@@ -1,7 +1,7 @@
 import "#db";
 import express from "express";
 import { errorHandler } from "#middleware";
-import { scoreRoutes, aiRoutes } from "#routes";
+import { eventRoutes } from "#routes";
 import cors from "cors";
 
 const app = express();

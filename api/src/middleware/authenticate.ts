@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { RequestHandler } from "express";
+import { Types } from "mongoose";
 
 const ACCESS_JWT_SECRET = process.env.ACCESS_JWT_SECRET;
 if (!ACCESS_JWT_SECRET) {
@@ -22,7 +23,7 @@ export const authenticate: RequestHandler = (req, _res, next) => {
         cause: { status: 401 },
       });
     const user = {
-      id: decoded.sub,
+      id: new Types.ObjectId(decoded.sub),
       roles: decoded.roles,
     };
     req.user = user;
