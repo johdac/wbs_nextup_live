@@ -45,3 +45,7 @@ export const geoPoint = z.object({
     message: "Must provide a tuple of two numbers for lng and lat",
   }),
 });
+
+export const dateString = z.coerce.date({
+  message: "A start date is required",
+});

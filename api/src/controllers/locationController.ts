@@ -1,7 +1,15 @@
-import { Location } from "#models";
+import { Location, User } from "#models";
 import type { RequestHandler } from "express";
 
 export const locationCreate: RequestHandler = async (req, res) => {
+  // Check required references
+  const { createdBy } = req.body;
+  const [userExists] = await Promise.all([User.exists({ _id: createdBy })]);
+  if (!userExists)
+    throw new Error("CreatedBy user does not exist", {
+      cause: { status: 400 },
+    });
+
   const location = await Location.create(req.body);
   res.json(location);
 };
@@ -15,7 +23,10 @@ export const locationGetOne: RequestHandler = async (req, res) => {
   const {
     params: { id },
   } = req;
-  const location = await Location.findById(id).populate("createdBy", "usernam");
+  const location = await Location.findById(id).populate(
+    "createdBy",
+    "username",
+  );
   if (!location)
     throw new Error(`Location with id of ${id} doesn't exist`, { cause: 404 });
   res.json(location);

@@ -36,6 +36,7 @@ eventRoutes
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
+    loadEvent,
     validateBody(eventSchema),
     eventUpdate,
   )
@@ -43,5 +44,6 @@ eventRoutes
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
+    loadEvent,
     eventDelete,
   )

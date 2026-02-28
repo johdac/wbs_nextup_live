@@ -1,14 +1,44 @@
-import { Event } from "#models";
+import { Event, User, Location, Artist } from "#models";
 import type { RequestHandler } from "express";
 
 export const eventCreate: RequestHandler = async (req, res) => {
-  const data = await Event.create(req.body);
-  res.json(data);
+  // Check required references
+  const { createdBy, location, artists } = req.body;
+
+  const [userExists, locationExists] = await Promise.all([
+    User.exists({ _id: createdBy }),
+    Location.exists({ _id: location }),
+  ]);
+
+  if (!userExists)
+    throw new Error("CreatedBy user does not exist", {
+      cause: { status: 400 },
+    });
+
+  if (!locationExists)
+    throw new Error("Location does not exist", { cause: { status: 400 } });
+
+  const artistCount = await Artist.countDocuments({
+    _id: { $in: artists },
+  });
+
+  if (artistCount !== artists.length)
+    throw new Error("One or more artists do not exist", {
+      cause: { status: 400 },
+    });
+
+  // Create Event
+  const event = await Event.create(req.body);
+  const populatedEvent = await Event.findById(event.id)
+    .populate("createdBy", "username")
+    .populate("location", "geo title")
+    .populate("artists", "name genres description musicUrls");
+  res.json(populatedEvent);
 };
 
 export const eventGetAll: RequestHandler = async (req, res) => {
-  const scores = await Event.find().populate("createdBy", "username");
-  res.json(scores);
+  const event = await Event.find().populate("createdBy", "username");
+  res.json(event);
 };
 
 export const eventGetOne: RequestHandler = async (req, res) => {

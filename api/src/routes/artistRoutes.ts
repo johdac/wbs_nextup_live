@@ -6,7 +6,7 @@ import {
   validateBody,
   validateRouteParams,
 } from "#middleware";
-import { artistSchema, idParamSchema } from "#schema";
+import { artistSchema, artistUpdateSchema, idParamSchema } from "#schema";
 import {
   artistCreate,
   artistDelete,
@@ -39,12 +39,14 @@ artistRoutes
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
-    validateBody(artistSchema),
+    loadArtist,
+    validateBody(artistUpdateSchema),
     artistUpdate,
   )
   .delete(
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
+    loadArtist,
     artistDelete,
-  )
+  );

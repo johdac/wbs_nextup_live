@@ -1,7 +1,15 @@
-import { Artist } from "#models";
+import { Artist, User } from "#models";
 import type { RequestHandler } from "express";
 
 export const artistCreate: RequestHandler = async (req, res) => {
+  // Check required references
+  const { createdBy } = req.body;
+  const [userExists] = await Promise.all([User.exists({ _id: createdBy })]);
+  if (!userExists)
+    throw new Error("CreatedBy user does not exist", {
+      cause: { status: 400 },
+    });
+
   const artist = await Artist.create(req.body);
   res.json(artist);
 };
@@ -31,7 +39,7 @@ export const artistUpdate: RequestHandler = async (req, res) => {
     params: { id },
     body: {
       name,
-      genre,
+      genres,
       musicUrls,
       imageUrls,
       description,
@@ -44,7 +52,7 @@ export const artistUpdate: RequestHandler = async (req, res) => {
   if (!artist)
     throw new Error(`Artist with id of ${id} doesn't exist`, { cause: 404 }); // Just for TS
   if (name) artist.name = name;
-  if (genre) artist.genre = genre;
+  if (genres) artist.genres = genres;
   if (musicUrls) artist.musicUrls = musicUrls;
   if (imageUrls) artist.imageUrls = imageUrls;
   if (description) artist.description = description;

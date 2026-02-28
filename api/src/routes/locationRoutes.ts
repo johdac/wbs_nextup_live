@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   authenticate,
   authorize,
-  loadEvent,
+  loadLocation,
   validateBody,
   validateRouteParams,
 } from "#middleware";
@@ -13,7 +13,7 @@ import {
   locationGetOne,
   locationUpdate,
 } from "#controllers";
-import { locationSchema, idParamSchema } from "#schema";
+import { locationSchema, idParamSchema, loactionUpdateSchema } from "#schema";
 
 export const locationRoutes = Router();
 
@@ -36,12 +36,14 @@ locationRoutes
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
-    validateBody(locationSchema),
+    loadLocation,
+    validateBody(loactionUpdateSchema),
     locationUpdate,
   )
   .delete(
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
+    loadLocation,
     locationDelete,
-  )
+  );
