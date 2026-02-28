@@ -1,5 +1,5 @@
 import z from "zod";
-import { mongoId } from "./rules";
+import { mongoId, string128 } from "./rules.ts";
 
 const GenreEnum = z.enum(["rock", "jazz", "hiphop", "electronic", "classical"]);
 
@@ -7,7 +7,7 @@ type Genre = z.infer<typeof GenreEnum>;
 
 export const artistSchema = z.object({
   createdBy: mongoId,
-  name: z.string({ message: "An artists name is required" }),
+  name: string128,
   genre: GenreEnum.optional(),
   description: z.string().optional(),
   musicUrls: z.array(z.url({ message: "Invalid url format" })).optional(),

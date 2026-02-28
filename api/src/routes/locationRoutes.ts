@@ -2,49 +2,46 @@ import { Router } from "express";
 import {
   authenticate,
   authorize,
-  loadArtist,
+  loadEvent,
   validateBody,
   validateRouteParams,
 } from "#middleware";
-import { artistSchema, idParamSchema } from "#schema";
 import {
-  artistCreate,
-  artistDelete,
-  artistGetAll,
-  artistGetOne,
-  artistUpdate,
+  locationCreate,
+  locationDelete,
+  locationGetAll,
+  locationGetOne,
+  locationUpdate,
 } from "#controllers";
+import { locationSchema, idParamSchema } from "#schema";
 
-export const artistRoutes = Router();
+export const locationRoutes = Router();
 
 // prettier-ignore
-artistRoutes
+locationRoutes
   .route("/")
   .post(
     // authenticate,
     // authorize("organizer"),
-    validateBody(artistSchema),
-    artistCreate,
+    validateBody(locationSchema),
+    locationCreate
   )
-  .get(artistGetAll)
+  .get(locationGetAll);
 
 // prettier-ignore
-artistRoutes
+locationRoutes
   .route("/:id")
-  .get(
-    validateRouteParams(idParamSchema),
-    artistGetOne
-  )
+  .get(validateRouteParams(idParamSchema), locationGetOne)
   .put(
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
-    validateBody(artistSchema),
-    artistUpdate,
+    validateBody(locationSchema),
+    locationUpdate,
   )
   .delete(
     validateRouteParams(idParamSchema),
     // authenticate,
     // authorize("self"),
-    artistDelete,
+    locationDelete,
   )

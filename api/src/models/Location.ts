@@ -8,7 +8,7 @@ const locationSchema = new Schema(
       required: [true, "A userId is required"],
     },
     title: { type: String, required: [true, "A title is required"] },
-    location: {
+    geo: {
       // GEO Json
       type: {
         type: String,

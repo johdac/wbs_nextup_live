@@ -1,6 +1,5 @@
 import { Artist } from "#models";
 import type { RequestHandler } from "express";
-import { isValidObjectId } from "mongoose";
 
 export const artistCreate: RequestHandler = async (req, res) => {
   const artist = await Artist.create(req.body);
@@ -14,7 +13,7 @@ export const artistGetAll: RequestHandler = async (req, res) => {
 
 export const artistGetOne: RequestHandler = async (req, res) => {
   const {
-    params: { id }, // TODO need validation in router
+    params: { id },
   } = req;
   const artist = await Artist.findById(id).populate("createdBy", "username");
   if (!artist)

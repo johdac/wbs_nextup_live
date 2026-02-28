@@ -3,8 +3,18 @@ import { z } from "zod";
 
 export const string64 = z
   .string()
-  .min(2, { message: "Title must have at least two characters" })
-  .max(64, { message: "Title may only have up to 64 characters" });
+  .min(2, { message: "String must have at least two characters" })
+  .max(64, { message: "String may only have up to 64 characters" });
+
+export const string128 = z
+  .string()
+  .min(2, { message: "String must have at least two characters" })
+  .max(128, { message: "String may only have up to 128 characters" });
+
+export const string256 = z
+  .string()
+  .min(2, { message: "String must have at least two characters" })
+  .max(256, { message: "String may only have up to 256 characters" });
 
 export const email = z.email({ message: "Email has wrong format" });
 
@@ -25,4 +35,13 @@ export const password = z
 
 export const mongoId = z.string().refine(isValidObjectId, {
   message: "Provided id is not valid",
+});
+
+export const geoPoint = z.object({
+  type: z.literal("Point", {
+    message: "String literal must be 'Point'",
+  }),
+  coordinates: z.tuple([z.number(), z.number()], {
+    message: "Must provide a tuple of two numbers for lng and lat",
+  }),
 });
