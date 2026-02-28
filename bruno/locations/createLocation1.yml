@@ -1,0 +1,37 @@
+info:
+  name: createLocation1
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{api}}/locations"
+  body:
+    type: json
+    data: |-
+      {
+        "createdBy": "{{userId}}",
+        "title": "Fitz Roy",
+        "geo": {
+          "type": "Point",
+          "coordinates": [13.4205455, 52.5130996]
+        }
+      }
+  auth: inherit
+
+runtime:
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.id
+        method: jsonq
+      variable:
+        name: createdLocation1
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

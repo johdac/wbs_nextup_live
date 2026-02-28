@@ -1,0 +1,33 @@
+info:
+  name: createArtist1
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{api}}/artists"
+  body:
+    type: json
+    data: |-
+      {
+        "createdBy": "{{userId}}",
+        "name": "Awesome Band",
+        "genres": ["rock"]
+      }
+
+runtime:
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.id
+        method: jsonq
+      variable:
+        name: createdArtist1
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

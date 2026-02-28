@@ -1,0 +1,21 @@
+info:
+  name: updateLocation
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{api}}/locations/{{createdLocation1}}"
+  body:
+    type: json
+    data: |-
+      {
+        "description": "Fitz Roy is a bar/club in Berlin Mitte"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
