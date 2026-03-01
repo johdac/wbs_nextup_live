@@ -2,7 +2,5 @@ name: default
 variables:
   - name: api
     value: http://localhost:3000
-  - name: userId
-    value: 69a3051fae0d074d723d0da2
   - secret: true
     name: accessToken
