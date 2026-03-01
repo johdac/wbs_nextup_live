@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-purple: #3d31a9;
+  --color-pink: #ff4d94;
+  --color-orange: #ff7c52;
+  --color-yellow: #ffbd4a;
+  --color-gray: #a3a3a3;
+
+  --color-background: #0a0a0a;
+  --color-foreground: #ffffff;
+
+  --bg-brand-gradient: linear-gradient(
+    to right,
+    var(--color-brand-pink),
+    var(--color-brand-orange),
+    var(--color-brand-yellow)
+  );
+}
+@theme {
+  --color-background: #0a0a0a;
+  --color-foreground: #ffffff;
+}
+
+@layer utilities {
+  .bg-heavy-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='heavyNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23heavyNoise)'/%3E%3C/svg%3E");
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
