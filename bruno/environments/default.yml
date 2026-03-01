@@ -1,0 +1,6 @@
+name: default
+variables:
+  - name: api
+    value: http://localhost:3000
+  - secret: true
+    name: accessToken

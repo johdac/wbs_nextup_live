@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { RequestHandler } from "express";
+import { Types } from "mongoose";
 
 const ACCESS_JWT_SECRET = process.env.ACCESS_JWT_SECRET;
 if (!ACCESS_JWT_SECRET) {
@@ -13,6 +14,7 @@ export const authenticate: RequestHandler = (req, _res, next) => {
   if (!accessToken)
     throw new Error("Please sign in", { cause: { status: 401 } });
   try {
+    // Verify that the token was signed with our JWT secret
     const decoded = jwt.verify(
       accessToken,
       ACCESS_JWT_SECRET,
@@ -21,8 +23,10 @@ export const authenticate: RequestHandler = (req, _res, next) => {
       throw new Error("Invalid or expired access token", {
         cause: { status: 401 },
       });
+
+    // Atach user data to request
     const user = {
-      id: decoded.sub,
+      id: new Types.ObjectId(decoded.sub),
       roles: decoded.roles,
     };
     req.user = user;
@@ -31,7 +35,7 @@ export const authenticate: RequestHandler = (req, _res, next) => {
     if (err instanceof jwt.TokenExpiredError) {
       next(
         new Error("Expired access token", {
-          cause: { status: 401, code: "ACCES_TOKEN_EXPIRED" },
+          cause: { status: 401, code: "ACCESS_TOKEN_EXPIRED" },
         }),
       );
     } else {

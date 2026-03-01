@@ -1,4 +1,5 @@
 import { model, Schema, Types } from "mongoose";
+import { GENRES } from "#shared";
 
 const artistSchema = new Schema(
   {
@@ -8,11 +9,13 @@ const artistSchema = new Schema(
       required: [true, "A userId is required"],
     },
     name: { type: String, required: [true, "An artists name is required"] },
-    genre: {
-      type: String,
-      enum: ["rock", "jazz", "hiphop", "electronic", "classical"],
-      required: true,
-    },
+    genres: [
+      {
+        type: String,
+        enum: GENRES,
+        required: true,
+      },
+    ],
     description: { type: String },
     musicUrls: [{ type: String }],
     mainImageUrl: { type: String },

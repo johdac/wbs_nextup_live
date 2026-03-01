@@ -20,11 +20,6 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    genre: {
-      type: String,
-      enum: ["rock", "jazz", "hiphop", "electronic", "classical"],
-      required: true,
-    },
     role: {
       type: String,
       enum: ["user", "admin", "organizer"],

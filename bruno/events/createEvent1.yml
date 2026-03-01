@@ -1,0 +1,36 @@
+info:
+  name: createEvent1
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{api}}/events"
+  body:
+    type: json
+    data: |-
+      {
+        "location": "{{createdLocation1}}",
+        "artists": ["{{createdArtist1}}"],
+        "title": "Artist 1 playing at Fitz Roy",
+        "startDate": "2026-05-28T17:20:00.000Z",
+        "endDate": "2026-05-28T17:23:00.000Z"
+      }
+  auth: inherit
+
+runtime:
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.id
+        method: jsonq
+      variable:
+        name: createdEvent1
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

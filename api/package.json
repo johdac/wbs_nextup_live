@@ -25,6 +25,10 @@
       "development": "./src/routes/index.ts",
       "default": "./dist/routes/index.js"
     },
+    "#shared": {
+      "development": "./src/shared/index.ts",
+      "default": "./dist/shared/index.js"
+    },
     "#schema": {
       "development": "./src/schema/index.ts",
       "default": "./dist/schema/index.js"

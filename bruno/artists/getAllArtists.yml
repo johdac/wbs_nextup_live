@@ -1,0 +1,20 @@
+info:
+  name: getAllArtists
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{api}}/artists"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: ""
+      value: bo
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
