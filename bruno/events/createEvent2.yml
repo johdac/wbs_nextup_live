@@ -1,20 +1,20 @@
 info:
-  name: createLocation1
+  name: createEvent2
   type: http
-  seq: 1
+  seq: 2
 
 http:
   method: POST
-  url: "{{api}}/locations"
+  url: "{{api}}/events"
   body:
     type: json
     data: |-
       {
-        "title": "Fitz Roy",
-        "geo": {
-          "type": "Point",
-          "coordinates": [13.4205455, 52.5130996]
-        }
+        "location": "{{createdLocation1}}",
+        "artists": ["{{createdArtist1}}"],
+        "title": "Artist 1 playing at Fitz Roy again",
+        "startDate": "2026-05-29T17:20:00.000Z",
+        "endDate": "2026-05-29T17:23:00.000Z"
       }
   auth: inherit
 
@@ -26,7 +26,7 @@ runtime:
         expression: res.body.id
         method: jsonq
       variable:
-        name: createdLocation1
+        name: createdEvent2
         scope: runtime
 
 settings:

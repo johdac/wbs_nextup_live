@@ -8,11 +8,11 @@ if (!ACCESS_JWT_SECRET) {
 } else {
   const token = jwt.sign(
     {
-      roles: ["USER"],
+      roles: ["organizer"],
     },
     ACCESS_JWT_SECRET,
     {
-      subject: "6995d3c12b8e0f0121cef187", // this must be the id of an existing user
+      subject: "69a3051fae0d074d723d0da2", // this must be the id of an existing user
       expiresIn: "55d",
     },
   );

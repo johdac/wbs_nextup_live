@@ -1,5 +1,5 @@
 info:
-  name: getArtistById
+  name: getArtist1
   type: http
   seq: 4
 

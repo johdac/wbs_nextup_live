@@ -10,7 +10,6 @@ http:
     type: json
     data: |-
       {
-        "createdBy": "{{userId}}",
         "location": "{{createdLocation1}}",
         "artists": ["{{createdArtist1}}"],
         "title": "Artist 1 playing at Fitz Roy",

@@ -21,8 +21,8 @@ export const locationRoutes = Router();
 locationRoutes
   .route("/")
   .post(
-    // authenticate,
-    // authorize("organizer"),
+    authenticate,
+    authorize("organizer"),
     validateBody(locationSchema),
     locationCreate
   )
@@ -34,16 +34,16 @@ locationRoutes
   .get(validateRouteParams(idParamSchema), locationGetOne)
   .put(
     validateRouteParams(idParamSchema),
-    // authenticate,
-    // authorize("self"),
+    authenticate,
     loadLocation,
+    authorize("self"),
     validateBody(loactionUpdateSchema),
     locationUpdate,
   )
   .delete(
     validateRouteParams(idParamSchema),
-    // authenticate,
-    // authorize("self"),
+    authenticate,
     loadLocation,
+    authorize("self"),
     locationDelete,
   );

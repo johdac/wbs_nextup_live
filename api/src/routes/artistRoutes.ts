@@ -21,8 +21,8 @@ export const artistRoutes = Router();
 artistRoutes
   .route("/")
   .post(
-    // authenticate,
-    // authorize("organizer"),
+    authenticate,
+    authorize("organizer"),
     validateBody(artistSchema),
     artistCreate,
   )
@@ -37,16 +37,16 @@ artistRoutes
   )
   .put(
     validateRouteParams(idParamSchema),
-    // authenticate,
-    // authorize("self"),
+    authenticate,
     loadArtist,
+    authorize("self"),
     validateBody(artistUpdateSchema),
     artistUpdate,
   )
   .delete(
     validateRouteParams(idParamSchema),
-    // authenticate,
-    // authorize("self"),
+    authenticate,
     loadArtist,
+    authorize("self"),
     artistDelete,
   );

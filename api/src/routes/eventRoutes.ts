@@ -13,7 +13,7 @@ import {
   eventGetOne,
   eventUpdate,
 } from "#controllers";
-import { eventSchema, idParamSchema } from "#schema";
+import { eventSchema, eventUpdateSchema, idParamSchema } from "#schema";
 
 export const eventRoutes = Router();
 
@@ -21,8 +21,8 @@ export const eventRoutes = Router();
 eventRoutes
   .route("/")
   .post(
-    // authenticate,
-    // authorize("organizer"),
+    authenticate,
+    authorize("organizer"),
     validateBody(eventSchema),
     eventCreate
   )
@@ -34,16 +34,16 @@ eventRoutes
   .get(validateRouteParams(idParamSchema), eventGetOne)
   .put(
     validateRouteParams(idParamSchema),
-    // authenticate,
-    // authorize("self"),
+    authenticate,
     loadEvent,
-    validateBody(eventSchema),
+    authorize("self"),
+    validateBody(eventUpdateSchema),
     eventUpdate,
   )
   .delete(
     validateRouteParams(idParamSchema),
-    // authenticate,
-    // authorize("self"),
+    authenticate,
     loadEvent,
+    authorize("self"),
     eventDelete,
-  )
+  );

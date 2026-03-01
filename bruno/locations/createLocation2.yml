@@ -10,7 +10,6 @@ http:
     type: json
     data: |-
       {
-        "createdBy": "{{userId}}",
         "title": "Madame Claude",
         "geo": {
           "type": "Point",

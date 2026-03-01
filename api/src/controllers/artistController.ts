@@ -1,14 +1,11 @@
 import { Artist, User } from "#models";
 import type { RequestHandler } from "express";
+import { assertExists } from "#utils";
 
 export const artistCreate: RequestHandler = async (req, res) => {
-  // Check required references
-  const { createdBy } = req.body;
-  const [userExists] = await Promise.all([User.exists({ _id: createdBy })]);
-  if (!userExists)
-    throw new Error("CreatedBy user does not exist", {
-      cause: { status: 400 },
-    });
+  // Setting the createdBy value of the request to the current user we attached in authenticate
+  assertExists(req.user);
+  req.body.createdBy = req.user.id;
 
   const artist = await Artist.create(req.body);
   res.json(artist);
@@ -25,7 +22,9 @@ export const artistGetOne: RequestHandler = async (req, res) => {
   } = req;
   const artist = await Artist.findById(id).populate("createdBy", "username");
   if (!artist)
-    throw new Error(`Artist with id of ${id} doesn't exist`, { cause: 404 });
+    throw new Error(`Artist with id of ${id} doesn't exist`, {
+      cause: { status: 404 },
+    });
   res.json(artist);
 };
 
@@ -49,8 +48,7 @@ export const artistUpdate: RequestHandler = async (req, res) => {
     artist,
   } = req;
 
-  if (!artist)
-    throw new Error(`Artist with id of ${id} doesn't exist`, { cause: 404 }); // Just for TS
+  assertExists(artist);
   if (name) artist.name = name;
   if (genres) artist.genres = genres;
   if (musicUrls) artist.musicUrls = musicUrls;
@@ -66,11 +64,8 @@ export const artistUpdate: RequestHandler = async (req, res) => {
 export const artistDelete: RequestHandler = async (req, res) => {
   const {
     params: { id },
-    artist,
   } = req;
 
-  if (!artist)
-    throw new Error(`Post with id of ${id} doesn't exist`, { cause: 404 });
   await Artist.findByIdAndDelete(id);
   res.json({ success: `Artist with id of ${id} was deleted` });
 };

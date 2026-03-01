@@ -2,8 +2,7 @@ import z from "zod";
 import { mongoId, string128 } from "./rules.ts";
 import { GENRES } from "#shared";
 
-export const artistSchema = z.object({
-  createdBy: mongoId,
+export const artistSchema = z.strictObject({
   name: string128,
   genres: z.array(z.enum(GENRES).optional()),
   description: z.string().optional(),

@@ -10,10 +10,10 @@ http:
     type: json
     data: |-
       {
-        "createdBy": "{{userId}}",
         "name": "Awesome Band",
-        "genres": ["jazz", "pop"]
+        "genres": ["jazz", "electronic"]
       }
+  auth: inherit
 
 runtime:
   actions:

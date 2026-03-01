@@ -1,14 +1,11 @@
 import { Location, User } from "#models";
+import { assertExists } from "#utils";
 import type { RequestHandler } from "express";
 
 export const locationCreate: RequestHandler = async (req, res) => {
-  // Check required references
-  const { createdBy } = req.body;
-  const [userExists] = await Promise.all([User.exists({ _id: createdBy })]);
-  if (!userExists)
-    throw new Error("CreatedBy user does not exist", {
-      cause: { status: 400 },
-    });
+  // Setting the createdBy value of the request to the current user we attached in authenticate
+  assertExists(req.user);
+  req.body.createdBy = req.user.id;
 
   const location = await Location.create(req.body);
   res.json(location);
@@ -28,7 +25,9 @@ export const locationGetOne: RequestHandler = async (req, res) => {
     "username",
   );
   if (!location)
-    throw new Error(`Location with id of ${id} doesn't exist`, { cause: 404 });
+    throw new Error(`Location with id of ${id} doesn't exist`, {
+      cause: { status: 404 },
+    });
   res.json(location);
 };
 
@@ -39,13 +38,11 @@ export const locationUpdate: RequestHandler = async (req, res) => {
    * must have stored a user on the request.
    */
   const {
-    params: { id },
     body: { title, geo, zip, address, city, country, description },
     location,
   } = req;
 
-  if (!location)
-    throw new Error(`Location with id of ${id} doesn't exist`, { cause: 404 }); // Just for TS
+  assertExists(location);
   if (title) location.title = title;
   if (geo) location.geo = geo;
   if (zip) location.zip = zip;
@@ -61,11 +58,8 @@ export const locationUpdate: RequestHandler = async (req, res) => {
 export const locationDelete: RequestHandler = async (req, res) => {
   const {
     params: { id },
-    location,
   } = req;
 
-  if (!location)
-    throw new Error(`Location with id of ${id} doesn't exist`, { cause: 404 });
   await Location.findByIdAndDelete(id);
   res.json({ success: `Location with id of ${id} was deleted` });
 };

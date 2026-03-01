@@ -1,8 +1,7 @@
 import z from "zod";
 import { geoPoint, mongoId, string128, string256, string64 } from "./rules.ts";
 
-export const locationSchema = z.object({
-  createdBy: mongoId,
+export const locationSchema = z.strictObject({
   title: string128,
   geo: geoPoint,
   zip: string64.optional(),

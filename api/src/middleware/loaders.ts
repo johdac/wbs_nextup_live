@@ -1,6 +1,13 @@
 import type { RequestHandler } from "express";
 import { Location, Event, Artist } from "#models";
 
+/**
+ * These run in the routes after authentication but before authorization to attach
+ * the data for the resource that is supposed to be edited. Then in the auhtorization
+ * we can compare for examply if the owner of the resource is the same as the current
+ * user.
+ */
+
 export const loadLocation: RequestHandler = async (req, _res, next) => {
   const location = await Location.findById(req.params.id);
   if (!location)
