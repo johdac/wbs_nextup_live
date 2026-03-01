@@ -11,7 +11,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="fixed inset-0 z-0 pointer-events-none bg-heavy-grain opacity-[0.12] mix-blend-screen" />
 
       {/* Layer 3: Contrast Layer */}
-      {/* This layer reinforces the "interesting gray" texture from your image */}
+      {/* This layer reinforces the "interesting gray*/}
       <div className="fixed inset-0 z-0 pointer-events-none bg-heavy-grain opacity-[0.08] mix-blend-overlay" />
 
       {/* Layer 4: Subtle Vignette to focus light in center */}
