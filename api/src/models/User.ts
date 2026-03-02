@@ -2,6 +2,12 @@ import { Schema, model, Types } from "mongoose";
 
 const userSchema = new Schema(
   {
+    auth0Id: {
+      type: String,
+      unique: true,
+      sparse: true, // allow the old accounts without auth0Id
+      index: true,
+    },
     username: {
       type: String,
       required: [true, "username is required"],
@@ -9,7 +15,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      // required: [true, "Password is required"], // don't require password, let Auth0 users without password
       select: false,
       trim: true,
     },
