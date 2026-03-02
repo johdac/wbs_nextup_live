@@ -1,10 +1,16 @@
 import type { Request, Response, NextFunction } from "express";
 
-export function requireRole(...roles: Array<"user" | "admin" | "organizer">) {
+export function requireRole(...allowed: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const role = req.userDoc?.role;
-    if (!role) return res.status(500).json({ error: "userDoc missing (attachUser not applied?)" });
-    if (!roles.includes(role)) return res.status(403).json({ error: "Forbidden" });
+    const user = (req as any).user as { roles?: string[] } | undefined;
+
+    if (!user?.roles?.length) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const ok = user.roles.some((r) => allowed.includes(r));
+    if (!ok) return res.status(403).json({ message: "Forbidden" });
+
     next();
   };
 }

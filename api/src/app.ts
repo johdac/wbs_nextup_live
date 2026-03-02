@@ -26,7 +26,7 @@ app.route("/").get((req, res) => {
   res.json("Hello World");
 });
 
-// ✅ 用來測試：前端帶 Bearer token 打這支，會自動建立/綁定 DB user
+// testing
 app.post("/me", requireAuth, attachUser, (req, res) => {
   if (!req.userDoc) {
     return res.status(500).json({
@@ -43,10 +43,7 @@ app.post("/me", requireAuth, attachUser, (req, res) => {
   });
 });
 
-app.get("/public", (req, res) => res.json({ ok: true }));
-app.get("/private", requireAuth, attachUser, (req, res) => res.json({ id: req.userDoc._id }));
-
-app.use("/events", requireAuth, attachUser, eventRoutes);
+app.use("/events", eventRoutes);
 app.use("/artists", artistRoutes);
 app.use("/locations", locationRoutes);
 app.use("*splat", (req, res) => {
