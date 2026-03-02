@@ -1,9 +1,10 @@
 export const GENRES = [
-  "rock",
-  "jazz",
-  "hiphop",
-  "electronic",
   "classical",
+  "electronic",
+  "hiphop",
+  "jazz",
+  "rock",
+  "world",
 ] as const;
 
 export type Genre = (typeof GENRES)[number];

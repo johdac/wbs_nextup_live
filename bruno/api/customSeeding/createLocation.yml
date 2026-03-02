@@ -1,0 +1,42 @@
+info:
+  name: createLocation
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{api}}/locations"
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Gretchen",
+        "geo": {
+          "type": "Point",
+          "coordinates": [13.3851147, 52.4960025]
+        },
+        "zip": "10963",
+        "address": "Obentrautstraße 19-21",
+        "city": "Berlin",
+        "country": "Germany",
+        "description": "",
+        "websiteUrl": "https://www.gretchen-club.de/"
+      }
+  auth: inherit
+
+runtime:
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.id
+        method: jsonq
+      variable:
+        name: createdLocation1
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

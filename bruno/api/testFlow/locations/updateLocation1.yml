@@ -1,17 +1,16 @@
 info:
-  name: updateEvent1
+  name: updateLocation1
   type: http
-  seq: 4
+  seq: 5
 
 http:
   method: PUT
-  url: "{{api}}/events/{{createdEvent1}}"
+  url: "{{api}}/locations/{{createdLocation1}}"
   body:
     type: json
     data: |-
       {
-        "description": "It is going to be an awesome night",
-        "endDate": "2026-05-28T17:23:30.000Z"
+        "description": "Fitz Roy is a bar/club in Berlin Mitte"
       }
   auth: inherit
 

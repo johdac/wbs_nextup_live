@@ -1,0 +1,15 @@
+info:
+  name: deleteArtist1
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{api}}/artists/{{createdArtist1}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

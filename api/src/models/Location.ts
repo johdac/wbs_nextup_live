@@ -25,6 +25,7 @@ const locationSchema = new Schema(
     city: { type: String },
     country: { type: String },
     description: { type: String },
+    websiteUrl: { type: String },
   },
   { timestamps: true },
 );
