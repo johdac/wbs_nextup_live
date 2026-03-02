@@ -16,16 +16,28 @@
     var(--color-brand-orange),
     var(--color-brand-yellow)
   );
-}
-@theme {
   --color-background: #0a0a0a;
   --color-foreground: #ffffff;
 }
 
-@layer utilities {
-  .bg-heavy-grain {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='heavyNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23heavyNoise)'/%3E%3C/svg%3E");
+@layer base {
+  body {
+    background-color: var(--nxp-bg);
+    background-image: url("/bg.jpg");
+    background-repeat: repeat;
+    background-size: 600px;
+    color: var(--nxp-text);
+    font-family:
+      "Outfit",
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Inter",
+      sans-serif;
   }
+}
+
+@layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
