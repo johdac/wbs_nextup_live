@@ -3,7 +3,7 @@ export const Hero = () => {
     <div className="min-h-[calc(100vh-200px)]">
       <main className="max-w-7xl mx-auto px-12 mt-20 grid grid-cols-1 lg:grid-cols-2 items-center relative z-10">
         <div className="space-y-6">
-          <h1 className="text-7xl font-black leading-tight tracking-tight uppercase">
+          <h1 className="text-7xl font-black leading-[1] tracking-tight uppercase">
             Find your next
             <br />
             live show
@@ -28,7 +28,8 @@ export const Hero = () => {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative ml-12">
+          <img src="hero.webp" alt="" />
           <div className="relative z-10 scale-110"></div>
         </div>
       </main>

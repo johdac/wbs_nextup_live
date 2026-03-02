@@ -2,9 +2,9 @@ import React from "react";
 
 export const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
+    <div className="relative min-h-screen text-white overflow-x-hidden">
       {/* Layer 1: Base Dark Color */}
-      <div className="fixed inset-0 z-0 bg-[#0a0a0a]" />
+      <div className="fixed inset-0 z-0 " />
 
       {/* Layer 2: Extreme Grain Overlay */}
       {/* Increased opacity and used 'screen' blend mode for more visible white grain */}
