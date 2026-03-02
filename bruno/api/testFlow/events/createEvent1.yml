@@ -1,17 +1,20 @@
 info:
-  name: createArtist2
+  name: createEvent1
   type: http
-  seq: 2
+  seq: 1
 
 http:
   method: POST
-  url: "{{api}}/artists"
+  url: "{{api}}/events"
   body:
     type: json
     data: |-
       {
-        "name": "Awesome Band",
-        "genres": ["jazz", "electronic"]
+        "location": "{{createdLocation1}}",
+        "artists": ["{{createdArtist1}}"],
+        "title": "Test Event 1",
+        "startDate": "2026-05-28T17:20:00.000Z",
+        "endDate": "2026-05-28T17:23:00.000Z"
       }
   auth: inherit
 
@@ -23,7 +26,7 @@ runtime:
         expression: res.body.id
         method: jsonq
       variable:
-        name: createdArtist2
+        name: createdEvent1
         scope: runtime
 
 settings:

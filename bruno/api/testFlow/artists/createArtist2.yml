@@ -1,7 +1,7 @@
 info:
-  name: createArtist1
+  name: createArtist2
   type: http
-  seq: 1
+  seq: 2
 
 http:
   method: POST
@@ -10,9 +10,8 @@ http:
     type: json
     data: |-
       {
-        "name": "Awesome Band",
-        "genres": ["rock"],
-        "description": "Test"
+        "name": "Test Band 1",
+        "genres": ["jazz", "electronic"]
       }
   auth: inherit
 
@@ -24,7 +23,7 @@ runtime:
         expression: res.body.id
         method: jsonq
       variable:
-        name: createdArtist1
+        name: createdArtist2
         scope: runtime
 
 settings:

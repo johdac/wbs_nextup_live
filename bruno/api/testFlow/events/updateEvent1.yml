@@ -1,0 +1,22 @@
+info:
+  name: updateEvent1
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{api}}/events/{{createdEvent1}}"
+  body:
+    type: json
+    data: |-
+      {
+        "description": "It is going to be an awesome night",
+        "endDate": "2026-05-28T17:23:30.000Z"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

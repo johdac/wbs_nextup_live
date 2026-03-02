@@ -43,7 +43,10 @@ export const eventGetOne: RequestHandler = async (req, res) => {
   const {
     params: { id },
   } = req;
-  const event = await Event.findById(id).populate("createdBy", "username");
+  const event = await Event.findById(id)
+    .populate("createdBy", "username")
+    .populate("location")
+    .populate("artists");
   if (!event)
     throw new Error(`Event with id of ${id} doesn't exist`, {
       cause: { status: 404 },

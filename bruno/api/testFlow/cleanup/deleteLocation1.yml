@@ -1,17 +1,11 @@
 info:
-  name: updateLocation1
+  name: deleteLocation1
   type: http
-  seq: 4
+  seq: 2
 
 http:
-  method: PUT
+  method: DELETE
   url: "{{api}}/locations/{{createdLocation1}}"
-  body:
-    type: json
-    data: |-
-      {
-        "description": "Fitz Roy is a bar/club in Berlin Mitte"
-      }
   auth: inherit
 
 settings:

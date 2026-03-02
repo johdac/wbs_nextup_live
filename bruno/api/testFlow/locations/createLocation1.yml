@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "title": "Fitz Roy",
+        "title": "Test Location 1",
         "geo": {
           "type": "Point",
           "coordinates": [13.4205455, 52.5130996]

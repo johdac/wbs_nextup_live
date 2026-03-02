@@ -1,0 +1,36 @@
+info:
+  name: createArtist
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{api}}/artists"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "AYSAY",
+        "genres": ["electronic", "world"],
+        "description": "<p>AySay is a Copenhagen-based band which combines Anatolian folk and Nordic electronica through the Danish/Kurdish/Turkish heritage of lead singer, Luna Ersahin. They create a musical space where boundaries are broken down to leave you only with a raw human experience - in the spectrum between hope and hopelessness. AySay’s music celebrates diversity and bridges worlds, making them a vibrant voice in the global music scene.</p><p>With Luna’s mesmerizing, pitch-defying voice at the helm, and the virtuosic talents of Aske Døssing Bendixen and Carl West Hosbond, AySay crafts a musical universe that carries listeners from Nordic landscapes to the heart of Anatolia. By combining traditional instruments like the saz with contemporary pop and electronic elements, AySay produces an innovative soundscape that defies genres and unites cultures.</p><p>For this event we offer discounted tickets to give people with less money still access to culture. These quotas are limited and only available at TixforGigs. We trust in your self-assessment: If you can, please book standard tickets and leave the reduced tickets to those who have to save money at the moment.</p><p>Photo: Mishael Oladipo Fapohunda</p>",
+        "musicUrls": ["https://www.youtube.com/watch?v=sobKh5qQXO0"],
+        "mainImageUrl": 
+      }
+  auth: inherit
+
+runtime:
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.id
+        method: jsonq
+      variable:
+        name: createdArtist1
+        scope: runtime
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

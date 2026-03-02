@@ -38,7 +38,7 @@ export const locationUpdate: RequestHandler = async (req, res) => {
    * must have stored a user on the request.
    */
   const {
-    body: { title, geo, zip, address, city, country, description },
+    body: { title, geo, zip, address, city, country, description, websiteUrl },
     location,
   } = req;
 
@@ -50,6 +50,7 @@ export const locationUpdate: RequestHandler = async (req, res) => {
   if (city) location.city = city;
   if (country) location.country = country;
   if (description) location.description = description;
+  if (websiteUrl) location.websiteUrl = websiteUrl;
 
   await location.save();
   res.json(location);

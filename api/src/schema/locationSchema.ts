@@ -9,6 +9,7 @@ export const locationSchema = z.strictObject({
   city: string64.optional(),
   country: string64.optional(),
   description: z.string().optional(),
+  websiteUrl: z.url({ message: "Invalid url format" }).optional(),
 });
 
 export const loactionUpdateSchema = locationSchema
