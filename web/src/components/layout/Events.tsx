@@ -1,57 +1,154 @@
 import EventCard from "./EventCard";
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import DateTimeInput from "./DateTimeInput";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+// import { Search } from "lucide-react";
 import { mockEvents } from "../../data/MockData";
+import { useNavigate, useSearchParams } from "react-router";
 
 const EventList = () => {
   const [search, setSearch] = useState("");
+  const [dateTime, setDateTime] = useState<Date | null>(null);
+  const [radius, setRadius] = useState(1);
+  const [searchParams] = useSearchParams();
+  const [genre, setGenre] = useState(searchParams.get("genre") || "");
+  const [location, setLocation] = useState(searchParams.get("location") || "");
+
+  const navigate = useNavigate();
+
+  const genres = [
+    "Rock",
+    "Techno",
+    "Jazz",
+    "Hip-Hop",
+    "Indie",
+    "Electronic",
+    "Pop",
+    "Classical",
+    "Folk",
+    "Reggae",
+  ];
+
+  useEffect(() => {
+    setGenre(searchParams.get("genre") || "");
+    setLocation(searchParams.get("location") || "");
+  }, [searchParams]);
+
+  const handleSearch = () => {
+    // Construct the URL with query parameters
+    const params = new URLSearchParams();
+    if (genre) params.append("genre", genre);
+    if (location) params.append("location", location);
+    // Add other filters as needed
+
+    navigate(`/events?${params.toString()}`);
+  };
 
   const filtered = useMemo(() => {
-    if (!search.trim()) {
-      return mockEvents;
-    }
-
+    let events = mockEvents;
     const q = search.toLowerCase().trim();
-    return mockEvents.filter((event) => {
-      return (
-        event.title.toLowerCase().includes(q) ||
-        event.genre.toLowerCase().includes(q)
+    if (q) {
+      events = events.filter(
+        (event) =>
+          event.title.toLowerCase().includes(q) ||
+          event.genre.toLowerCase().includes(q),
       );
-    });
-  }, [search]);
+    }
+    if (genre) {
+      events = events.filter((event) => event.genre === genre);
+    }
+    return events;
+  }, [search, genre]);
 
   return (
-    <section id="events" className="relative py-20">
-      <div className="absolute inset-0 retro-stripe opacity-30" />
-      <div className="container relative mx-auto px-4">
-        <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
-          All <span className="neon-gradient-text">Upcoming</span> Events
-        </h2>
-        <p className="mb-6 font-body text-sm text-muted-foreground">
-          Your next unforgettable night awaits
-        </p>
+    <section className=" py-20">
+      <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
+        All <span className="neon-gradient-text">Upcoming</span> Events
+      </h2>
+      <p className="mb-6 font-body text-sm text-white">
+        Your next unforgettable night awaits
+      </p>
 
-        <div className="relative mb-10">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search by title or genre..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray py-4 pl-12 pr-4"
-          />
-        </div>
+      <div
+        style={{ backgroundImage: 'url("/bg.jpg")' }}
+        className="sticky top-24 z-40  py-4 mb-10 "
+      >
+        <div
+          className=" flex flex-col gap-4 
+                lg:flex-row lg:items-end lg:gap-4"
+        >
+          {/* Date / Time Picker */}
+          <div className="w-full lg:flex-1 mui-white-outline">
+            <DateTimeInput value={dateTime} onChange={setDateTime} />
+          </div>
 
-        <div className="flex flex-col gap-4">
-          {filtered.length > 0 ? (
-            filtered.map((event) => <EventCard key={event.id} event={event} />)
-          ) : (
-            <p className="py-12 text-center font-display text-lg text-white">
-              No events found matching
-              {/* <span className="text-purple">{search}</span>" */}
-            </p>
-          )}
+          {/* Location + Radius */}
+          <div className="w-full lg:flex-[1.5] flex gap-2">
+            <TextField
+              label="Location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              fullWidth
+              size="small"
+              variant="outlined"
+              className="mui-white-outline"
+            />
+            <TextField
+              label="Radius"
+              type="number"
+              value={radius}
+              onChange={(e) => setRadius(Number(e.target.value))}
+              size="small"
+              inputProps={{ min: 1, max: 100 }}
+              className="mui-white-outline"
+              sx={{ width: { xs: 100, sm: 150 } }} // Responsive width
+            />
+          </div>
+
+          {/* Genre */}
+          <div className="w-full lg:flex-1">
+            <TextField
+              select
+              label="Genre"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              fullWidth
+              size="small"
+              variant="outlined"
+              className="mui-white-outline"
+            >
+              <MenuItem value="">All Genres</MenuItem>
+              {genres.map((g) => (
+                <MenuItem key={g} value={g}>
+                  {g}
+                </MenuItem>
+              ))}
+            </TextField>
+          </div>
+
+          {/* Search Button */}
+          <div className="w-full lg:w-auto lg:min-w-[160px]">
+            <button
+              onClick={handleSearch}
+              className="bg-purple w-full py-2.5 md:py-3 rounded-md text-lg text-white font-bold active:bg-orange lg:hover:bg-orange transition-all cursor-pointer"
+            >
+              Find Events
+            </button>
+          </div>
         </div>
+      </div>
+
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+        {filtered.length > 0 ? (
+          filtered.map((event, index) => (
+            <EventCard key={event.id} event={event} index={index} />
+          ))
+        ) : (
+          <p className="py-12 text-center font-display text-lg text-white">
+            No events found matching
+          </p>
+        )}
       </div>
     </section>
   );

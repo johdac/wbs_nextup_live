@@ -198,4 +198,34 @@ export const mockEvents: MusicEvent[] = [
     isPopular: true,
     organizerName: "Golden Stage Productions",
   },
+  {
+    id: "e7",
+    title: "Summer Beats Live",
+    description:
+      "A high-energy live concert featuring chart-topping pop and hip-hop artists with stunning stage production.",
+    startDate: "2026-03-20T22:00:00",
+    endDate: "2026-03-21T05:00:00",
+    location: locations[2],
+    artists: [artists[2]],
+    genre: "Electronic",
+    coverImage:
+      "https://images.unsplash.com/photo-1670028514318-0ac718c0590d?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    isPopular: true,
+    organizerName: "Golden Stage Productions",
+  },
+  {
+    id: "e6",
+    title: "Summer Beats Live",
+    description:
+      "A high-energy live concert featuring chart-topping pop and hip-hop artists with stunning stage production.",
+    startDate: "2026-03-20T22:00:00",
+    endDate: "2026-03-21T05:00:00",
+    location: locations[2],
+    artists: [artists[2]],
+    genre: "Electronic",
+    coverImage:
+      "https://images.unsplash.com/photo-1670028514318-0ac718c0590d?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    isPopular: true,
+    organizerName: "Golden Stage Productions",
+  },
 ];
