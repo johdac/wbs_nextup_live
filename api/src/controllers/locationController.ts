@@ -3,16 +3,16 @@ import { assertExists } from "#utils";
 import type { RequestHandler } from "express";
 
 export const locationCreate: RequestHandler = async (req, res) => {
-  // Setting the createdBy value of the request to the current user we attached in authenticate
+  // Setting the createdById value of the request to the current user we attached in authenticate
   assertExists(req.user);
-  req.body.createdBy = req.user.id;
+  req.body.createdById = req.user.id;
 
   const location = await Location.create(req.body);
   res.json(location);
 };
 
 export const locationGetAll: RequestHandler = async (req, res) => {
-  const locations = await Location.find().populate("createdBy", "username");
+  const locations = await Location.find().populate("createdById", "username");
   res.json(locations);
 };
 
@@ -21,7 +21,7 @@ export const locationGetOne: RequestHandler = async (req, res) => {
     params: { id },
   } = req;
   const location = await Location.findById(id).populate(
-    "createdBy",
+    "createdById",
     "username",
   );
   if (!location)
@@ -38,12 +38,12 @@ export const locationUpdate: RequestHandler = async (req, res) => {
    * must have stored a user on the request.
    */
   const {
-    body: { title, geo, zip, address, city, country, description, websiteUrl },
+    body: { name, geo, zip, address, city, country, description, websiteUrl },
     location,
   } = req;
 
   assertExists(location);
-  if (title) location.title = title;
+  if (name) location.name = name;
   if (geo) location.geo = geo;
   if (zip) location.zip = zip;
   if (address) location.address = address;

@@ -3,16 +3,16 @@ import type { RequestHandler } from "express";
 import { assertExists } from "#utils";
 
 export const artistCreate: RequestHandler = async (req, res) => {
-  // Setting the createdBy value of the request to the current user we attached in authenticate
+  // Setting the createdById value of the request to the current user we attached in authenticate
   assertExists(req.user);
-  req.body.createdBy = req.user.id;
+  req.body.createdById = req.user.id;
 
   const artist = await Artist.create(req.body);
   res.json(artist);
 };
 
 export const artistGetAll: RequestHandler = async (req, res) => {
-  const artists = await Artist.find().populate("createdBy", "username");
+  const artists = await Artist.find().populate("createdById", "username");
   res.json(artists);
 };
 
@@ -20,7 +20,7 @@ export const artistGetOne: RequestHandler = async (req, res) => {
   const {
     params: { id },
   } = req;
-  const artist = await Artist.findById(id).populate("createdBy", "username");
+  const artist = await Artist.findById(id).populate("createdById", "username");
   if (!artist)
     throw new Error(`Artist with id of ${id} doesn't exist`, {
       cause: { status: 404 },

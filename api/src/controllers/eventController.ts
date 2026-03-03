@@ -1,42 +1,143 @@
-import { Event, User, Location, Artist } from "#models";
+import { Event, Location, Artist } from "#models";
 import { assertExists } from "#utils";
 import type { RequestHandler } from "express";
+import { Types } from "mongoose";
 
 export const eventCreate: RequestHandler = async (req, res) => {
-  // Setting the createdBy value of the request to the current user we attached in authenticate
+  // Setting the createdById value of the request to the current user we attached in authenticate
   assertExists(req.user);
-  req.body.createdBy = req.user.id;
+  req.body.createdById = req.user.id;
 
   // Making sure that all linked entries exist
-  const { location, artists } = req.body;
-  const [locationExists] = await Promise.all([
-    Location.exists({ _id: location }),
-  ]);
-  if (!locationExists)
+  const { locationId, artistsIds } = req.body;
+
+  const location = await Location.findById(locationId);
+  if (!location)
     throw new Error("Location does not exist", { cause: { status: 400 } });
+
   const artistCount = await Artist.countDocuments({
-    _id: { $in: artists },
+    _id: { $in: artistsIds },
   });
-  if (artistCount !== artists.length)
+  if (artistCount !== artistsIds.length)
     throw new Error("One or more artists do not exist", {
       cause: { status: 400 },
     });
+
+  // Getting the geo from location to store in the events geo
+  req.body.geo = location.geo;
+  req.body.locationName = location.name;
+
+  // Getting the genres and names from selected artists, deduplicating and adding them to the request for storing
+  const artists = await Artist.find({
+    _id: { $in: req.body.artistsIds },
+  }).select("genres name");
+
+  const mergedGenres = [...new Set(artists.flatMap((a) => a.genres))];
+  const artistNames = artists.map((a) => a.name);
+
+  req.body.genres = mergedGenres;
+  req.body.artistNames = artistNames;
 
   // Create Event
   const event = await Event.create(req.body);
 
   // Response should be populated so that we can build ui easier
   const populatedEvent = await Event.findById(event.id)
-    .populate("createdBy", "username")
-    .populate("location", "geo title")
-    .populate("artists", "name genres description musicUrls");
+    .populate("createdById", "username")
+    .populate("locationId", "title")
+    .populate("artistsIds", "name genres description musicUrls");
 
   res.json(populatedEvent);
 };
 
 export const eventGetAll: RequestHandler = async (req, res) => {
-  const event = await Event.find().populate("createdBy", "username");
-  res.json(event);
+  const {
+    artistId,
+    organizerId,
+    genres,
+    lat,
+    lng,
+    locationId,
+    radius,
+    search,
+    startAfter,
+    startUntil,
+    page = "1",
+  } = req.query;
+
+  const filter: any = {};
+
+  // To be adapted
+  // if (search && typeof search === "string") filter.$text = { $search: search };
+  // if (createdById && typeof createdById === "string") filter.createdById = createdById;
+
+  // Search by artistId
+  if (artistId && typeof artistId === "string") {
+    // TODO this should be moved into params validation middleware
+    if (!Types.ObjectId.isValid(artistId))
+      throw new Error("Invalid artistId", { cause: { status: 400 } });
+    filter.artistsIds = new Types.ObjectId(artistId);
+  }
+
+  // Search by locationId
+  if (locationId && typeof locationId === "string") {
+    // TODO this should be moved into params validation middleware
+    if (!Types.ObjectId.isValid(locationId))
+      throw new Error("Invalid locationId", { cause: { status: 400 } });
+    filter.locationId = new Types.ObjectId(locationId);
+  }
+
+  // Search by createdById
+  if (organizerId && typeof organizerId === "string") {
+    // TODO this should be moved into params validation middleware
+    if (!Types.ObjectId.isValid(organizerId))
+      throw new Error("Invalid organizerId", { cause: { status: 400 } });
+    filter.createdById = new Types.ObjectId(organizerId);
+  }
+
+  // Search by genres
+  if (genres) {
+    const genreArray = typeof genres === "string" ? genres.split(",") : genres;
+    filter.genres = { $in: genreArray };
+  }
+
+  // Search by start date
+  if (startAfter || startUntil) {
+    filter.startDate = {};
+    if (startAfter) filter.startDate.$gte = new Date(startAfter as string);
+    if (startUntil) filter.startDate.$lte = new Date(startUntil as string);
+  }
+
+  // Search by radius
+  if (lat && lng && radius) {
+    filter.geo = {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [parseFloat(lng as string), parseFloat(lat as string)],
+        },
+        $maxDistance: parseFloat(radius as string),
+      },
+    };
+  }
+
+  // Search by text
+  if (search && typeof search === "string") {
+    filter.$text = { $search: search };
+  }
+
+  const pageNum = parseInt(page as string);
+  const limitNum = 10;
+
+  const events_raw = await Event.find(filter)
+    .populate("createdById", "username")
+    .populate("locationId")
+    .populate("artistsIds")
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum)
+    .sort({ startDate: 1 });
+
+  res.json(events_raw);
 };
 
 export const eventGetOne: RequestHandler = async (req, res) => {
@@ -44,9 +145,9 @@ export const eventGetOne: RequestHandler = async (req, res) => {
     params: { id },
   } = req;
   const event = await Event.findById(id)
-    .populate("createdBy", "username")
-    .populate("location")
-    .populate("artists");
+    .populate("createdById", "username")
+    .populate("locationId")
+    .populate("artistsIds");
   if (!event)
     throw new Error(`Event with id of ${id} doesn't exist`, {
       cause: { status: 404 },
@@ -61,35 +162,45 @@ export const eventUpdate: RequestHandler = async (req, res) => {
    * must have stored a user on the request.
    */
   const {
-    params: { id },
-    body: { location, artists, title, startDate, endDate, description },
+    body: { locationId, artistsIds, title, startDate, endDate, description },
     event,
   } = req;
 
-  // Check required references
-  if (location) {
-    const locationExists = await Location.exists({ _id: location });
-    if (!locationExists)
+  assertExists(event);
+
+  // Loctation Update
+  if (locationId) {
+    const location = await Location.findById(locationId);
+    if (!location)
       throw new Error("Location does not exist", { cause: { status: 400 } });
+
+    event.locationId = locationId;
+    event.geo = location.geo; // keep geo in sync
+    event.locationName = location.name;
   }
 
-  if (artists && artists.length > 0) {
-    const artistCount = await Artist.countDocuments({
-      _id: { $in: artists },
-    });
-    if (artistCount !== artists.length)
+  // Artists Update. In here we are getting the genres from selected artists, deduplicating and adding them to the request
+  // We do the same for artist names
+  if (artistsIds) {
+    const artists = await Artist.find({
+      _id: { $in: artistsIds },
+    }).select("genres name");
+
+    if (artists.length !== artistsIds.length)
       throw new Error("One or more artists do not exist", {
         cause: { status: 400 },
       });
+
+    event.artistsIds = artistsIds;
+    event.genres = [...new Set(artists.flatMap((a) => a.genres))];
+    event.artistNames = artists.map((a) => a.name);
   }
 
-  assertExists(event);
-  if (location) event.location = location;
-  if (artists) event.artists = artists;
-  if (title) event.title = title;
-  if (startDate) event.startDate = startDate;
-  if (endDate) event.endDate = endDate;
-  if (description) event.description = description;
+  // Simple Fields
+  if (title !== undefined) event.title = title;
+  if (startDate !== undefined) event.startDate = startDate;
+  if (endDate !== undefined) event.endDate = endDate;
+  if (description !== undefined) event.description = description;
 
   await event.save();
   res.json(event);

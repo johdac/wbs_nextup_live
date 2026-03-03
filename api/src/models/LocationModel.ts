@@ -2,12 +2,12 @@ import { model, Schema, Types } from "mongoose";
 
 const locationSchema = new Schema(
   {
-    createdBy: {
+    createdById: {
       type: Types.ObjectId,
       ref: "User",
       required: [true, "A userId is required"],
     },
-    title: { type: String, required: [true, "A title is required"] },
+    name: { type: String, required: [true, "A name is required"] },
     geo: {
       // GEO Json
       type: {
@@ -29,5 +29,6 @@ const locationSchema = new Schema(
   },
   { timestamps: true },
 );
+locationSchema.index({ geo: "2dsphere" });
 
 export const Location = model("Location", locationSchema);

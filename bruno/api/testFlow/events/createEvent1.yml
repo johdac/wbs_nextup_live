@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "location": "{{createdLocation1}}",
-        "artists": ["{{createdArtist1}}"],
+        "locationId": "{{createdLocation1}}",
+        "artistsIds": ["{{createdArtist1}}"],
         "title": "Test Event 1",
         "startDate": "2026-05-28T17:20:00.000Z",
         "endDate": "2026-05-28T17:23:00.000Z"

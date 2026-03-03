@@ -1,0 +1,25 @@
+info:
+  name: searchEventsByRadius
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{api}}/events?lat=52.5130996&lng=13.4205455&radius=9"
+  params:
+    - name: lat
+      value: "52.5130996"
+      type: query
+    - name: lng
+      value: "13.4205455"
+      type: query
+    - name: radius
+      value: "9"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

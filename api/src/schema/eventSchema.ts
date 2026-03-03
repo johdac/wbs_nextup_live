@@ -2,8 +2,8 @@ import z from "zod";
 import { dateString, mongoId, string128 } from "./rules.ts";
 
 export const eventSchema = z.strictObject({
-  location: mongoId,
-  artists: z.array(mongoId),
+  locationId: mongoId,
+  artistsIds: z.array(mongoId),
   title: string128,
   startDate: dateString,
   endDate: dateString,

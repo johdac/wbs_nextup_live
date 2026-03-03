@@ -3,7 +3,7 @@ import { GENRES } from "#shared";
 
 const artistSchema = new Schema(
   {
-    createdBy: {
+    createdById: {
       type: Types.ObjectId,
       ref: "User",
       required: [true, "A userId is required"],

@@ -15,14 +15,14 @@ export const authorize = (...allowedRoles: string[]): RequestHandler => {
     // If the current user is an admin, he may proceed anyway
     if (userRoles.includes("admin")) return next();
 
-    // If we passed "self" as a role we check if the ids matched on the current user + the createdBy id which we extracted in the loader
+    // If we passed "self" as a role we check if the ids matched on the current user + the createdById id which we extracted in the loader
     if (allowedRoles.includes("self")) {
       // Let's make sure we have something to compare against
-      if (!req.createdBy)
+      if (!req.createdById)
         throw new Error("No ownership for entry found", {
           cause: { status: 500 },
         });
-      if (req.createdBy.equals(userId)) return next();
+      if (req.createdById.equals(userId)) return next();
     }
 
     // If we passed organizer as a role we check if current user has that role
