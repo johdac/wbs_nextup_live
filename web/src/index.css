@@ -1,3 +1,106 @@
+/* MUI Outlined Input white border and text for dark background */
+.mui-white-outline .MuiOutlinedInput-root {
+  color: rgb(158, 153, 153);
+}
+.mui-white-outline .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(158, 153, 153);
+}
+.mui-white-outline
+  .MuiOutlinedInput-root:hover
+  .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(158, 153, 153);
+}
+.mui-white-outline
+  .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(158, 153, 153);
+}
+.mui-white-outline .MuiInputLabel-root {
+  color: rgb(158, 153, 153);
+}
+
+/* Focus State (The blue or white ring when clicking) */
+
+.mui-white-outline .MuiInputLabel-root.Mui-focused {
+  color: rgb(158, 153, 153);
+}
+
+/* Focus State (The blue or white ring when clicking) */
+
+.mui-white-outline .MuiFormControl-root.MuiPickersTextField-root {
+  width: 100% !important;
+  display: flex;
+}
+
+/* 3. Style the text and sections inside */
+.mui-white-outline .MuiPickersSectionList-sectionContent,
+.mui-white-outline .MuiPickersInputBase-input {
+  color: rgb(158, 153, 153) !important;
+}
+
+/**/
+/* 1. Target standard TextFields (Location, Radius) and Select (Genre) */
+.mui-white-outline .MuiOutlinedInput-input {
+  padding: 15px !important;
+}
+
+/* 2. Target the Date & Time Picker sections specifically */
+.mui-white-outline .MuiPickersInputBase-root {
+  padding: 0 15px !important; /* Horizontal padding for the container */
+  min-height: 54px; /* Adjust height to accommodate 15px vertical feel */
+}
+
+/* 3. Ensure the Label shifts correctly so it doesn't crash into the new padding */
+.mui-white-outline .MuiInputLabel-root {
+  transform: translate(14px, 16px) scale(1);
+}
+
+.mui-white-outline .MuiInputLabel-shrink {
+  transform: translate(14px, -9px) scale(0.75) !important;
+}
+
+/**/
+
+/* 1. The Border (Normal state) */
+.mui-white-outline .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.3) !important; /* Subtle white border */
+}
+
+/* 2. The Border (Hover state) */
+.mui-white-outline
+  .MuiOutlinedInput-root:hover
+  .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 3. The Border (Focused/Active state) */
+.mui-white-outline
+  .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: #ffffff !important; /* Bright white when clicking */
+}
+
+/* 4. The Text Color (The numbers/letters you type) */
+.mui-white-outline .MuiInputBase-input {
+  color: #ffffff !important;
+}
+
+/* 5. The Icon (Your existing fix) */
+.mui-white-outline .MuiSvgIcon-root {
+  color: rgb(158, 153, 153) !important;
+}
+
+/* Fixes the Calendar Icon color */
+.mui-white-outline .MuiSvgIcon-root {
+  color: rgb(158, 153, 153) !important;
+}
+
+.MuiFormControl-root
+  .MuiPickersTextField-root
+  .css-eqc3kq-MuiFormControl-root-MuiPickersTextField-root {
+  border: 1px solid gray;
+}
+
 @import "tailwindcss";
 
 @theme {
@@ -9,6 +112,9 @@
 
   --color-background: #0a0a0a;
   --color-foreground: #ffffff;
+
+  --color-hover-purple: #1f1670;
+  --color-hover-text: #8eb4ff;
 
   --bg-brand-gradient: linear-gradient(
     to right,

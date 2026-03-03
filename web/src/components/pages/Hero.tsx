@@ -1,9 +1,9 @@
 export const Hero = () => {
   return (
     <div className="min-h-[calc(100vh-200px)]">
-      <main className="max-w-7xl mx-auto px-12 mt-20 grid grid-cols-1 lg:grid-cols-2 items-center relative z-10">
+      <div className="max-w-8xl mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
         <div className="space-y-6">
-          <h1 className="text-7xl font-black leading-[1] tracking-tight uppercase">
+          <h1 className="text-7xl font-black leading-[1] tracking-tight uppercase text-white">
             Find your next
             <br />
             live show
@@ -22,17 +22,16 @@ export const Hero = () => {
             <button className="bg-gradient-to-r from-pink to-yellow text-black font-bold px-8 py-4 rounded-md uppercase text-sm tracking-widest">
               Find shows near me
             </button>
-            <button className="border border-white px-8 py-4 rounded-md uppercase text-sm font-bold tracking-widest hover:bg-white hover:text-black transition">
+            <button className="border border-white text-white px-8 py-4 rounded-md uppercase text-sm font-bold tracking-widest hover:bg-white hover:text-black transition">
               For bands
             </button>
           </div>
         </div>
 
-        <div className="relative ml-12">
-          <img src="hero.webp" alt="" />
-          <div className="relative z-10 scale-110"></div>
+        <div className="flex justify-end">
+          <img src="hero.webp" alt="" className="w-full" />
         </div>
-      </main>
+      </div>
     </div>
   );
 };

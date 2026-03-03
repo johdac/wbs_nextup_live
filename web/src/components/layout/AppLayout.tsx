@@ -1,5 +1,4 @@
 import { Outlet, useNavigation } from "react-router";
-import { MainLayout } from "./MainLayout";
 import { Header } from "./Header";
 import Footer from "./Footer";
 
@@ -7,7 +6,7 @@ export const AppLayout = () => {
   const navigation = useNavigation();
 
   return (
-    <MainLayout>
+    <div className="container mx-auto px-4 py-8">
       <Header></Header>
 
       {navigation.state === "loading" && <p>Loading...</p>}
@@ -17,6 +16,6 @@ export const AppLayout = () => {
       </main>
 
       <Footer></Footer>
-    </MainLayout>
+    </div>
   );
 };
