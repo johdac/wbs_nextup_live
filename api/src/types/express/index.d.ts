@@ -3,7 +3,7 @@ import type { Event, Artist, Location } from "#models";
 declare global {
   namespace Express {
     interface Request {
-      createdBy?: Types.ObjectId;
+      createdById?: Types.ObjectId;
       user?: {
         // data comes from JWT token
         id: Types.ObjectId;

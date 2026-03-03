@@ -12,7 +12,7 @@ export const loadLocation: RequestHandler = async (req, _res, next) => {
   const location = await Location.findById(req.params.id);
   if (!location)
     throw new Error("Location not found", { cause: { status: 404 } });
-  req.createdBy = location.createdBy;
+  req.createdById = location.createdById;
   req.location = location;
   next();
 };
@@ -20,7 +20,7 @@ export const loadLocation: RequestHandler = async (req, _res, next) => {
 export const loadEvent: RequestHandler = async (req, _res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) throw new Error("Event not found", { cause: { status: 404 } });
-  req.createdBy = event.createdBy;
+  req.createdById = event.createdById;
   req.event = event;
   next();
 };
@@ -28,7 +28,7 @@ export const loadEvent: RequestHandler = async (req, _res, next) => {
 export const loadArtist: RequestHandler = async (req, _res, next) => {
   const artist = await Artist.findById(req.params.id);
   if (!artist) throw new Error("Artist not found", { cause: { status: 404 } });
-  req.createdBy = artist.createdBy;
+  req.createdById = artist.createdById;
   req.artist = artist;
   next();
 };

@@ -25,13 +25,13 @@ const userSchema = new Schema(
       enum: ["user", "admin", "organizer"],
       default: "user",
     },
-    favoritedEvents: [
+    favoritedEventsIds: [
       {
         type: Types.ObjectId,
         ref: "Event",
       },
     ],
-    excludedEvents: [
+    excludedEventsIds: [
       {
         type: Types.ObjectId,
         ref: "Event",

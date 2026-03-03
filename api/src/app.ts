@@ -9,7 +9,7 @@ const port = process.env.PORT;
 
 app.use(
   cors({
-    origin: process.env.CLIENT_BASE_URL,
+    origin: process.env.WEB_URL,
     credentials: true,
     exposedHeaders: ["WWW-Authenticate"],
   }),
