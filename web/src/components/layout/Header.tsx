@@ -12,7 +12,6 @@ export const Header = () => {
   const location = useLocation();
   return (
     <>
-      {/* <nav className="flex justify-between items-center py-4 sm:py-8  text-white relative"> */}
       <nav
         style={{ backgroundImage: 'url("/bg.jpg")' }}
         className="sticky top-0 z-50 h-24
