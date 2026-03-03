@@ -1,0 +1,31 @@
+info:
+  name: searchEventsByMulti
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{api}}/events?artistId={{createdArtist1}}&lat=52.5130996&lng=13.4205455&radius=9&genres=rock,pop"
+  params:
+    - name: artistId
+      value: "{{createdArtist1}}"
+      type: query
+    - name: lat
+      value: "52.5130996"
+      type: query
+    - name: lng
+      value: "13.4205455"
+      type: query
+    - name: radius
+      value: "9"
+      type: query
+    - name: genres
+      value: rock,pop
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

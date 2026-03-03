@@ -1,7 +1,7 @@
 info:
   name: deleteEvent2
   type: http
-  seq: 6
+  seq: 13
 
 http:
   method: DELETE

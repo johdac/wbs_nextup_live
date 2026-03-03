@@ -1,11 +1,15 @@
 info:
-  name: getEvent1
+  name: searchEventsByString
   type: http
-  seq: 11
+  seq: 10
 
 http:
   method: GET
-  url: "{{api}}/events/{{createdEvent1}}"
+  url: "{{api}}/events?search=rot"
+  params:
+    - name: search
+      value: rot
+      type: query
   auth: inherit
 
 settings:
