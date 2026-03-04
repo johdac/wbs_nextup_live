@@ -63,6 +63,7 @@ export const eventGetAll: RequestHandler = async (req, res) => {
     startAfter,
     startUntil,
     page = "1",
+    limit = 10,
   } = req.query;
 
   const filter: any = {};
@@ -127,7 +128,7 @@ export const eventGetAll: RequestHandler = async (req, res) => {
   }
 
   const pageNum = parseInt(page as string);
-  const limitNum = 10;
+  const limitNum = Number(limit) > 100 ? 100 : Number(limit);
 
   const events_raw = await Event.find(filter)
     .populate("createdById", "username")
