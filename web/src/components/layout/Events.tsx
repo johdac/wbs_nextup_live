@@ -70,10 +70,7 @@ const EventList = () => {
         Your next unforgettable night awaits
       </p>
 
-      <div
-        style={{ backgroundImage: 'url("/bg.jpg")' }}
-        className="sticky top-24 z-40  py-4 mb-10 "
-      >
+      <div className=" py-4 mb-10 ">
         <div
           className=" flex flex-col gap-4
                 lg:flex-row lg:items-end lg:gap-4"

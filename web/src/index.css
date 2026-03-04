@@ -101,6 +101,51 @@
   border: 1px solid gray;
 }
 
+/* Login Modal Dialog Styling */
+.login-modal-paper {
+  background-color: #1a1a1a !important;
+  background-image: linear-gradient(to-bottom, #2a2a2a, #0a0a0a) !important;
+  border-radius: 12px !important;
+  /* border: 1px solid #6b4da6 !important; */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.login-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.login-modal-content {
+  padding: 32px !important;
+  color: white !important;
+}
+
+/* Role Radio Buttons */
+.role-radio-group {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.role-radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.role-radio-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #3d31a9;
+}
+
+.role-radio-option label {
+  cursor: pointer;
+  font-size: 14px;
+}
+
 @import "tailwindcss";
 
 @theme {
@@ -110,11 +155,21 @@
   --color-yellow: #ffbd4a;
   --color-gray: #a3a3a3;
 
-  --color-background: #0a0a0a;
+  --color-background: hsl(222 47% 6%);
   --color-foreground: #ffffff;
+
+  --color-secondary: #313338;
+  --color-secondary-foreground: hsl(210 40% 96%);
 
   --color-hover-purple: #1f1670;
   --color-hover-text: #8eb4ff;
+
+  --color-border: #3d31a9;
+  --color-ring: #3d31a9;
+  --color-input: hsl(222 30% 18%);
+
+  --color-muted: hsl(222 30% 14%);
+  --color-muted-foreground: hsl(215 20% 55%);
 
   --bg-brand-gradient: linear-gradient(
     to right,
@@ -124,6 +179,15 @@
   );
   --color-background: #0a0a0a;
   --color-foreground: #ffffff;
+}
+
+@layer components {
+  .btn-default {
+    @apply bg-purple text-white font-medium hover:bg-purple/80 transition cursor-pointer px-4 py-2 rounded-lg;
+  }
+  .input-default {
+    @apply flex h-12 w-full rounded-md border border-input  px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
+  }
 }
 
 @layer base {

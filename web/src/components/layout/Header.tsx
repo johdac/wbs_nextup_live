@@ -1,23 +1,21 @@
 import { Sparkles, Heart, Plus, UserPlus, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
+import { Login } from "./Login";
+
 const navItems = [
   { to: "/events", label: "Discover", icon: Sparkles },
   { to: "/favorites", label: "Favorites", icon: Heart },
   { to: "/create", label: "Create New", icon: Plus },
-  { to: "/signup", label: "Sign up", icon: UserPlus },
 ];
+
 export const Header = () => {
   const [open, setOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const location = useLocation();
   return (
     <>
-      <nav
-        style={{ backgroundImage: 'url("/bg.jpg")' }}
-        className="sticky top-0 z-50 h-24
-                flex justify-between items-center 
-                py-4 sm:py-8 text-white relative "
-      >
+      <nav className="flex justify-between items-center py-4 sm:py-8 text-white">
         <Link to="/">
           <div className="text-2xl sm:text-4xl font-black italic tracking-tighter">
             NextUp Live<span className="not-italic ml-1">✦</span>
@@ -40,6 +38,14 @@ export const Header = () => {
               </Link>
             );
           })}
+          {/* Sign up Button */}
+          <button
+            onClick={() => setLoginModalOpen(true)}
+            className="flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            <span>Sign up</span>
+          </button>
         </div>
 
         {/* Mobile Burger Icon */}
@@ -74,8 +80,21 @@ export const Header = () => {
               {label}
             </Link>
           ))}
+          {/* Sign up Button Mobile */}
+          <button
+            onClick={() => {
+              setLoginModalOpen(true);
+              setOpen(false);
+            }}
+            className="flex items-center px-8 py-4 active:bg-hover-purple w-full text-left hover:bg-hover-purple"
+          >
+            <UserPlus className="h-4 w-4 mr-3" />
+            Sign up
+          </button>
         </div>
       </nav>
+      {/* Login Modal */}
+      <Login open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
     </>
   );
 };
