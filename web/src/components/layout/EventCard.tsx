@@ -1,4 +1,4 @@
-import { Play, MapPin, Heart } from "lucide-react";
+import { Play, MapPin, Heart, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
@@ -61,6 +61,18 @@ const EventCard = ({
         <h3 className="text-lg sm:text-xl font-bold text-white transition-colors">
           {event.title}
         </h3>
+        <div className="my-1.5 flex flex-wrap items-center gap-2">
+          <div className="text-white flex items-center">
+            {event.artists.map((artist) => {
+              return (
+                <>
+                  <MicVocal className="mr-1" />
+                  <p>{artist.name}</p>
+                </>
+              );
+            })}
+          </div>
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
           <span className="flex items-center">
