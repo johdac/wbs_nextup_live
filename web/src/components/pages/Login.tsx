@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Lock, Mail } from "lucide-react";
+import { CircleAlert, Lock, Mail } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate, Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-
+import { motion } from "framer-motion";
 interface LoginFormInputs {
   email: string;
   password: string;
@@ -47,78 +47,88 @@ export const Login = () => {
 
       <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
         {/* Left Column - Form */}
-        <div className="flex items-center justify-center px-4 min-h-screen md:min-h-full">
-          <div className="w-full max-w-md">
-            <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
-              <div className="text-center space-y-2 mb-6">
-                <h1 className="text-3xl font-bold">Welcome Back</h1>
-                <p className="text-purple-light text-sm">
-                  Sign in to your account
-                </p>
-              </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {/* Email */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground mb-1 block">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="email"
-                      {...register("email", { required: "Email is required" })}
-                      placeholder="john@gmail.com"
-                      className="input-default pl-10  focus:border-primary w-full"
-                    />
-                  </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex items-center justify-center px-4 min-h-screen md:min-h-full">
+            <div className="w-full max-w-md">
+              <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
+                <div className="text-center space-y-2 mb-6">
+                  <h1 className="text-3xl font-bold">Welcome Back</h1>
+                  <p className="text-purple-light text-sm">
+                    Sign in to your account
+                  </p>
                 </div>
-
-                {/* Password */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground mb-1 block">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="password"
-                      {...register("password", {
-                        required: "Password is required",
-                      })}
-                      placeholder="••••••••"
-                      className="input-default pl-10  focus:border-primary w-full"
-                    />
-                  </div>
-                </div>
-
                 {/* Error Message */}
                 {error && (
-                  <div className="p-3 rounded-lg bg-red-500/20 border border-red-500 text-red-300 text-sm">
-                    {error}
+                  <div className="p-3 flex items-center rounded-lg bg-red-500/20 border border-red-500 text-red-800 text-sm">
+                    <CircleAlert className="text-red-800 pr-2" /> {error}
                   </div>
                 )}
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+                  {/* Email */}
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-1 block">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="email"
+                        {...register("email", {
+                          required: "Email is required",
+                        })}
+                        placeholder="john@gmail.com"
+                        className="input-default pl-10  focus:border-primary w-full"
+                      />
+                    </div>
+                  </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
-                >
-                  {loading ? "Signing In..." : "Sign In"}
-                </button>
+                  {/* Password */}
+                  <div className="">
+                    <label className="text-sm font-medium text-foreground mb-1 block">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="password"
+                        {...register("password", {
+                          required: "Password is required",
+                        })}
+                        placeholder="••••••••"
+                        className="input-default pl-10  focus:border-primary w-full"
+                      />
+                    </div>
+                  </div>
 
-                {/* Sign up link */}
-                <p className="text-center text-sm text-muted-foreground pt-4">
-                  Don't have an account?{" "}
-                  <Link to="/register" className="text-primary hover:underline">
-                    Sign up
-                  </Link>
-                </p>
-              </form>
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
+                  >
+                    {loading ? "Logging In..." : "Login"}
+                  </button>
+
+                  {/* Sign up link */}
+                  <p className="text-center text-sm text-muted-foreground pt-4">
+                    Don't have an account?{" "}
+                    <Link
+                      to="/register"
+                      className="text-primary hover:underline"
+                    >
+                      Sign up
+                    </Link>
+                  </p>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column - Design Section */}
         <div className="hidden md:flex bg-linear-to-br from-purple-600 via-blue-600 to-purple-700 h-full rounded-lg overflow-hidden items-center justify-center relative p-8">

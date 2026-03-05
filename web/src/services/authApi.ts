@@ -10,17 +10,17 @@ export const authService = {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         // Check if the backend sent an error message
-        if (err.response?.data?.message) {
-          throw new Error(err.response.data.message);
-        } else if (err.response?.data) {
-          // Try to extract any error info from the response
-          const errorData = err.response.data as any;
-          if (typeof errorData === "string") {
-            throw new Error(errorData);
-          } else if (errorData.error) {
-            throw new Error(errorData.error);
-          }
-        }
+        // if (err.response?.data?.message) {
+        //   throw new Error(err.response.data.message);
+        // } else if (err.response?.data) {
+        //   // Try to extract any error info from the response
+        //   const errorData = err.response.data as any;
+        //   if (typeof errorData === "string") {
+        //     throw new Error(errorData);
+        //   } else if (errorData.error) {
+        //     throw new Error(errorData.error);
+        //   }
+        // }
 
         if (err.response?.status === 401 || err.response?.status === 400) {
           throw new Error("Invalid email or password");
