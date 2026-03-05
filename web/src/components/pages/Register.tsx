@@ -238,12 +238,12 @@ export const Register = () => {
                   </button>
 
                   {/* Login Link */}
-                  <p className="text-center text-sm text-muted-foreground pt-2">
+                  <p className="text-center text-sm text-gray-600 ">
                     Already have an account?{" "}
                     <button
                       type="button"
                       onClick={() => navigate("/login")}
-                      className="text-primary hover:underline"
+                      className="text-blue-500 cursor-pointer hover:underline"
                     >
                       Sign In
                     </button>
