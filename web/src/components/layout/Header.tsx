@@ -106,6 +106,7 @@ export const Header = () => {
             ) : (
               <Link
                 to="/login"
+                state={{ from: location }}
                 className="flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer"
               >
                 <UserPlus className="h-4 w-4 mr-2" />
@@ -171,6 +172,7 @@ export const Header = () => {
             ) : (
               <Link
                 to="/login"
+                state={{ from: location }}
                 onClick={() => setOpen(false)}
                 className="flex items-center px-8 py-4 active:bg-hover-purple w-full text-left hover:bg-hover-purple"
               >

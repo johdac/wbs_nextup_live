@@ -3,7 +3,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { Landing } from "./components/pages/Landing";
 import EventList from "./components/layout/Events";
 import { Register } from "./components/pages/Register";
-import { Login } from "./components/layout/Login";
+import { Login } from "./components/pages/Login";
 
 export const router = createBrowserRouter([
   {
