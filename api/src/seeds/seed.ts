@@ -1,8 +1,13 @@
-import axios from "axios";
-
 // use like so: from within the /api folder "node --env-file=.env.development.local src/seeds/seed.ts"
 
+import axios from "axios";
+import { locationsSeed } from "./seed.locations.ts";
+import { artistsSeed } from "./seed.artists.ts";
+import { eventsSeed } from "./seed.events.ts";
+
 async function seed() {
+  // ---- VARS
+
   // const authServer = process.env.AUTH_URL;
   // const email = process.env.SEED_USER_LOGIN;
   // const password = process.env.SEED_USER_PASSWORD;
@@ -16,66 +21,137 @@ async function seed() {
 
   // const token = login.data.accessToken;
 
-  //---- SEED ARTISTS
+  if (!apiUrl || !token) {
+    console.error("Missing env vars", "apiUrl", apiUrl, "token", token);
+    process.exit(1);
+  }
 
-  // console.log("Seeding artists");
+  // ---- HELPER FUNCTIONS
 
-  // await axios.post(
-  //   `${apiUrl}/artists`,
-  //   {},
-  //   {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   },
-  // );
-
-  // console.log("Seeding artists complete");
-
-  //---- SEED LOCATIONS
-
-  console.log("Seeding locations to", apiUrl);
-
-  const locations = [
-    {
-      name: "Madame Claude",
-      geo: {
-        type: "Point",
-        coordinates: [13.4205455, 52.5130996],
-      },
-      zip: "10997",
-      address: "Lübbener Str. 19",
-      city: "Berlin",
-      country: "Germany",
-      description:
-        "Formerly a brothel very close to the berlin wall, MADAME CLAUDE is a bar located in the Kreuzberg-Schlesisches Tor district, which is well-known for its intense alternative nightlife. <br>Initiated by the childish dream to play in a backwards flat, the decoration of the main room of Madame Claude is a reconstitution of an apartment which would have been built upside down challenging the laws of gravity with furnitures on the ceiling.<br>Madame Claude welcomes events, concerts and DJ’s from 7pm till late.<h2>About us</h2>We are 3 French friends who were previously working in Paris, Madrid and London. <br>Some years ago, we decided to leave our professional activities to gather in Berlin in order to open a club/music venue although none of us was able to speak German.",
-      websiteUrl: "https://madameclaude.de/",
-    },
-    {
-      name: "Rotbart",
-      geo: {
-        type: "Point",
-        coordinates: [13.4466089, 52.4742216],
-      },
-      zip: "12055",
-      address: "Böhmische Str. 43",
-      city: "Berlin",
-      country: "Germany",
-      websiteUrl: "https://www.rotbart-rixdorf.de/",
-    },
-  ];
-
-  const res = await Promise.all(
-    locations.map((location) =>
-      axios.post(`${apiUrl}/locations`, location, {
+  async function post(apiUrl: string, path: string, data: any, token: string) {
+    try {
+      const res = await axios.post(`${apiUrl}${path}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }),
-    ),
-  );
+      });
 
-  console.log("Seeding locations complete");
+      return res.data;
+    } catch (err: any) {
+      console.error(`❌ POST ${path} failed`);
+
+      if (err.response) {
+        console.error("Status:", err.response.status);
+        console.error("Response:", err.response.data);
+      } else {
+        console.error(err.message);
+      }
+
+      throw err;
+    }
+  }
+
+  async function get(apiUrl: string, path: string, token: string) {
+    try {
+      const res = await axios.get(`${apiUrl}${path}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return res.data;
+    } catch (err: any) {
+      console.error(`❌ GET ${path} failed`);
+
+      if (err.response) {
+        console.error("Status:", err.response.status);
+        console.error("Response:", err.response.data);
+      } else {
+        console.error(err.message);
+      }
+
+      throw err;
+    }
+  }
+
+  // ---- SEEDING
+
+  try {
+    // ---- SEED ARTISTS
+
+    console.log("Seeding artists");
+
+    const createdArtists = await Promise.all(
+      artistsSeed.map((artist) => post(apiUrl, "/artists", artist, token)),
+    );
+
+    const artistIdByName = Object.fromEntries(
+      createdArtists.map((artist) => [artist.name, artist.id]),
+    );
+
+    console.log("Seeding artists complete");
+
+    //---- SEED LOCATIONS
+
+    console.log("Seeding locations");
+
+    const createdLocations = await Promise.all(
+      locationsSeed.map((location) =>
+        post(apiUrl, "/locations", location, token),
+      ),
+    );
+
+    const locationIdByName = Object.fromEntries(
+      createdLocations.map((location) => [location.name, location.id]),
+    );
+
+    console.log("Seeding locations complete");
+
+    //---- SEED EVENTS
+
+    console.log("Seeding events");
+
+    function resolveEventSeed(event: any) {
+      const locationId = locationIdByName[event.location];
+      if (!locationId) throw new Error(`Unknown location: ${event.location}`);
+
+      const artistsIds = event.artists.map((name: string) => {
+        const id = artistIdByName[name];
+        if (!id) throw new Error(`Unknown artist: ${name}`);
+        return id;
+      });
+
+      return {
+        title: event.title,
+        startDate: new Date(event.startDate),
+        endDate: new Date(event.endDate),
+        description: event.description,
+        locationId,
+        artistsIds,
+      };
+    }
+
+    const resolvedEvents = eventsSeed.map(resolveEventSeed);
+
+    await Promise.all(
+      resolvedEvents.map((event) => post(apiUrl, "/events", event, token)),
+    );
+
+    console.log("Seeding events complete");
+  } catch (err: any) {
+    console.error("❌ Seed failed");
+
+    if (err.response) {
+      console.error("Status:", err.response.status);
+      console.error("Response:", err.response.data);
+    } else if (err instanceof Error) {
+      console.error(err.stack ?? err.message);
+    } else {
+      console.error(err);
+    }
+
+    process.exit(1);
+  }
 }
 
 seed();
