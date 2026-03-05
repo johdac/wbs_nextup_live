@@ -24,12 +24,11 @@ const EventCard = ({
         zIndex: index,
         backgroundImage: 'url("/bg.jpg")',
       }}
-      className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
-
+      className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
       // className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg sm:border sm:border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
     >
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 py-2 text-white  shadow-xs">
+      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
         <span className="text-md font-bold uppercase tracking-wider">

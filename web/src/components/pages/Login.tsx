@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Lock, Mail } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 
 interface LoginFormInputs {
@@ -11,9 +11,13 @@ interface LoginFormInputs {
 
 export const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { handleSignIn } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const from =
+    (location.state as { from?: { pathname?: string } })?.from?.pathname || "/";
 
   const { register, handleSubmit, reset } = useForm<LoginFormInputs>();
 
@@ -23,7 +27,7 @@ export const Login = () => {
     try {
       await handleSignIn(data);
       reset();
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       reset();
       setError(err instanceof Error ? err.message : "An error occurred");

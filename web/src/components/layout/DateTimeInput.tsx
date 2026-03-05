@@ -13,12 +13,23 @@ export default function DateTimeInput({
   };
 
   return (
+    // <DatePicker
+    //   label="Date"
+    //   value={value ? dayjs(value) : null}
+    //   onChange={handleChange}
+    //   slotProps={{
+    //     textField: { fullWidth: true, className: "mui-white-outline" },
+    //   }}
+    // />
     <DatePicker
       label="Date"
       value={value ? dayjs(value) : null}
       onChange={handleChange}
       slotProps={{
-        textField: { fullWidth: true, className: "mui-white-outline" },
+        textField: {
+          fullWidth: true,
+          className: "mui-white-outline",
+        },
       }}
     />
   );

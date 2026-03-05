@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("role");
       queryClient.setQueryData(["authUser"], null);
       queryClient.removeQueries({ queryKey: ["authUser"] });
-      window.location.href = "/login";
+      window.location.href = "/";
     }
   };
 
