@@ -115,11 +115,11 @@ export const Login = () => {
                   </button>
 
                   {/* Sign up link */}
-                  <p className="text-center text-sm text-muted-foreground pt-4">
+                  <p className="text-center text-sm text-gray-600 pt-1 ">
                     Don't have an account?{" "}
                     <Link
                       to="/register"
-                      className="text-primary hover:underline"
+                      className="text-blue-500 cursor-pointer hover:underline"
                     >
                       Sign up
                     </Link>
