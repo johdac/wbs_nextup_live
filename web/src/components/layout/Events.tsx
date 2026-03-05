@@ -62,92 +62,94 @@ const EventList = () => {
   }, [search, genre]);
 
   return (
-    <section className=" py-20">
-      <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
-        All <span className="neon-gradient-text">Upcoming</span> Events
-      </h2>
-      <p className="mb-6 font-body text-sm text-white">
-        Your next unforgettable night awaits
-      </p>
+    <div className="container mx-auto px-4 py-8">
+      <section className=" py-20">
+        <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
+          All <span className="neon-gradient-text">Upcoming</span> Events
+        </h2>
+        <p className="mb-6 font-body text-sm text-white">
+          Your next unforgettable night awaits
+        </p>
 
-      <div className=" py-4 mb-10 ">
-        <div
-          className=" flex flex-col gap-4
+        <div className=" py-4 mb-10 ">
+          <div
+            className=" flex flex-col gap-4
                 lg:flex-row lg:items-end lg:gap-4"
-        >
-          {/* Date / Time Picker */}
-          <div className="w-full lg:flex-1 mui-white-outline">
-            <DateTimeInput value={dateTime} onChange={setDateTime} />
-          </div>
+          >
+            {/* Date / Time Picker */}
+            <div className="w-full lg:flex-1 mui-white-outline">
+              <DateTimeInput value={dateTime} onChange={setDateTime} />
+            </div>
 
-          {/* Location + Radius */}
-          <div className="w-full lg:flex-[1.5] flex gap-2">
-            <TextField
-              label="Location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              fullWidth
-              size="small"
-              variant="outlined"
-              className="mui-white-outline"
-            />
-            <TextField
-              label="Radius"
-              type="number"
-              value={radius}
-              onChange={(e) => setRadius(Number(e.target.value))}
-              size="small"
-              inputProps={{ min: 1, max: 100 }}
-              className="mui-white-outline"
-              sx={{ width: { xs: 100, sm: 150 } }} // Responsive width
-            />
-          </div>
+            {/* Location + Radius */}
+            <div className="w-full lg:flex-[1.5] flex gap-2">
+              <TextField
+                label="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                fullWidth
+                size="small"
+                variant="outlined"
+                className="mui-white-outline"
+              />
+              <TextField
+                label="Radius"
+                type="number"
+                value={radius}
+                onChange={(e) => setRadius(Number(e.target.value))}
+                size="small"
+                inputProps={{ min: 1, max: 100 }}
+                className="mui-white-outline"
+                sx={{ width: { xs: 100, sm: 150 } }} // Responsive width
+              />
+            </div>
 
-          {/* Genre */}
-          <div className="w-full lg:flex-1">
-            <TextField
-              select
-              label="Genre"
-              value={genre}
-              onChange={(e) => setGenre(e.target.value)}
-              fullWidth
-              size="small"
-              variant="outlined"
-              className="mui-white-outline"
-            >
-              <MenuItem value="">All Genres</MenuItem>
-              {genres.map((g) => (
-                <MenuItem key={g} value={g}>
-                  {g}
-                </MenuItem>
-              ))}
-            </TextField>
-          </div>
+            {/* Genre */}
+            <div className="w-full lg:flex-1">
+              <TextField
+                select
+                label="Genre"
+                value={genre}
+                onChange={(e) => setGenre(e.target.value)}
+                fullWidth
+                size="small"
+                variant="outlined"
+                className="mui-white-outline"
+              >
+                <MenuItem value="">All Genres</MenuItem>
+                {genres.map((g) => (
+                  <MenuItem key={g} value={g}>
+                    {g}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
 
-          {/* Search Button */}
-          <div className="w-full lg:w-auto lg:min-w-[160px]">
-            <button
-              onClick={handleSearch}
-              className="bg-purple w-full py-2.5 md:py-3 rounded-md text-lg text-white font-bold active:bg-orange lg:hover:bg-orange transition-all cursor-pointer"
-            >
-              Find Events
-            </button>
+            {/* Search Button */}
+            <div className="w-full lg:w-auto lg:min-w-[160px]">
+              <button
+                onClick={handleSearch}
+                className="bg-purple w-full py-2.5 md:py-3 rounded-md text-lg text-white font-bold active:bg-orange lg:hover:bg-orange transition-all cursor-pointer"
+              >
+                Find Events
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
-        {filtered.length > 0 ? (
-          filtered.map((event, index) => (
-            <EventCard key={event.id} event={event} index={index} />
-          ))
-        ) : (
-          <p className="py-12 text-center font-display text-lg text-white">
-            No events found matching
-          </p>
-        )}
-      </div>
-    </section>
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+          {filtered.length > 0 ? (
+            filtered.map((event, index) => (
+              <EventCard key={event.id} event={event} index={index} />
+            ))
+          ) : (
+            <p className="py-12 text-center font-display text-lg text-white">
+              No events found matching
+            </p>
+          )}
+        </div>
+      </section>
+    </div>
   );
 };
 
