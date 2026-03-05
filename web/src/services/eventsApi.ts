@@ -1,5 +1,34 @@
 import { eventsApi } from "./events.services";
 
+export interface EventCardArtist {
+  id: string;
+  name: string;
+  genre: string;
+  description: string;
+  imageUrl: string;
+}
+
+export interface EventCardLocation {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+}
+
+export interface EventListItem {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: EventCardLocation;
+  artists: EventCardArtist[];
+  genre: string;
+  coverImage: string;
+  isPopular: boolean;
+  organizerName: string;
+}
+
 interface EventSearchParams {
   search?: string;
   artistId?: string;
@@ -19,43 +48,40 @@ export interface GeoPoint {
   coordinates: [number, number];
 }
 
-export interface UserSummary {
-  id: string;
+interface ApiUserSummary {
+  _id?: string;
+  id?: string;
   username: string;
 }
 
-export interface Location {
-  id: string;
+interface ApiLocation {
+  _id?: string;
+  id?: string;
   name: string;
-  geo: GeoPoint;
-  createdById: string;
-  createdAt: string;
-  updatedAt: string;
+  city?: string;
+  address?: string;
 }
 
-export interface Artist {
-  id: string;
+interface ApiArtist {
+  _id?: string;
+  id?: string;
   name: string;
   genres: string[];
-  description: string;
-  musicUrls: string[];
-  imageUrls: string[];
-  createdById: string;
-  createdAt: string;
-  updatedAt: string;
+  description?: string;
 }
 
-export interface Event {
-  id: string;
+interface ApiEvent {
+  _id?: string;
+  id?: string;
   title: string;
   description?: string;
 
-  createdById: UserSummary;
+  createdById: ApiUserSummary | string;
 
-  locationId: Location;
+  locationId: ApiLocation | string;
   locationName: string;
 
-  artistsIds: Artist[];
+  artistsIds: ApiArtist[];
   artistNames: string[];
 
   genres: string[];
@@ -68,15 +94,67 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
 }
+
+const EVENT_FESTIVAL_IMAGES = [
+  "/1.avif",
+  "/2.avif",
+  "/3.avif",
+  "/4.avif",
+  "/5.avif",
+];
+
+// Transform API response to MusicEvent format for display
+const transformEventToMusicEvent = (
+  event: ApiEvent,
+  imageIndex: number,
+): EventListItem => {
+  const organizer =
+    typeof event.createdById === "object" ? event.createdById : undefined;
+  const location =
+    typeof event.locationId === "object" ? event.locationId : undefined;
+
+  return {
+    id: event.id || (event._id as string),
+    title: event.title,
+    description: event.description || "",
+    startDate: event.startDate,
+    endDate: event.endDate,
+    location: {
+      id: location?.id || location?._id || "",
+      name: event.locationName || location?.name || "Unknown Location",
+      address: location?.address || "",
+      city: location?.city || "",
+    },
+    artists:
+      event.artistsIds?.map((artist) => {
+        return {
+          id: artist.id || artist._id || "",
+          name: artist.name || "",
+          genre: artist.genres?.[0] || "Unknown",
+          description: artist.description || "",
+          imageUrl: "/placeholder.svg",
+        };
+      }) || [],
+    genre: event.genres?.[0] || "Unknown",
+    coverImage:
+      EVENT_FESTIVAL_IMAGES[imageIndex % EVENT_FESTIVAL_IMAGES.length],
+    isPopular: false,
+    organizerName: organizer?.username || "Unknown Organizer",
+  };
+};
+
 export const eventsService = {
-  getEventById: async (id: string): Promise<Event> => {
-    const { data } = await eventsApi.get<Event>(`/events/${id}`);
-    return data;
+  getEventById: async (id: string): Promise<EventListItem> => {
+    const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
+    const hash = id
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return transformEventToMusicEvent(data, hash);
   },
   fetchEventsList: async (
     page: number = 1,
     filters?: Omit<EventSearchParams, "page">,
-  ): Promise<Event[]> => {
+  ): Promise<EventListItem[]> => {
     const params: Record<string, string> = { page: page.toString() };
 
     if (filters?.search) params.search = filters.search;
@@ -91,7 +169,7 @@ export const eventsService = {
     if (filters?.startAfter) params.startAfter = filters.startAfter;
     if (filters?.startUntil) params.startUntil = filters.startUntil;
 
-    const { data } = await eventsApi.get<Event[]>("/events", { params });
-    return data;
+    const { data } = await eventsApi.get<ApiEvent[]>("/events", { params });
+    return data.map((event, index) => transformEventToMusicEvent(event, index));
   },
 };

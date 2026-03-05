@@ -219,7 +219,7 @@ export const Register = () => {
                 <p className="text-center text-sm text-muted-foreground pt-2">
                   Already have an account?{" "}
                   <button
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/login")}
                     className="text-primary hover:underline"
                   >
                     Sign In

@@ -1,5 +1,5 @@
-import TextField from "@mui/material/TextField";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
 
 export default function DateTimeInput({
   value,
@@ -8,16 +8,18 @@ export default function DateTimeInput({
   value: Date | null;
   onChange: (date: Date | null) => void;
 }) {
+  const handleChange = (dayjsDate: Dayjs | null) => {
+    onChange(dayjsDate ? dayjsDate.toDate() : null);
+  };
+
   return (
-    <DateTimePicker
-      label="Date & Time"
-      value={value}
-      onChange={onChange}
-      renderInput={(params) => (
-        <TextField {...params} fullWidth className="mui-white-outline" />
-      )}
-      ampm={false}
-      inputFormat="yyyy/MM/dd HH:mm"
+    <DatePicker
+      label="Date"
+      value={value ? dayjs(value) : null}
+      onChange={handleChange}
+      slotProps={{
+        textField: { fullWidth: true, className: "mui-white-outline" },
+      }}
     />
   );
 }
