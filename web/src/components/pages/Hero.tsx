@@ -1,6 +1,6 @@
 export const Hero = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4">
       <div className="min-h-[calc(100vh-200px)]">
         <div className="max-w-8xl mt-6 sm:mt-10 px-4 sm:px-0 grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           <div className="space-y-6">
