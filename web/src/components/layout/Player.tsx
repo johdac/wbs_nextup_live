@@ -268,22 +268,22 @@ export const Player = () => {
 
   return (
     <div className="w-full fixed bottom-0 z-20">
-      <div className="w-full container">
+      <div className="w-full container flex justify-end">
         {playlist.length > 0 && (
-          <div className="bg-slate-800 rounded-t-2xl px-6 py-4 flex ml-40">
+          <div className="bg-gradient-to-r from-pink to-yellow  rounded-t-2xl px-4 w-3xl py-2 flex">
             {/* Controls */}
             <div className="flex items-center justify-center gap-2 mr-5">
               <button
                 onClick={goPrev}
                 disabled={!canGoPrev}
-                className="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
+                className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
               >
                 <SkipBack size={16} />
               </button>
 
               <button
                 onClick={togglePlayPause}
-                className="p-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition"
+                className="p-4 btn-default rounded-full text-white transition"
               >
                 {isPlaying ? <Pause size={20} /> : <Play size={20} />}
               </button>
@@ -291,7 +291,7 @@ export const Player = () => {
               <button
                 onClick={goNext}
                 disabled={!canGoNext}
-                className="p-3 rounded-full bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
+                className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
               >
                 <SkipForward size={16} />
               </button>
@@ -304,7 +304,7 @@ export const Player = () => {
                   ref={iframeRef}
                   className="w-3xs aspect-video absolute bottom-4 rounded-lg "
                   style={{
-                    boxShadow: "rgb(36 47 56 / 79%) 0px 0px 20px 5px",
+                    boxShadow: "rgb(255 191 81 / 20%) 0px 0px 20px 5px",
                   }}
                   title="Embedded player"
                   allow="autoplay; encrypted-media"
@@ -316,15 +316,15 @@ export const Player = () => {
 
             {/* Song Info */}
             <div className="pb-">
-              <p className="text-slate-400 text-sm mb-0.5">
+              <p className=" text-sm mb-0.5 mt-1">
                 Now Playing{" "}
-                <span className="text-slate-400">
+                <span className="">
                   {currentIndex + 1} / {playlist.length}
                 </span>
               </p>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <div className="text-lg font-bold text-white mb-2">
                 {nowPlayingTitle}{" "}
-              </h2>
+              </div>
             </div>
           </div>
         )}
