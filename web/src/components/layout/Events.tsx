@@ -7,13 +7,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
-const EVENT_FALLBACK_IMAGES = [
-  "/1.avif",
-  "/2.avif",
-  "/3.avif",
-  "/4.avif",
-  "/5.avif",
-];
+const EVENT_FALLBACK_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
 
 const EventList = () => {
   const [dateTime, setDateTime] = useState<Date | null>(null);
@@ -55,9 +49,7 @@ const EventList = () => {
     let result = eventsList;
     if (genre) {
       const selectedGenre = genre.toLowerCase();
-      result = result.filter(
-        (event: EventListItem) => event.genre.toLowerCase() === selectedGenre,
-      );
+      result = result.filter((event: EventListItem) => event.genre.toLowerCase() === selectedGenre);
     }
     return result;
   }, [eventsList, genre]);
@@ -68,9 +60,7 @@ const EventList = () => {
         <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
           All <span className="neon-gradient-text">Upcoming</span> Events
         </h2>
-        <p className="mb-6 font-body text-sm text-white">
-          Your next unforgettable night awaits
-        </p>
+        <p className="mb-6 font-body text-sm text-white">Your next unforgettable night awaits</p>
 
         <div className=" py-4 mb-10 ">
           <div
@@ -140,33 +130,19 @@ const EventList = () => {
         </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
-          {isLoading && (
-            <div className="py-12 text-center font-display text-lg text-white">
-              Loading events...
-            </div>
-          )}
+          {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
           {!isLoading && filtered.length > 0
             ? filtered.map((event: EventListItem, index: number) => {
                 const eventWithImage = {
                   ...event,
-                  coverImage:
-                    event.coverImage ||
-                    EVENT_FALLBACK_IMAGES[index % EVENT_FALLBACK_IMAGES.length],
+                  coverImage: event.coverImage || EVENT_FALLBACK_IMAGES[index % EVENT_FALLBACK_IMAGES.length],
                 };
 
-                return (
-                  <EventCard
-                    key={event.id}
-                    event={eventWithImage}
-                    index={index}
-                  />
-                );
+                return <EventCard key={event.id} event={eventWithImage} index={index} />;
               })
             : !isLoading && (
                 <p className="py-12 text-center font-display text-lg text-white">
-                  {error
-                    ? "Failed to load events from server"
-                    : "No events found"}
+                  {error ? "Failed to load events from server" : "No events found"}
                 </p>
               )}
         </div>
