@@ -17,7 +17,12 @@ const artistSchema = new Schema(
       },
     ],
     description: { type: String },
-    musicUrls: [{ type: String }],
+    musicResources: [
+      {
+        url: { type: String },
+        title: { type: String },
+      },
+    ],
     mainImageUrl: { type: String },
     imageUrls: [{ type: String }],
     websiteUrl: { type: String },
