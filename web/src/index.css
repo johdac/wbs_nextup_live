@@ -182,6 +182,9 @@
 }
 
 @layer components {
+  .container {
+    @apply mx-auto px-4;
+  }
   .btn-default {
     @apply bg-purple text-white font-medium hover:bg-purple/80 transition cursor-pointer px-4 py-2 rounded-lg;
   }
