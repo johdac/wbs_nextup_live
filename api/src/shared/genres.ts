@@ -3,6 +3,7 @@ export const GENRES = [
   "electronic",
   "hiphop",
   "jazz",
+  "pop",
   "rock",
   "world",
 ] as const;

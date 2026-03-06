@@ -61,4 +61,16 @@ export const locationsSeed = [
     country: "Germany",
     websiteUrl: "https://www.gretchen-club.de/",
   },
+  {
+    name: "Hole",
+    geo: {
+      type: "Point",
+      coordinates: [13.4308069, 52.4643727],
+    },
+    zip: "12051",
+    address: "Hermannstraße 146",
+    city: "Berlin",
+    country: "Germany",
+    websiteUrl: "https://hole-berlin.de/",
+  },
 ];

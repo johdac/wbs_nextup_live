@@ -49,3 +49,5 @@ export const geoPoint = z.object({
 export const dateString = z.coerce.date({
   message: "A start date is required",
 });
+
+export const url = z.url({ message: "Invalid url format" });
