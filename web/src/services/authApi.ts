@@ -9,6 +9,19 @@ export const authService = {
       return data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        // Check if the backend sent an error message
+        // if (err.response?.data?.message) {
+        //   throw new Error(err.response.data.message);
+        // } else if (err.response?.data) {
+        //   // Try to extract any error info from the response
+        //   const errorData = err.response.data as any;
+        //   if (typeof errorData === "string") {
+        //     throw new Error(errorData);
+        //   } else if (errorData.error) {
+        //     throw new Error(errorData.error);
+        //   }
+        // }
+
         if (err.response?.status === 401 || err.response?.status === 400) {
           throw new Error("Invalid email or password");
         } else if (err.response?.status) {
@@ -21,8 +34,35 @@ export const authService = {
     }
   },
   register: async (formData: RegisterFormState) => {
-    const { data } = await authApi.post<TokenRes>("/register", formData);
-    return data;
+    try {
+      const { data } = await authApi.post<TokenRes>("/register", formData);
+      return data;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        // Check if the backend sent an error message
+        if (err.response?.data?.message) {
+          throw new Error(err.response.data.message);
+        } else if (err.response?.data) {
+          // Try to extract any error info from the response
+          const errorData = err.response.data as any;
+          if (typeof errorData === "string") {
+            throw new Error(errorData);
+          } else if (errorData.error) {
+            throw new Error(errorData.error);
+          }
+        }
+
+        // Fallback to status-based messages
+        if (err.response?.status === 400) {
+          throw new Error("Invalid registration data");
+        } else if (err.response?.status) {
+          throw new Error(
+            `Error: ${err.response.status} - ${err.response.statusText}`,
+          );
+        }
+      }
+      throw err;
+    }
   },
   getMe: async () => {
     const { data } = await authApi.get<{ user: User }>("/me");

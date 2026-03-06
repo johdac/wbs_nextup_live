@@ -1,4 +1,4 @@
-/* MUI Outlined Input white border and text for dark background */
+/* MUI Outlined Input white border and text for dark background
 .mui-white-outline .MuiOutlinedInput-root {
   color: rgb(158, 153, 153);
 }
@@ -20,6 +20,54 @@
 }
 
 /* Focus State (The blue or white ring when clicking) */
+
+/* DatePicker border */
+.mui-white-outline .MuiPickersOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Hover */
+.mui-white-outline
+  .MuiPickersOutlinedInput-root:hover
+  .MuiPickersOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Focus */
+.mui-white-outline
+  .MuiPickersOutlinedInput-root.Mui-focused
+  .MuiPickersOutlinedInput-notchedOutline {
+  border-color: #ffffff !important;
+}
+
+.mui-white-outline .MuiInputLabel-root.Mui-focused {
+  color: rgb(158, 153, 153);
+}
+*/
+
+
+/* Text color */
+.mui-white-outline .MuiInputBase-input {
+  color: rgb(158, 153, 153);
+}
+
+/* Border */
+.mui-white-outline .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(158, 153, 153);
+}
+
+.mui-white-outline:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(158, 153, 153);
+}
+
+.mui-white-outline.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(158, 153, 153);
+}
+
+/* Label */
+.mui-white-outline .MuiInputLabel-root {
+  color: rgb(158, 153, 153);
+}
 
 .mui-white-outline .MuiInputLabel-root.Mui-focused {
   color: rgb(158, 153, 153);
@@ -58,7 +106,9 @@
 .mui-white-outline .MuiInputLabel-shrink {
   transform: translate(14px, -9px) scale(0.75) !important;
 }
-
+.mui-white-outline .MuiPickersSectionList-root {
+  color: white !important;
+}
 /**/
 
 /* 1. The Border (Normal state) */

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, CircleAlert } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { motion } from "framer-motion";
 
 interface RegisterFormInputs {
   username: string;
@@ -63,172 +64,195 @@ export const Register = () => {
 
       <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
         {/* Left Column - Form */}
-        <div className="flex items-center justify-center px-4 min-h-screen md:min-h-full">
-          <div className="w-full max-w-md">
-            <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
-              <div className="text-center space-y-2 mb-6">
-                <h1 className="text-3xl font-bold">Create Account</h1>
-                <p className="text-purple-light text-sm">
-                  Join us to discover amazing events
-                </p>
-              </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {/* Username */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground mb-1 block">
-                    Username
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="text"
-                      {...register("username", {
-                        required: "Username is required",
-                      })}
-                      placeholder="Enter your username"
-                      className="input-default pl-10  focus:border-primary w-full"
-                    />
-                  </div>
-                  {errors.username && (
-                    <p className="text-red-400 text-xs">
-                      {errors.username.message}
-                    </p>
-                  )}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex items-center justify-center px-4 min-h-screen md:min-h-full">
+            <div className="w-full max-w-md">
+              <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
+                <div className="text-center space-y-2 mb-6">
+                  <h1 className="text-3xl font-bold">Create Account</h1>
+                  <p className="text-purple-light text-sm">
+                    Join us to discover amazing events
+                  </p>
                 </div>
 
-                {/* Email */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground mb-1 block">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="email"
-                      {...register("email", {
-                        required: "Email is required",
-                        pattern: {
-                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Invalid email",
-                        },
-                      })}
-                      placeholder="john@gmail.com"
-                      className="input-default pl-10  focus:border-primary w-full"
-                    />
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  {/* Username */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground mb-1 block">
+                      Username
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="text"
+                        {...register("username", {
+                          required: "Username is required",
+                        })}
+                        placeholder="Enter your username"
+                        className="input-default pl-10  focus:border-primary w-full"
+                      />
+                    </div>
+                    {errors.username && (
+                      <p className="text-red-800 text-xs">
+                        {errors.username.message}
+                      </p>
+                    )}
                   </div>
-                  {errors.email && (
-                    <p className="text-red-400 text-xs">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
 
-                {/* Password */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground mb-1 block">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="password"
-                      {...register("password", {
-                        required: "Password is required",
-                      })}
-                      placeholder="••••••••"
-                      className="input-default pl-10  focus:border-primary w-full"
-                    />
+                  {/* Email */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground mb-1 block">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="email"
+                        {...register("email", {
+                          required: "Email is required",
+                          pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Invalid email",
+                          },
+                        })}
+                        placeholder="john@gmail.com"
+                        className="input-default pl-10  focus:border-primary w-full"
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-red-800 text-xs">
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
-                  {errors.password && (
-                    <p className="text-red-400 text-xs">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
 
-                {/* Confirm Password */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground mb-1 block">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="password"
-                      {...register("confirmPassword", {
-                        required: "Please confirm your password",
-                        validate: (value) =>
-                          value === password || "Passwords do not match",
-                      })}
-                      placeholder="••••••••"
-                      className="input-default pl-10 focus:border-primary w-full"
-                    />
+                  {/* Password */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground mb-1 block">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="password"
+                        {...register("password", {
+                          required: "Password is required",
+                          minLength: {
+                            value: 8,
+                            message: "Password must be at least 8 characters.",
+                          },
+                          validate: {
+                            hasLowercase: (value) =>
+                              /[a-z]/.test(value) ||
+                              "Password must include at least one lowercase letter.",
+                            hasUppercase: (value) =>
+                              /[A-Z]/.test(value) ||
+                              "Password must include at least one uppercase letter.",
+                            hasNumber: (value) =>
+                              /[0-9]/.test(value) ||
+                              "Password must include at least one number.",
+                          },
+                        })}
+                        placeholder="••••••••"
+                        className="input-default pl-10  focus:border-primary w-full"
+                      />
+                    </div>
+                    {errors.password && (
+                      <p className="text-red-800 text-xs">
+                        {errors.password.message}
+                      </p>
+                    )}
                   </div>
-                  {errors.confirmPassword && (
-                    <p className="text-red-400 text-xs">
-                      {errors.confirmPassword.message}
-                    </p>
-                  )}
-                </div>
 
-                {/* Role Selection */}
-                <div className="space-y-3 pt-2">
-                  {/* <label className="text-sm font-medium text-black block">
+                  {/* Confirm Password */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground mb-1 block">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="password"
+                        {...register("confirmPassword", {
+                          required: "Please confirm your password",
+                          validate: (value) =>
+                            value === password || "Passwords do not match",
+                        })}
+                        placeholder="••••••••"
+                        className="input-default pl-10 focus:border-primary w-full"
+                      />
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-red-800 text-xs">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Role Selection */}
+                  <div className="space-y-3 pt-2">
+                    {/* <label className="text-sm font-medium text-black block">
                     I am a
                   </label> */}
-                  <div className="flex gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        value="user"
-                        {...register("role")}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">Event Attendee</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        value="organizer"
-                        {...register("role")}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">Event Organizer</span>
-                    </label>
+                    <div className="flex gap-6">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="user"
+                          {...register("role")}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                        <span className="text-sm">Event Attendee</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          value="organizer"
+                          {...register("role")}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                        <span className="text-sm">Event Organizer</span>
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="p-3 rounded-lg bg-red-500/20 border border-red-500 text-red-300 text-sm">
-                    {error}
-                  </div>
-                )}
+                  {/* Error Message */}
+                  {error && (
+                    <div className="p-3 flex items-center rounded-lg bg-red-500/20 border border-red-500 text-red-800 text-sm">
+                      <CircleAlert className="text-red pr-2" /> {error}
+                    </div>
+                  )}
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
-                >
-                  {loading ? "Creating Account..." : "Create Account"}
-                </button>
-
-                {/* Login Link */}
-                <p className="text-center text-sm text-muted-foreground pt-2">
-                  Already have an account?{" "}
+                  {/* Submit Button */}
                   <button
-                    onClick={() => navigate("/")}
-                    className="text-primary hover:underline"
+                    type="submit"
+                    disabled={loading}
+                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
                   >
-                    Sign In
+                    {loading ? "Creating Account..." : "Create Account"}
                   </button>
-                </p>
-              </form>
+
+                  {/* Login Link */}
+                  <p className="text-center text-sm text-gray-600 ">
+                    Already have an account?{" "}
+                    <button
+                      type="button"
+                      onClick={() => navigate("/login")}
+                      className="text-blue-500 cursor-pointer hover:underline"
+                    >
+                      Sign In
+                    </button>
+                  </p>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column - Design Section */}
         <div className="hidden md:flex bg-linear-to-br from-purple-600 via-blue-600 to-purple-700 h-full rounded-lg overflow-hidden items-center justify-center relative p-8">

@@ -1,7 +1,16 @@
-import { Sparkles, Heart, Plus, UserPlus, Menu, X } from "lucide-react";
-import { useState } from "react";
+import {
+  Sparkles,
+  Heart,
+  Plus,
+  UserPlus,
+  Menu,
+  X,
+  LogOut,
+  User,
+} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import { Login } from "./Login";
+import { useAuth } from "../../context/AuthContext";
 
 const navItems = [
   { to: "/events", label: "Discover", icon: Sparkles },
@@ -11,8 +20,28 @@ const navItems = [
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const { signedIn, user, handleSignOut } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target as Node)
+      ) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    if (userDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [userDropdownOpen]);
   return (
     <>
       <div className="container mx-auto px-4 py-8">
@@ -23,7 +52,7 @@ export const Header = () => {
             </div>
           </Link>
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center font-medium gap-x-6 bg-purple rounded-lg overflow-hidden">
+          <div className="hidden lg:flex items-center font-medium gap-x-6 bg-purple rounded-lg overflow-visible relative">
             {navItems.map(({ to, label, icon: Icon }) => {
               const active = location.pathname === to;
               return (
@@ -39,14 +68,51 @@ export const Header = () => {
                 </Link>
               );
             })}
-            {/* Sign up Button */}
-            <button
-              onClick={() => setLoginModalOpen(true)}
-              className="flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              <span>Login</span>
-            </button>
+            {/* User Menu or Login Button */}
+            {signedIn && user ? (
+              <div className="relative" ref={userDropdownRef}>
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className={`flex items-center px-8 py-4 transition ${userDropdownOpen ? "bg-hover-purple" : "hover:bg-hover-purple"} cursor-pointer gap-2`}
+                >
+                  <User className="h-4 w-4" />
+                  <span className="truncate max-w-37.5">{user.username}</span>
+                </button>
+
+                {/* Dropdown Menu */}
+                {userDropdownOpen && (
+                  <div className="absolute right-0 top-16 w-48 bg-purple rounded-lg shadow-xl py-2 z-50 border border-purple-500/50">
+                    <Link
+                      to="/profile"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setUserDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-left text-white"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                state={{ from: location }}
+                className="flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Burger Icon */}
@@ -81,21 +147,41 @@ export const Header = () => {
                 {label}
               </Link>
             ))}
-            {/* Sign up Button Mobile */}
-            <button
-              onClick={() => {
-                setLoginModalOpen(true);
-                setOpen(false);
-              }}
-              className="flex items-center px-8 py-4 active:bg-hover-purple w-full text-left hover:bg-hover-purple"
-            >
-              <UserPlus className="h-4 w-4 mr-3" />
-              Sign up
-            </button>
+            {/* User Menu or Sign up Button Mobile */}
+            {signedIn && user ? (
+              <>
+                <Link
+                  to="/profile"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center px-8 py-4 hover:bg-hover-purple gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  {user.username}
+                </Link>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setOpen(false);
+                  }}
+                  className="flex items-center px-8 py-4 hover:bg-hover-purple w-full text-left gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                state={{ from: location }}
+                onClick={() => setOpen(false)}
+                className="flex items-center px-8 py-4 active:bg-hover-purple w-full text-left hover:bg-hover-purple"
+              >
+                <UserPlus className="h-4 w-4 mr-3" />
+                Login
+              </Link>
+            )}
           </div>
         </nav>
-        {/* Login Modal */}
-        <Login open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
       </div>
     </>
   );

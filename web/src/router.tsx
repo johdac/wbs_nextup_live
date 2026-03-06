@@ -3,6 +3,8 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { Landing } from "./components/pages/Landing";
 import EventList from "./components/layout/Events";
 import { Register } from "./components/pages/Register";
+import { Login } from "./components/pages/Login";
+import { EventsDetail } from "./components/pages/EventsDetail";
 
 export const router = createBrowserRouter([
   {
@@ -16,10 +18,18 @@ export const router = createBrowserRouter([
         path: "/events",
         element: <EventList></EventList>,
       },
+      {
+        path: "/event/:id",
+        element: <EventsDetail></EventsDetail>,
+      },
     ],
   },
   {
     element: <Register></Register>,
     path: "/register",
+  },
+  {
+    element: <Login></Login>,
+    path: "/login",
   },
 ]);

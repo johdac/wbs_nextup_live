@@ -1,9 +1,15 @@
-import { Play, MapPin, Heart } from "lucide-react";
+import { Play, MapPin, Heart, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
-import type { MusicEvent } from "../../data/MockData";
+import type { EventListItem } from "../../services/eventsApi";
 
-const EventCard = ({ event, index }: { event: MusicEvent; index: number }) => {
+const EventCard = ({
+  event,
+  index,
+}: {
+  event: EventListItem;
+  index: number;
+}) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -18,18 +24,19 @@ const EventCard = ({ event, index }: { event: MusicEvent; index: number }) => {
         zIndex: index,
         backgroundImage: 'url("/bg.jpg")',
       }}
-      className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg border border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
+      className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
+      // className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg sm:border sm:border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
     >
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 py-2 text-white shadow-purple-200 shadow-xs">
+      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
+        <span className="text-6xl font-black leading-none">{dayStr}</span>
+        {/* <span className="text-md font-bold">{yearStr}</span> */}
         <span className="text-md font-bold uppercase tracking-wider">
           {monthStr}
         </span>
-        <span className="text-6xl font-black leading-none">{dayStr}</span>
-        <span className="text-md font-bold">{yearStr}</span>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
-      <div className="relative w-full sm:w-30 h-40 sm:h-30 flex-shrink-0 overflow-hidden rounded-md bg-muted">
+      <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
         {event.coverImage ? (
           <img
             src={event.coverImage}
@@ -54,6 +61,18 @@ const EventCard = ({ event, index }: { event: MusicEvent; index: number }) => {
         <h3 className="text-lg sm:text-xl font-bold text-white transition-colors">
           {event.title}
         </h3>
+        <div className="my-1.5 flex flex-wrap items-center gap-2">
+          <div className="text-white flex items-center">
+            {event.artists.map((artist) => {
+              return (
+                <>
+                  <MicVocal className="mr-1" />
+                  <p>{artist.name}</p>
+                </>
+              );
+            })}
+          </div>
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
           <span className="flex items-center">
