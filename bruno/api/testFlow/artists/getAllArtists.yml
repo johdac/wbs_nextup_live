@@ -12,6 +12,8 @@ runtime:
   variables:
     - name: ""
       value: bo
+    - name: api
+      value: http://localhost:3000
 
 settings:
   encodeUrl: true

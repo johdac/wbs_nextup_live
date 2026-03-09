@@ -131,6 +131,24 @@ const transformEventToMusicEvent = (event: ApiEvent, imageIndex: number): EventL
   };
 };
 
+export interface ArtistListItem {
+  id: string;
+  name: string;
+  genre: string;
+  description: string;
+  imageUrl: string;
+}
+
+const transformArtist = (artist: ApiArtist): ArtistListItem => {
+  return {
+    id: artist.id || artist._id || "",
+    name: artist.name || "",
+    genre: artist.genres?.[0] || "Unknown",
+    description: artist.description || "",
+    imageUrl: "/placeholder.svg",
+  };
+};
+
 export const eventsService = {
   getEventById: async (id: string): Promise<EventListItem> => {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
@@ -154,9 +172,8 @@ export const eventsService = {
     const { data } = await eventsApi.get<ApiEvent[]>("/events", { params });
     return data.map((event, index) => transformEventToMusicEvent(event, index));
   },
-  getArtistById: async (id: string): Promise<EventCardArtist> => {
+  getArtistById: async (id: string): Promise<ArtistListItem> => {
     const { data } = await eventsApi.get<ApiArtist>(`/artists/${id}`);
-    const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return transformEventToMusicEvent(data, hash);
+    return transformArtist(data);
   },
 };

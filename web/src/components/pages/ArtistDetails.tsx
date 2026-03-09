@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, ListPlus, Heart, Sparkles } from "lucide-react";
 import { eventsService, type EventCardArtist } from "../../services/eventsApi";
+import EventList from "../layout/Events";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,98 +51,40 @@ export const ArtistDetails = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
-        {/* image of the band */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1] tracking-tight uppercase text-white">
-            {artist.name}
-          </h1>
-          <div>
-            <img src={artist.imageUrl} alt={artist.name} className="w-full rounded-xl max-w-md lg:max-w-full" />
-          </div>
-        </div>
-        <div className="grid grid-cols-4 gap-2 items-end w-full pt-4">
-          <div className="col-span-3"></div>
-        </div>
+      <div className="max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}
-          <div className="md:col-span-2 grid grid-cols-1 gap-10 md:pr-8">
-            {/* artists */}
-            {artist.artists?.length ? (
-              <div className="space-y-3">
-                <div className="text-3xl font-bold">ARTISTS</div>
-                <div>
-                  {artist.artists.map((a) => (
-                    <div key={a.id} className="grid md:grid-cols-2 items-center justify-center py-3 rounded-lg mb-2">
-                      <div>
-                        <img
-                          src={a.imageUrl}
-                          alt={a.name}
-                          className="w-full items-center rounded-xl max-w-md md:max-w-full"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
-                        <div className="col-span-3 flex flex-col gap-1">
-                          <div className="text-xl">{a.name}</div>
-                          <div
-                            className="text-base text-gray"
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
-                          />
-                          <div>
-                            <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                              {artist.genre?.length ? artist.genre : "-"}
-                            </span>
-                          </div>
-                        </div>
-                        <button className="flex justify-center items-center">
-                          <CirclePlay className="w-10 h-10 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            {/* description */}
-            {artist.description ? (
-              <div className="space-y-3">
-                <div className="text-3xl font-bold">DESCRIPTION</div>
-                <p
-                  className="text-lg font-light"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description) }}
-                />
-              </div>
-            ) : null}
+          <div className="grid grid-cols-1">
+            {/* image of the artist */}
+            <img
+              src={"https://theocroker.com/assets/images/share.jpg?v=14ef552c"} //artist.imageUrl
+              alt={artist.name}
+              className="w-fit rounded-lg max-w-md lg:max-w-full"
+            />
           </div>
           {/* right */}
-          <aside className="flex flex-col items-start gap-10 p-6 rounded-xl transition-all bg-gray-800/35">
-            <div className="flex gap-4 items-center">
-              <button>
-                <Heart className="w-8 h-8 transition-colors duration-100 hover:text-red-500 hover:scale-115 cursor-pointer" />
-              </button>
-              <button>
-                <Play className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
-              <button>
-                <ListPlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
-            </div>
-
-            <div>
-              <div className="flex flex-row pb-1 items-center">
-                <Sparkles className="mr-1 h-5 w-5" />
-                <div className="text-lg">GENRES</div>
-              </div>
+          <div className="md:col-span-2 flex flex-col items-start gap-3">
+            <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase text-white">
+              {artist.name}
               <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
                 {artist.genre?.length ? artist.genre : "-"}
               </span>
+            </h1>
+            <div className="px-5 py-4 transition-all bg-gray-800/35">
+              {/* description */}
+              {artist.description ? (
+                <div className="space-y-3">
+                  <p
+                    className="text-lg font-light"
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description) }}
+                  />
+                </div>
+              ) : null}
             </div>
-            <button>
-              <Share2 className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-            </button>
-          </aside>
+          </div>
         </div>
       </div>
+      <EventList />
     </div>
   );
 };
