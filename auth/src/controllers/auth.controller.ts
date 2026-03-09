@@ -15,9 +15,13 @@ interface SuccessMessage {
   message: string;
 }
 
-interface resBodyTokenDTO extends SuccessMessage {
+interface TokenPairResponseDTO extends SuccessMessage {
   accessToken: string;
   refreshToken: string;
+}
+
+interface AuthTokenResponseDTO extends TokenPairResponseDTO {
+  role: string;
 }
 
 type UserProfileDTO = {
@@ -31,7 +35,7 @@ type UserProfileDTO = {
 
 export const register: RequestHandler<
   {},
-  resBodyTokenDTO,
+  AuthTokenResponseDTO,
   registerDTO
 > = async (req, res) => {
   const { username, email, password, role } = req.body;
@@ -59,12 +63,15 @@ export const register: RequestHandler<
   const [refreshToken, accessToken] = await createTokens(user);
   if (!refreshToken || !accessToken)
     throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
-  res
-    .status(201)
-    .json({ message: `${username} Registered!`, accessToken, refreshToken });
+  res.status(201).json({
+    message: `${username} Registered!`,
+    accessToken,
+    refreshToken,
+    role: user.role,
+  });
 };
 
-export const login: RequestHandler<{}, resBodyTokenDTO, loginDTO> = async (
+export const login: RequestHandler<{}, AuthTokenResponseDTO, loginDTO> = async (
   req,
   res,
 ) => {
@@ -84,15 +91,16 @@ export const login: RequestHandler<{}, resBodyTokenDTO, loginDTO> = async (
   if (!refreshToken || !accessToken)
     throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
   res.json({
-    message: "Welcome back! Ready for battle?",
+    message: "Welcome back!",
     refreshToken,
     accessToken,
+    role: user.role,
   });
 };
 
 export const refresh: RequestHandler<
   {},
-  resBodyTokenDTO,
+  TokenPairResponseDTO,
   refreshTokenDTO
 > = async (req, res) => {
   const { refreshToken } = req.body;
