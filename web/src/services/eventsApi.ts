@@ -6,6 +6,7 @@ export interface EventCardArtist {
   genre: string;
   description: string;
   imageUrl: string;
+  websiteUrl: string;
 }
 
 export interface EventCardLocation {
@@ -68,6 +69,8 @@ interface ApiArtist {
   name: string;
   genres: string[];
   description?: string;
+  imageUrl: string;
+  websiteUrl: string;
 }
 
 interface ApiEvent {
@@ -122,6 +125,7 @@ const transformEventToMusicEvent = (event: ApiEvent, imageIndex: number): EventL
           genre: artist.genres?.[0] || "Unknown",
           description: artist.description || "",
           imageUrl: "/placeholder.svg",
+          websiteUrl: artist.websiteUrl || "",
         };
       }) || [],
     genre: event.genres?.[0] || "Unknown",
@@ -131,21 +135,14 @@ const transformEventToMusicEvent = (event: ApiEvent, imageIndex: number): EventL
   };
 };
 
-export interface ArtistListItem {
-  id: string;
-  name: string;
-  genre: string;
-  description: string;
-  imageUrl: string;
-}
-
-const transformArtist = (artist: ApiArtist): ArtistListItem => {
+const transformArtist = (artist: ApiArtist): EventCardArtist => {
   return {
     id: artist.id || artist._id || "",
     name: artist.name || "",
     genre: artist.genres?.[0] || "Unknown",
     description: artist.description || "",
     imageUrl: "/placeholder.svg",
+    websiteUrl: artist.websiteUrl || "",
   };
 };
 
@@ -172,7 +169,7 @@ export const eventsService = {
     const { data } = await eventsApi.get<ApiEvent[]>("/events", { params });
     return data.map((event, index) => transformEventToMusicEvent(event, index));
   },
-  getArtistById: async (id: string): Promise<ArtistListItem> => {
+  getArtistById: async (id: string): Promise<EventCardArtist> => {
     const { data } = await eventsApi.get<ApiArtist>(`/artists/${id}`);
     return transformArtist(data);
   },

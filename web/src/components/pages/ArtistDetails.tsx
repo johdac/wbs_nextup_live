@@ -3,6 +3,8 @@ import { useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { eventsService, type EventCardArtist } from "../../services/eventsApi";
 import EventList from "../layout/Events";
+import { CirclePlay, Link } from "lucide-react";
+import { EventByArtist } from "../layout/EventsByArtist";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -56,20 +58,23 @@ export const ArtistDetails = () => {
           {/* left */}
           <div className="grid grid-cols-1">
             {/* image of the artist */}
-            <img
-              src={"https://theocroker.com/assets/images/share.jpg?v=14ef552c"} //artist.imageUrl
-              alt={artist.name}
-              className="w-fit rounded-lg max-w-md lg:max-w-full"
-            />
+            <img src={artist.imageUrl} alt={artist.name} className="rounded-lg w-full h-64 lg:h-full object-cover" />
           </div>
           {/* right */}
           <div className="md:col-span-2 flex flex-col items-start gap-3">
-            <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase text-white">
-              {artist.name}
+            <div className="grid grid-cols-2 md:grid-cols-3">
+              <h1 className="md:col-span-2 flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
+                {artist.name}
+              </h1>
+              <button className="flex justify-center items-center">
+                <CirclePlay className="w-10 h-10 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+              </button>
+            </div>
+            <div className="p-1">
               <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
                 {artist.genre?.length ? artist.genre : "-"}
               </span>
-            </h1>
+            </div>
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
               {artist.description ? (
@@ -81,10 +86,18 @@ export const ArtistDetails = () => {
                 </div>
               ) : null}
             </div>
+            <div className="">
+              <a
+                href={artist.websiteUrl}
+                className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
+              >
+                <Link /> <div>Link</div>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-      <EventList />
+      <EventByArtist artistId={artist.id} />
     </div>
   );
 };
