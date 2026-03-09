@@ -155,6 +155,15 @@ const transformArtist = (artist: ApiArtist): EventCardArtist => {
   };
 };
 
+const transformLocation = (location: ApiLocation): EventCardLocation => {
+  return {
+    id: location.id || location._id || "",
+    name: location.name || "",
+    city: location.city || "",
+    address: location.address || "",
+  };
+};
+
 export const eventsService = {
   getEventById: async (id: string): Promise<EventListItem> => {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
@@ -188,5 +197,10 @@ export const eventsService = {
   getArtistById: async (id: string): Promise<EventCardArtist> => {
     const { data } = await eventsApi.get<ApiArtist>(`/artists/${id}`);
     return transformArtist(data);
+  },
+
+  getLocationById: async (id: string): Promise<EventCardLocation> => {
+    const { data } = await eventsApi.get<ApiLocation>(`/locations/${id}`);
+    return transformLocation(data);
   },
 };

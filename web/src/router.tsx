@@ -7,6 +7,7 @@ import { Login } from "./components/pages/Login";
 import { EventDetails } from "./components/pages/EventDetails";
 import { ArtistDetails } from "./components/pages/ArtistDetails";
 import { CreateEvent } from "./components/pages/CreateEvent";
+import { VenueDetails } from "./components/pages/VenueDetails";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
       {
         path: "/artist/:id",
         element: <ArtistDetails></ArtistDetails>,
+      },
+      {
+        path: "/venue/:id",
+        element: <VenueDetails></VenueDetails>,
       },
       {
         path: "/create",
