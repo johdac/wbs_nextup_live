@@ -41,7 +41,7 @@ export const ArtistDetails = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
+      <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}
           <div className="grid grid-cols-1">

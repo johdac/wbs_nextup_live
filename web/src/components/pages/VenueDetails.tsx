@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import DOMPurify from "dompurify";
 import { eventsService, type EventCardLocation } from "../../services/eventsApi";
-import { CirclePlay, Link } from "lucide-react";
-import { EventByArtist } from "../layout/EventsByArtist";
+import { Link } from "lucide-react";
 import { EventByLocation } from "../layout/EventsByLocation";
 
 export const VenueDetails = () => {
@@ -42,7 +40,7 @@ export const VenueDetails = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
+      <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}
           <div className="grid grid-cols-1">{/* Map */}</div>
@@ -56,14 +54,7 @@ export const VenueDetails = () => {
 
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
-              {location.address ? (
-                <div className="space-y-3">
-                  <p
-                    className="text-lg font-light"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(location.address) }}
-                  />
-                </div>
-              ) : null}
+              {location.address ? <div className="space-y-3">{location.address}</div> : null}
             </div>
             <div className="">
               <a

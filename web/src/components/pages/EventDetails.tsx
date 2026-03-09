@@ -144,7 +144,7 @@ export const EventDetails = () => {
   return (
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        {/* image of the band */}
+        {/* TOP - image of the band */}
         <div
           className="h-72 w-full bg-cover bg-center bg-no-repeat rounded-xl"
           style={{ backgroundImage: `url(${event.coverImage})` }}
@@ -156,7 +156,7 @@ export const EventDetails = () => {
           </div>
         </div>
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* left */}
+          {/* LEFT SIDE */}
           <div className="md:col-span-2 grid grid-cols-1 gap-10 md:pr-8">
             {/* artists */}
             {event.artists?.length ? (
@@ -209,7 +209,7 @@ export const EventDetails = () => {
               </div>
             ) : null}
           </div>
-          {/* right */}
+          {/* RIGHT SIDE */}
           <aside className="flex flex-col items-start gap-10 p-6 rounded-xl transition-all bg-gray-800/35">
             <div className="flex gap-4 items-center">
               <button>
