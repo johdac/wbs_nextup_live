@@ -4,7 +4,8 @@ import { Landing } from "./components/pages/Landing";
 import EventList from "./components/layout/Events";
 import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
-import { EventsDetail } from "./components/pages/EventsDetail";
+import { EventDetails } from "./components/pages/EventDetails";
+import { ArtistDetails } from "./components/pages/ArtistDetails";
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +21,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/event/:id",
-        element: <EventsDetail></EventsDetail>,
+        element: <EventDetails></EventDetails>,
+      },
+      {
+        path: "/artist/:id",
+        element: <ArtistDetails></ArtistDetails>,
       },
     ],
   },

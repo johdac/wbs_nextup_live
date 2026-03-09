@@ -3,21 +3,15 @@ import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
 
-const EventCard = ({
-  event,
-  index,
-}: {
-  event: EventListItem;
-  index: number;
-}) => {
+const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
   const yearStr = format(new Date(event.startDate), "yyyy");
 
   return (
-    <Link
-      to={`/event/${event.id}`}
+    <div
+      // to={`/event/${event.id}`}
       style={{
         position: "sticky",
         top: "100px",
@@ -31,9 +25,7 @@ const EventCard = ({
       <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">
-          {monthStr}
-        </span>
+        <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -49,25 +41,25 @@ const EventCard = ({
 
         {/* DATE STICKER ON MOBILE ONLY */}
         <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider">
-            {monthStr}
-          </span>
+          <span className="text-xs font-bold uppercase tracking-wider">{monthStr}</span>
           <span className="text-xl font-black leading-none">{dayStr}</span>
           <span className="text-xs font-bold">{yearStr}</span>
         </div>
       </div>
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
-        <h3 className="text-lg sm:text-xl font-bold text-white transition-colors">
-          {event.title}
-        </h3>
+        <Link to={`/event/${event.id}`}>
+          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors">{event.title}</h3>
+        </Link>
         <div className="my-1.5 flex flex-wrap items-center gap-2">
           <div className="text-white flex items-center">
             {event.artists.map((artist) => {
               return (
                 <>
                   <MicVocal className="mr-1" />
-                  <p>{artist.name}</p>
+                  <Link to={`/artist/${artist.id}`}>
+                    <p key={artist.id}>{artist.name}</p>
+                  </Link>
                 </>
               );
             })}
@@ -75,10 +67,12 @@ const EventCard = ({
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
-          <span className="flex items-center">
-            <MapPin className="mr-1 h-5 w-5" />
-            {event.location.city}
-          </span>
+          <Link to={`/venue/:name`}>
+            <span className="flex items-center">
+              <MapPin className="mr-1 h-5 w-5" />
+              {event.location.city}
+            </span>
+          </Link>
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
           <span className="rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider">
@@ -92,7 +86,7 @@ const EventCard = ({
         <Play className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
         <Heart className="h-6 w-6 text-white hover:text-red-500" />
       </div>
-    </Link>
+    </div>
   );
 };
 
