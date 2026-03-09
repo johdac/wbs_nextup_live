@@ -76,13 +76,12 @@ export const EventDetails = () => {
                 <div className="text-3xl font-bold">ARTISTS</div>
                 <div>
                   {event.artists.map((a) => (
-                    <div key={a.id} className="grid md:grid-cols-2 items-center justify-center py-3 rounded-lg mb-2">
+                    <div
+                      key={a.id}
+                      className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5"
+                    >
                       <div>
-                        <img
-                          src={"https://theocroker.com/assets/images/share.jpg?v=14ef552c"} //a.imageUrl
-                          alt={a.name}
-                          className="w-full items-center rounded-xl max-w-md md:max-w-full"
-                        />
+                        <img src={a.imageUrl} alt={a.name} className="rounded-lg max-w-md md:max-w-full" />
                       </div>
                       <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
                         <div className="col-span-3 flex flex-col gap-1">
@@ -91,7 +90,7 @@ export const EventDetails = () => {
                               {a.name}
                             </div>
                             <div
-                              className="text-base text-gray line-clamp-1"
+                              className="text-base text-gray line-clamp-2"
                               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
                             />
                           </Link>
