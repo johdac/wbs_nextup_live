@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { eventsService, type EventCardArtist } from "../../services/eventsApi";
-import EventList from "../layout/Events";
 import { CirclePlay, Link } from "lucide-react";
 import { EventByArtist } from "../layout/EventsByArtist";
 
@@ -39,17 +38,6 @@ export const ArtistDetails = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!artist) return <p>Artist not found</p>;
-
-  //format Date
-  const formatDate = (value: string) => {
-    const date = new Date(value);
-    return Number.isNaN(date.getTime())
-      ? "-"
-      : date.toLocaleString("en", {
-          dateStyle: "short",
-          timeStyle: "short",
-        });
-  };
 
   return (
     <div className="container mx-auto">
