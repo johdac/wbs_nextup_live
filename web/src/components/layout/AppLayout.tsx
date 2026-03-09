@@ -1,14 +1,14 @@
 import { Outlet, useNavigation } from "react-router";
 import { Header } from "./Header";
 import Footer from "./Footer";
-import { Player } from "./Player";
+// import { Player } from "./Player";
 
 export const AppLayout = () => {
   const navigation = useNavigation();
 
   return (
     <div>
-      <Player></Player>
+      {/* <Player></Player> */}
       <Header></Header>
 
       {navigation.state === "loading" && <p>Loading...</p>}
