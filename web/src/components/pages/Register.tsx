@@ -83,7 +83,7 @@ export const Register = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   {/* Username */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground mb-1 block">
+                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
                       Username
                     </label>
                     <div className="relative">
@@ -106,7 +106,7 @@ export const Register = () => {
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground mb-1 block">
+                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
                       Email
                     </label>
                     <div className="relative">
@@ -133,7 +133,7 @@ export const Register = () => {
 
                   {/* Password */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground mb-1 block">
+                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
                       Password
                     </label>
                     <div className="relative">
@@ -171,7 +171,7 @@ export const Register = () => {
 
                   {/* Confirm Password */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground mb-1 block">
+                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
                       Confirm Password
                     </label>
                     <div className="relative">

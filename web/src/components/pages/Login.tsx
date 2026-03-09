@@ -71,7 +71,7 @@ export const Login = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                   {/* Email */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1 block">
+                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
                       Email
                     </label>
                     <div className="relative">
@@ -89,7 +89,7 @@ export const Login = () => {
 
                   {/* Password */}
                   <div className="">
-                    <label className="text-sm font-medium text-foreground mb-1 block">
+                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
                       Password
                     </label>
                     <div className="relative">

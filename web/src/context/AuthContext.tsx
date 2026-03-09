@@ -7,6 +7,18 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
+  const persistAuthSession = (
+    accessToken: string,
+    refreshToken: string,
+    role?: string,
+  ) => {
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    if (role) {
+      localStorage.setItem("role", role);
+    }
+  };
+
   const {
     data: user,
     isLoading,
@@ -30,21 +42,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: async (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("role", data.role);
-      const user = await authService.getMe();
-      queryClient.setQueryData(["authUser"], user);
+      persistAuthSession(data.accessToken, data.refreshToken, data.role);
+
+      try {
+        const currentUser = await authService.getMe();
+        const resolvedRole =
+          data.role ?? currentUser?.role ?? currentUser?.roles?.[0];
+
+        if (resolvedRole) {
+          localStorage.setItem("role", resolvedRole);
+        }
+        queryClient.setQueryData(["authUser"], currentUser);
+      } catch {
+        queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      }
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: authService.register,
-    onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("role", data.role);
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    onSuccess: async (data) => {
+      persistAuthSession(data.accessToken, data.refreshToken, data.role);
+
+      try {
+        const currentUser = await authService.getMe();
+        const resolvedRole =
+          data.role ?? currentUser?.role ?? currentUser?.roles?.[0];
+
+        if (resolvedRole) {
+          localStorage.setItem("role", resolvedRole);
+        }
+        queryClient.setQueryData(["authUser"], currentUser);
+      } catch {
+        queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      }
     },
   });
   const handleSignOut = async () => {

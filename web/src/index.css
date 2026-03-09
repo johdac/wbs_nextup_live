@@ -209,7 +209,7 @@
   --color-foreground: #ffffff;
 
   --color-secondary: hsl(223, 7%, 21%);
-  --color-secondary-foreground: hsl(210 40% 96%);
+  --color-secondary-foreground: hsl(240, 0%, 44%);
 
   --color-hover-purple: hsl(246, 67%, 26%);
   --color-hover-text: hsl(220, 100%, 78%);

@@ -1,12 +1,23 @@
 import axios from "axios";
 import { authApi } from "./auth.service";
-type TokenRes = { accessToken: string; refreshToken: string; role: string };
+type TokenRes = { accessToken: string; refreshToken: string; role?: string };
+
+const normalizeAuthResponse = (payload: any): TokenRes => {
+  const role =
+    payload?.role ?? payload?.user?.role ?? payload?.roles?.[0] ?? undefined;
+
+  return {
+    accessToken: payload.accessToken,
+    refreshToken: payload.refreshToken,
+    role,
+  };
+};
 
 export const authService = {
   login: async (credentials: LoginInput) => {
     try {
       const { data } = await authApi.post<TokenRes>("/login", credentials);
-      return data;
+      return normalizeAuthResponse(data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         // Check if the backend sent an error message
@@ -36,7 +47,7 @@ export const authService = {
   register: async (formData: RegisterFormState) => {
     try {
       const { data } = await authApi.post<TokenRes>("/register", formData);
-      return data;
+      return normalizeAuthResponse(data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         // Check if the backend sent an error message
