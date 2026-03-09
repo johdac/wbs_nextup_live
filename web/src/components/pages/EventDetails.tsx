@@ -55,14 +55,16 @@ export const EventDetails = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
+      <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1] tracking-tight uppercase text-white">
-            {event.title}
-          </h1>
-          <div>
-            <img src={event.coverImage} alt={event.title} className="w-full rounded-xl max-w-md lg:max-w-full" />
+        <div
+          className="h-72 w-full bg-cover bg-center bg-no-repeat rounded-xl"
+          style={{ backgroundImage: `url(${event.coverImage})` }}
+        >
+          <div className="flex items-center backdrop-blur-xs h-full rounded-xl">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase text-white">
+              {event.title}
+            </h1>
           </div>
         </div>
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -77,7 +79,7 @@ export const EventDetails = () => {
                     <div key={a.id} className="grid md:grid-cols-2 items-center justify-center py-3 rounded-lg mb-2">
                       <div>
                         <img
-                          src={a.imageUrl}
+                          src={"https://theocroker.com/assets/images/share.jpg?v=14ef552c"} //a.imageUrl
                           alt={a.name}
                           className="w-full items-center rounded-xl max-w-md md:max-w-full"
                         />
