@@ -5,7 +5,8 @@ declare global {
     __v: number;
     email: string;
     username: string;
-    roles: string[];
+    role?: "user" | "organizer" | "admin";
+    roles?: string[];
     favoritedEventsIds: string;
     excludedEventsIds: string;
   };

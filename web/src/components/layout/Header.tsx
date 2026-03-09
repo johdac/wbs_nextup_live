@@ -7,16 +7,20 @@ import {
   X,
   LogOut,
   User,
+  CalendarRange,
+  MapPin,
+  Mic2,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 
-const navItems = [
+const baseNavItems = [
   { to: "/events", label: "Discover", icon: Sparkles },
   { to: "/favorites", label: "Favorites", icon: Heart },
-  { to: "/create", label: "Create New", icon: Plus },
 ];
+
+const organizerNavItem = { to: "/create", label: "Create New", icon: Plus };
 
 export const Header = () => {
   const [open, setOpen] = useState(false);
@@ -24,6 +28,13 @@ export const Header = () => {
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { signedIn, user, handleSignOut } = useAuth();
+  const roleFromStorage = localStorage.getItem("role");
+  const currentRole = user?.role ?? user?.roles?.[0] ?? roleFromStorage;
+  const isOrganizer = currentRole === "organizer";
+  const hideCreateNew = signedIn && currentRole === "user";
+  const navItems = hideCreateNew
+    ? baseNavItems
+    : [...baseNavItems, organizerNavItem];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -90,6 +101,34 @@ export const Header = () => {
                       <User className="h-4 w-4" />
                       <span>Profile</span>
                     </Link>
+                    {isOrganizer && (
+                      <>
+                        <Link
+                          to="/managed-events"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
+                        >
+                          <CalendarRange className="h-4 w-4" />
+                          <span>Managed Events</span>
+                        </Link>
+                        <Link
+                          to="/managed-locations"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
+                        >
+                          <MapPin className="h-4 w-4" />
+                          <span>Managed Locations</span>
+                        </Link>
+                        <Link
+                          to="/managed-artists"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
+                        >
+                          <Mic2 className="h-4 w-4" />
+                          <span>Managed Artists</span>
+                        </Link>
+                      </>
+                    )}
                     <button
                       onClick={() => {
                         handleSignOut();
@@ -158,6 +197,34 @@ export const Header = () => {
                   <User className="h-4 w-4" />
                   {user.username}
                 </Link>
+                {isOrganizer && (
+                  <>
+                    <Link
+                      to="/managed-events"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center px-8 py-4 hover:bg-hover-purple gap-2"
+                    >
+                      <CalendarRange className="h-4 w-4" />
+                      Managed Events
+                    </Link>
+                    <Link
+                      to="/managed-locations"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center px-8 py-4 hover:bg-hover-purple gap-2"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      Managed Locations
+                    </Link>
+                    <Link
+                      to="/managed-artists"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center px-8 py-4 hover:bg-hover-purple gap-2"
+                    >
+                      <Mic2 className="h-4 w-4" />
+                      Managed Artists
+                    </Link>
+                  </>
+                )}
                 <button
                   onClick={() => {
                     handleSignOut();

@@ -188,7 +188,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #3d31a9;
+  accent-color: hsl(246, 55%, 43%);
 }
 
 .role-radio-option label {
@@ -199,23 +199,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-purple: #3d31a9;
-  --color-pink: #ff4d94;
-  --color-orange: #ff7c52;
-  --color-yellow: #ffbd4a;
-  --color-gray: #a3a3a3;
+  --color-purple: hsl(246, 55%, 43%);
+  --color-pink: hsl(336, 100%, 65%);
+  --color-orange: hsl(15, 100%, 66%);
+  --color-yellow: hsl(38, 100%, 65%);
+  --color-gray: hsl(0, 0%, 64%);
 
   --color-background: hsl(222 47% 6%);
   --color-foreground: #ffffff;
 
-  --color-secondary: #313338;
-  --color-secondary-foreground: hsl(210 40% 96%);
+  --color-secondary: hsl(223, 7%, 21%);
+  --color-secondary-foreground: hsl(240, 0%, 44%);
 
-  --color-hover-purple: #1f1670;
-  --color-hover-text: #8eb4ff;
+  --color-hover-purple: hsl(246, 67%, 26%);
+  --color-hover-text: hsl(220, 100%, 78%);
 
-  --color-border: #3d31a9;
-  --color-ring: #3d31a9;
+  --color-border: hsl(246, 55%, 43%);
+  --color-ring: hsl(246, 55%, 43%);
   --color-input: hsl(222 30% 18%);
 
   --color-muted: hsl(222 30% 14%);
