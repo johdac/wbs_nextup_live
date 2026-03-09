@@ -5,6 +5,7 @@ import EventList from "./components/layout/Events";
 import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
 import { EventsDetail } from "./components/pages/EventsDetail";
+import { CreateEvent } from "./components/pages/CreateEvent";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
       {
         path: "/event/:id",
         element: <EventsDetail></EventsDetail>,
+      },
+      {
+        path: "/create",
+        element: <CreateEvent></CreateEvent>,
       },
     ],
   },
