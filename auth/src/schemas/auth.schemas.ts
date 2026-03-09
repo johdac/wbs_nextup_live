@@ -31,7 +31,7 @@ export const registerSchema = z
         }),
 
       confirmPassword: z.string(),
-      username: z.string().min(4).max(50),
+      username: z.string().min(3).max(50),
     },
     { error: "Please provide a valid email and a secure password." },
   )
