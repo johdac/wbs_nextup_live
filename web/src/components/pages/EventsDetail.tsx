@@ -153,8 +153,8 @@ export const EventsDetail = () => {
   const endDate = formatDate(event.endDate);
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="pb-5 max-w-8xl mt-6 sm:mt-10 px-4 sm:px-0 flex flex-col justify-center items-center text-white">
+    <div className="container mx-auto">
+      <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-none tracking-tight uppercase text-white">
@@ -170,28 +170,14 @@ export const EventsDetail = () => {
         </div>
         <div className="grid grid-cols-4 gap-2 items-end w-full pt-4">
           <div className="col-span-3"></div>
-          <div className="flex gap-4 items-center justify-end pr-5">
-            <button>
-              <Heart className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-            </button>
-            <button>
-              <Play className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-            </button>
-            <button>
-              <SquarePlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-            </button>
-            <button>
-              <Share2 className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-            </button>
-          </div>
         </div>
-        <div className="max-w-8xl mt-6 sm:mt-10 px-4 sm:px-4 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}
-          <div className="md:col-span-2 grid grid-cols-1 gap-2 md:pr-8">
+          <div className="md:col-span-2 grid grid-cols-1 gap-10 md:pr-8">
             {/* artists */}
             {event.artists?.length ? (
-              <div className="space-y-2">
-                <div className="text-3xl">ARTISTS</div>
+              <div className="space-y-3">
+                <div className="text-3xl font-bold">ARTISTS</div>
                 <div>
                   {event.artists.map((a) => (
                     <div
@@ -205,14 +191,12 @@ export const EventsDetail = () => {
                           className="w-full items-center rounded-xl max-w-md md:max-w-full"
                         />
                       </div>
-                      <div className="grid grid-cols-4 gap-2 md:col-span-2 md:px-2">
-                        <div className="col-span-3 flex flex-col gap-1 p-2">
+                      <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
+                        <div className="col-span-3 flex flex-col gap-1">
                           <div className="text-xl">{a.name}</div>
                           <div
-                            className="text-sm text-gray"
-                            dangerouslySetInnerHTML={{
-                              __html: DOMPurify.sanitize(a.description),
-                            }}
+                            className="text-base text-gray"
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
                           />
                           <div>
                             <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
@@ -231,19 +215,31 @@ export const EventsDetail = () => {
             ) : null}
             {/* description */}
             {event.description ? (
-              <div className="space-y-2">
-                <div className="text-3xl">DESCRIPTION</div>
+              <div className="space-y-3">
+                <div className="text-3xl font-bold">DESCRIPTION</div>
                 <p
-                  className="leading-relaxed"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(event.description),
-                  }}
+                  className="text-lg font-light"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
                 />
               </div>
             ) : null}
           </div>
           {/* right */}
           <aside className="flex flex-col items-start gap-10 p-6 rounded-xl transition-all bg-gray-800/35">
+            <div className="flex gap-4 items-center">
+              <button>
+                <Heart className="w-8 h-8 transition-colors duration-100 hover:text-red-500 hover:scale-115 cursor-pointer" />
+              </button>
+              <button>
+                <Play className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+              </button>
+              <button>
+                <SquarePlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+              </button>
+              <button>
+                <Share2 className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+              </button>
+            </div>
             <div>
               <div className="flex flex-row pb-1 items-center">
                 <Calendar className="mr-1 h-5 w-5" />
