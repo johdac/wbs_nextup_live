@@ -3,8 +3,7 @@ import { authApi } from "./auth.service";
 type TokenRes = { accessToken: string; refreshToken: string; role?: string };
 
 const normalizeAuthResponse = (payload: any): TokenRes => {
-  const role =
-    payload?.role ?? payload?.user?.role ?? payload?.roles?.[0] ?? undefined;
+  const role = payload?.role ?? payload?.user?.role ?? payload?.roles?.[0] ?? undefined;
 
   return {
     accessToken: payload.accessToken,
@@ -36,9 +35,7 @@ export const authService = {
         if (err.response?.status === 401 || err.response?.status === 400) {
           throw new Error("Invalid email or password");
         } else if (err.response?.status) {
-          throw new Error(
-            `Error: ${err.response.status} - ${err.response.statusText}`,
-          );
+          throw new Error(`Error: ${err.response.status} - ${err.response.statusText}`);
         }
       }
       throw err;
@@ -67,9 +64,7 @@ export const authService = {
         if (err.response?.status === 400) {
           throw new Error("Invalid registration data");
         } else if (err.response?.status) {
-          throw new Error(
-            `Error: ${err.response.status} - ${err.response.statusText}`,
-          );
+          throw new Error(`Error: ${err.response.status} - ${err.response.statusText}`);
         }
       }
       throw err;
@@ -81,5 +76,9 @@ export const authService = {
   },
   logout: async (refreshToken: string) => {
     await authApi.post("/logout", { refreshToken });
+  },
+  updateMe: async (payload: { username: string; email: string; role: string; password?: string }) => {
+    const { data } = await authApi.post("/refresh", payload);
+    return data;
   },
 };
