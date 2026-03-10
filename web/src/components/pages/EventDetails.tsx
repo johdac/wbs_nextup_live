@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, SquarePlus, Heart } from "lucide-react";
+import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
-export const EventsDetail = () => {
+export const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
 
   const [event, setEvent] = useState<EventListItem | null>(null);
@@ -58,18 +58,15 @@ export const EventsDetail = () => {
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1] tracking-tight uppercase text-white">
+          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight uppercase text-white">
             {event.title}
           </h1>
           <div>
             <img src={event.coverImage} alt={event.title} className="w-full rounded-xl max-w-md lg:max-w-full" />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-2 items-end w-full pt-4">
-          <div className="col-span-3"></div>
-        </div>
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* left */}
+          {/* LEFT SIDE */}
           <div className="md:col-span-2 grid grid-cols-1 gap-10 md:pr-8">
             {/* artists */}
             {event.artists?.length ? (
@@ -77,21 +74,25 @@ export const EventsDetail = () => {
                 <div className="text-3xl font-bold">ARTISTS</div>
                 <div>
                   {event.artists.map((a) => (
-                    <div key={a.id} className="grid md:grid-cols-2 items-center justify-center py-3 rounded-lg mb-2">
+                    <div
+                      key={a.id}
+                      className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5"
+                    >
                       <div>
-                        <img
-                          src={a.imageUrl}
-                          alt={a.name}
-                          className="w-full items-center rounded-xl max-w-md md:max-w-full"
-                        />
+                        <img src={a.imageUrl} alt={a.name} className="rounded-lg max-w-md md:max-w-full" />
                       </div>
                       <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
                         <div className="col-span-3 flex flex-col gap-1">
-                          <div className="text-xl">{a.name}</div>
-                          <div
-                            className="text-base text-gray"
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
-                          />
+                          <Link to={`/artist/${a.id}`}>
+                            <div className="text-xl transition-colors duration-100 hover:text-purple cursor-pointer">
+                              {a.name}
+                            </div>
+                            <div
+                              className="text-base text-gray line-clamp-2"
+                              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
+                            />
+                          </Link>
+
                           <div>
                             <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
                               {event.genre?.length ? event.genre : "-"}
@@ -113,12 +114,14 @@ export const EventsDetail = () => {
                 <div className="text-3xl font-bold">DESCRIPTION</div>
                 <p
                   className="text-lg font-light"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(event.description),
+                  }}
                 />
               </div>
             ) : null}
           </div>
-          {/* right */}
+          {/* RIGHT SIDE */}
           <aside className="flex flex-col items-start gap-10 p-6 rounded-xl transition-all bg-gray-800/35">
             <div className="flex gap-4 items-center">
               <button>
@@ -128,10 +131,7 @@ export const EventsDetail = () => {
                 <Play className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
               </button>
               <button>
-                <SquarePlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
-              <button>
-                <Share2 className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+                <ListPlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
               </button>
             </div>
             <div>
@@ -145,7 +145,10 @@ export const EventsDetail = () => {
             </div>
 
             <div>
-              <div className="flex flex-row pb-1 text-lg">GENRES</div>
+              <div className="flex flex-row pb-1 items-center">
+                <Sparkles className="mr-1 h-5 w-5" />
+                <div className="text-lg">GENRES</div>
+              </div>
               <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
                 {event.genre?.length ? event.genre : "-"}
               </span>
@@ -154,9 +157,13 @@ export const EventsDetail = () => {
             <div>
               <div className="flex flex-row pb-1 items-center">
                 <MapPinHouse className="mr-1 h-5 w-5" />
-                <div className="text-lg">ADDRESS</div>
+                <div className="text-lg">LOCATION</div>
               </div>
-              <div>{event.location.address ?? "-"}</div>
+              <Link to={`/venue/${event.location.id}`}>
+                <div className="hover:text-purple cursor-pointer">{event.location.name}</div>
+              </Link>
+              <div>{event.location.address}</div>
+              <div>{event.location.city}</div>
             </div>
 
             <div>
@@ -175,6 +182,9 @@ export const EventsDetail = () => {
                 />
               </div>
             </div>
+            <button>
+              <Share2 className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+            </button>
           </aside>
         </div>
       </div>

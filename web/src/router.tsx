@@ -4,7 +4,14 @@ import { Landing } from "./components/pages/Landing";
 import EventList from "./components/layout/Events";
 import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
-import { EventsDetail } from "./components/pages/EventsDetail";
+import { EventDetails } from "./components/pages/EventDetails";
+import { ArtistDetails } from "./components/pages/ArtistDetails";
+import { CreateEvent } from "./components/pages/CreateEvent";
+import { ManagedLocations } from "./components/pages/ManagedLocations";
+import { ManagedEvents } from "./components/pages/ManagedEvents";
+import { ManagedArtists } from "./components/pages/ManagedArtists";
+import { VenueDetails } from "./components/pages/VenueDetails";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +27,47 @@ export const router = createBrowserRouter([
       },
       {
         path: "/event/:id",
-        element: <EventsDetail></EventsDetail>,
+        element: <EventDetails></EventDetails>,
+      },
+      {
+        path: "/artist/:id",
+        element: <ArtistDetails></ArtistDetails>,
+      },
+      {
+        path: "/venue/:id",
+        element: <VenueDetails></VenueDetails>,
+      },
+      {
+        path: "/create",
+        element: (
+          <ProtectedRoute>
+            <CreateEvent></CreateEvent>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-locations",
+        element: (
+          <ProtectedRoute>
+            <ManagedLocations></ManagedLocations>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-events",
+        element: (
+          <ProtectedRoute>
+            <ManagedEvents></ManagedEvents>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-artists",
+        element: (
+          <ProtectedRoute>
+            <ManagedArtists></ManagedArtists>
+          </ProtectedRoute>
+        ),
       },
     ],
   },
