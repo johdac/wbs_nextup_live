@@ -16,8 +16,7 @@ import L from "leaflet";
 
 export const EditEvent = () => {
   const location = useLocation();
-  const event = location.state?.event;
-  console.log(event);
+  const event = location.state?.event as EventListItem | undefined;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setValue, watch, getValues } = useForm<EventFormValues>({
@@ -143,7 +142,9 @@ export const EditEvent = () => {
     onSuccess: () => {
       setSuccess(true);
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      navigate("/events");
+      setTimeout(() => {
+        navigate("/managed-events");
+      }, 2400);
     },
     onError: (err: Error | unknown) => {
       const error = err as {
@@ -683,7 +684,7 @@ export const EditEvent = () => {
         {/* Success Message */}
         {success && (
           <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
-            Event created successfully! Redirecting...
+            Event updated successfully! Redirecting...
           </div>
         )}
 
@@ -757,7 +758,6 @@ export const EditEvent = () => {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  onClick={() => navigate(-1)}
                   disabled={updateEventMutation.isPending}
                   className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -767,7 +767,7 @@ export const EditEvent = () => {
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                  className="w-1/2 bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
