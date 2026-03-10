@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, MapPin, Save } from "lucide-react";
+import { MapPin, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import L from "leaflet";
 import { useAuth } from "../../context/AuthContext";
+import { LocationSelectDropdown } from "../location/LocationSelectDropdown";
+import { LocationFormFields } from "../location/LocationFormFields";
 import {
   locationsService,
   type UpdateLocationInput,
@@ -61,6 +63,37 @@ export const ManagedLocations = () => {
         error?.response?.data?.message ||
           error?.message ||
           "Failed to update location.",
+      );
+    },
+  });
+
+  const deleteLocationMutation = useMutation({
+    mutationFn: (id: string) => locationsService.deleteLocation(id),
+    onSuccess: () => {
+      setSuccess("Location deleted successfully.");
+      setError("");
+      setSelectedLocationId("");
+      setName("");
+      setAddress("");
+      setCity("");
+      setZip("");
+      setCountry("");
+      setLat("");
+      setLng("");
+      queryClient.invalidateQueries({
+        queryKey: ["managedLocations", user?._id],
+      });
+    },
+    onError: (err: Error | unknown) => {
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setSuccess("");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to delete location.",
       );
     },
   });
@@ -144,6 +177,20 @@ export const ManagedLocations = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!success) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSuccess("");
+    }, 3000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [success]);
+
   const handleSave = () => {
     setError("");
     setSuccess("");
@@ -182,6 +229,24 @@ export const ManagedLocations = () => {
     });
   };
 
+  const handleDelete = () => {
+    if (!selectedLocationId) {
+      setError("Please select a location.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this location?",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    deleteLocationMutation.mutate(selectedLocationId);
+  };
+
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
@@ -205,137 +270,89 @@ export const ManagedLocations = () => {
         )}
 
         <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <MapPin className="h-6 w-6" />
-            Location
-          </h2>
-
-          <div className="mb-4">
-            <div className="relative">
-              <select
-                value={selectedLocationId}
-                onChange={(e) => {
-                  const locationId = e.target.value;
-                  setSelectedLocationId(locationId);
-
-                  const selectedLocation = locations.find(
-                    (location) => (location.id || location._id) === locationId,
-                  );
-
-                  if (!selectedLocation) {
-                    return;
-                  }
-
-                  setName(selectedLocation.name || "");
-                  setAddress(selectedLocation.address || "");
-                  setCity(selectedLocation.city || "");
-                  setZip(selectedLocation.zip || "");
-                  setCountry(selectedLocation.country || "");
-                  setLat(selectedLocation.geo.coordinates[1].toString());
-                  setLng(selectedLocation.geo.coordinates[0].toString());
-                  setError("");
-                  setSuccess("");
-                }}
-                className="w-full px-4 py-3 pr-10 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition appearance-none"
-                style={{ backgroundColor: "#110b27" }}
-                disabled={locationsLoading}
-              >
-                <option value="">
-                  {locationsLoading
-                    ? "Loading your locations..."
-                    : "Select a location to edit"}
-                </option>
-                {locations.map((location) => (
-                  <option
-                    key={location.id || location._id}
-                    value={location.id || location._id}
-                  >
-                    {location.name} - {location.city || "Unknown City"}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
-            </div>
-          </div>
-
-          {selectedLocationId && (
-            <div className="space-y-3 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Zip
-                  </label>
-                  <input
-                    type="text"
-                    value={zip}
-                    onChange={(e) => setZip(e.target.value)}
-                    className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                />
-              </div>
-
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <MapPin className="h-6 w-6" />
+              Location
+            </h2>
+            {selectedLocationId && (
               <button
                 type="button"
-                onClick={handleSave}
-                disabled={updateLocationMutation.isPending}
-                className="w-full bg-purple-600 text-white font-medium py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                onClick={handleDelete}
+                disabled={deleteLocationMutation.isPending}
+                className="inline-flex cursor-pointer items-center justify-center px-3 py-2 rounded-lg bg-purple-600 border border-purple-500/50 text-white hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                aria-label="Delete selected location"
+                title="Delete selected location"
               >
-                <Save className="h-4 w-4" />
-                {updateLocationMutation.isPending
-                  ? "Saving..."
-                  : "Save Changes"}
+                <Trash2 className="h-4 w-4" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="w-full h-72 bg-black/40 rounded-lg border border-purple-500/30 overflow-hidden">
+          <div className="mb-4">
+            <LocationSelectDropdown
+              value={selectedLocationId}
+              onChange={(locationId) => {
+                setSelectedLocationId(locationId);
+
+                const selectedLocation = locations.find(
+                  (location) => (location.id || location._id) === locationId,
+                );
+
+                if (!selectedLocation) {
+                  return;
+                }
+
+                setName(selectedLocation.name || "");
+                setAddress(selectedLocation.address || "");
+                setCity(selectedLocation.city || "");
+                setZip(selectedLocation.zip || "");
+                setCountry(selectedLocation.country || "");
+                setLat(selectedLocation.geo.coordinates[1].toString());
+                setLng(selectedLocation.geo.coordinates[0].toString());
+                setError("");
+                setSuccess("");
+              }}
+              options={locations}
+              disabled={locationsLoading}
+              loading={locationsLoading}
+              loadingText="Loading your locations..."
+              placeholder="Select a location to edit"
+            />
+          </div>
+
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-out ${
+              selectedLocationId
+                ? "max-h-screen opacity-100 translate-y-0"
+                : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+            }`}
+          >
+            {selectedLocationId && (
+              <LocationFormFields
+                name={name}
+                address={address}
+                city={city}
+                zip={zip}
+                country={country}
+                onNameChange={setName}
+                onAddressChange={setAddress}
+                onCityChange={setCity}
+                onZipChange={setZip}
+                onCountryChange={setCountry}
+                onSubmit={handleSave}
+                submitLabel="Save Changes"
+                pendingLabel="Saving..."
+                isSubmitting={updateLocationMutation.isPending}
+              />
+            )}
+          </div>
+
+          <div
+            className={`w-full cursor-pointer h-72 bg-black/40 rounded-lg border border-purple-500/30 overflow-hidden transition-all duration-300 ${
+              selectedLocationId ? "ring-1 ring-purple-500/30" : ""
+            }`}
+          >
             <div ref={mapContainerRef} className="w-full h-full" />
           </div>
         </div>

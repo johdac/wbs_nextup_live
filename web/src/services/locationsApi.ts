@@ -58,7 +58,13 @@ export const locationsService = {
     id: string,
     locationData: UpdateLocationInput,
   ): Promise<Location> => {
-    const { data } = await eventsApi.put<Location>(`/locations/${id}`, locationData);
+    const { data } = await eventsApi.put<Location>(
+      `/locations/${id}`,
+      locationData,
+    );
     return data;
+  },
+  deleteLocation: async (id: string): Promise<void> => {
+    await eventsApi.delete(`/locations/${id}`);
   },
 };

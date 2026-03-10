@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState, type MutableRefObject } from "react";
-import { ChevronDown, MapPin, Loader } from "lucide-react";
+import { MapPin, Loader } from "lucide-react";
 import L from "leaflet";
 import { useEventFormContext } from "../../context/EventFormContext";
+import { LocationSelectDropdown } from "../location/LocationSelectDropdown";
+import { LocationFormFields } from "../location/LocationFormFields";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_CREATE_MAP_CENTER: L.LatLngTuple = [52.52, 13.405];
@@ -243,159 +245,75 @@ export const LocationLayout = () => {
         <>
           {/* Location Selector */}
           <div className="mb-4">
-            <div className="relative">
-              <select
-                value={selectedLocationId}
-                onChange={(e) => onLocationSelect(e.target.value)}
-                className="w-full px-4 py-3 pr-10 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition appearance-none"
-                style={{ backgroundColor: "#110b27" }}
-                disabled={locationsLoading}
-                required
-              >
-                <option value="">
-                  {locationsLoading
-                    ? "Loading locations..."
-                    : "Select a location"}
-                </option>
-                {locations.map((location) => (
-                  <option
-                    key={location.id || location._id}
-                    value={location.id || location._id}
-                  >
-                    {location.name} - {location.city || "Unknown City"}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
-            </div>
+            <LocationSelectDropdown
+              value={selectedLocationId}
+              onChange={onLocationSelect}
+              options={locations}
+              disabled={locationsLoading}
+              loading={locationsLoading}
+              loadingText="Loading locations..."
+              placeholder="Select a location"
+            />
           </div>
         </>
       ) : (
         <>
           {/* Create New Location Form */}
-          <div className="space-y-3 mb-4">
-            {/* Location Search */}
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Search Location
-              </label>
-              <input
-                type="text"
-                value={searchInput}
-                onChange={(e) => onLocationSearch(e.target.value)}
-                placeholder="Search address, place, business..."
-                className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-              />
-
-              {isSearching && (
-                <p className="mt-2 text-xs text-gray-400">Searching...</p>
-              )}
-
-              {/* Search Results Dropdown */}
-              {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-purple-500/40 bg-black/90 shadow-xl">
-                  {searchResults.map((result, idx) => (
-                    <button
-                      key={`${result.lat}-${result.lng}-${idx}`}
-                      type="button"
-                      onClick={() => onSelectSearchResult(result)}
-                      className="w-full text-left px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0"
-                    >
-                      <div className="text-white text-sm font-medium">
-                        {result.name || result.displayName}
-                      </div>
-                      <div className="text-gray-400 text-xs">
-                        {result.displayName}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* Location Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Name *
-              </label>
-              <input
-                type="text"
-                value={locationName}
-                onChange={(e) => onLocationNameChange(e.target.value)}
-                placeholder="e.g., Central Arena"
-                className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-              />
-            </div>{" "}
-            {/* Address */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Address
-              </label>
-              <input
-                type="text"
-                value={locationAddress}
-                onChange={(e) => onLocationAddressChange(e.target.value)}
-                placeholder="e.g., 123 Main St"
-                className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-              />
-            </div>
-            {/* City and Zip */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
+          <LocationFormFields
+            name={locationName}
+            address={locationAddress}
+            city={locationCity}
+            zip={locationZip}
+            country={locationCountry}
+            onNameChange={onLocationNameChange}
+            onAddressChange={onLocationAddressChange}
+            onCityChange={onLocationCityChange}
+            onZipChange={onLocationZipChange}
+            onCountryChange={onLocationCountryChange}
+            onSubmit={handleCreateLocation}
+            submitLabel="Save Location"
+            pendingLabel="Creating..."
+            isSubmitting={createLocationMutationIsPending}
+            validationMessage={validationError}
+            topSlot={
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-300 mb-1">
-                  City
+                  Search Location
                 </label>
                 <input
                   type="text"
-                  value={locationCity}
-                  onChange={(e) => onLocationCityChange(e.target.value)}
-                  placeholder="e.g., Berlin"
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+                  value={searchInput}
+                  onChange={(e) => onLocationSearch(e.target.value)}
+                  placeholder="Search address, place, business..."
+                  className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
                 />
+
+                {isSearching && (
+                  <p className="mt-2 text-xs text-gray-400">Searching...</p>
+                )}
+
+                {showSearchResults && searchResults.length > 0 && (
+                  <div className="absolute z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-purple-500/40 bg-black/90 shadow-xl">
+                    {searchResults.map((result, idx) => (
+                      <button
+                        key={`${result.lat}-${result.lng}-${idx}`}
+                        type="button"
+                        onClick={() => onSelectSearchResult(result)}
+                        className="w-full text-left px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0"
+                      >
+                        <div className="text-white text-sm font-medium">
+                          {result.name || result.displayName}
+                        </div>
+                        <div className="text-gray-400 text-xs">
+                          {result.displayName}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Zip
-                </label>
-                <input
-                  type="text"
-                  value={locationZip}
-                  onChange={(e) => onLocationZipChange(e.target.value)}
-                  placeholder="e.g., 10115"
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                />
-              </div>
-            </div>
-            {/* Country */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Country
-              </label>
-              <input
-                type="text"
-                value={locationCountry}
-                onChange={(e) => onLocationCountryChange(e.target.value)}
-                placeholder="e.g., Germany"
-                className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-              />
-            </div>
-            {/* Validation Error Message */}
-            {validationError && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <p className="text-sm text-red-400">{validationError}</p>
-              </div>
-            )}
-            {/* Create Location Button */}
-            <button
-              type="button"
-              onClick={handleCreateLocation}
-              disabled={createLocationMutationIsPending}
-              className="w-full bg-purple-600 text-white font-medium py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {createLocationMutationIsPending
-                ? "Creating..."
-                : "Save Location"}
-            </button>
-          </div>
+            }
+          />
         </>
       )}
 
