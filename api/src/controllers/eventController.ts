@@ -63,12 +63,12 @@ export const eventGetAll: RequestHandler = async (req, res) => {
     startAfter,
     startUntil,
     page = "1",
-    limit = 10,
+    limit = 20,
   } = req.query;
 
   const filter: any = {};
 
-  // To be adapted
+  // TODO To be adapted
   // if (search && typeof search === "string") filter.$text = { $search: search };
   // if (createdById && typeof createdById === "string") filter.createdById = createdById;
 
