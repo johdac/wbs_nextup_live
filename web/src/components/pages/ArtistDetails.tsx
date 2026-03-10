@@ -83,7 +83,7 @@ export const ArtistDetails = () => {
                 href={artist.websiteUrl}
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
               >
-                <Link /> <div>Link</div>
+                <Link /> <div>Website</div>
               </a>
             </div>
           </div>

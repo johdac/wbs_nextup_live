@@ -12,6 +12,8 @@ import { ManagedEvents } from "./components/pages/ManagedEvents";
 import { ManagedArtists } from "./components/pages/ManagedArtists";
 import { VenueDetails } from "./components/pages/VenueDetails";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { UserSetting } from "./components/pages/UserSetting";
+import { EditEvent } from "./components/pages/EditEvent";
 
 export const router = createBrowserRouter([
   {
@@ -62,10 +64,26 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "/managed-events/:id",
+        element: (
+          <ProtectedRoute>
+            <EditEvent></EditEvent>
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/managed-artists",
         element: (
           <ProtectedRoute>
             <ManagedArtists></ManagedArtists>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <UserSetting></UserSetting>
           </ProtectedRoute>
         ),
       },

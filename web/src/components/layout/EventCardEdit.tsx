@@ -1,9 +1,10 @@
-import { Play, MapPin, Heart, MicVocal } from "lucide-react";
+import { Pencil, MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
 
-const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
+const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }) => {
+  const navigate = useNavigate();
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -85,11 +86,18 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <Play className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
-        <Heart className="h-6 w-6 text-white hover:text-red-500" />
+        <button
+          onClick={() =>
+            navigate(`/managed-events/${event.id}`, {
+              state: { event },
+            })
+          }
+        >
+          <Pencil className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
+        </button>
       </div>
     </div>
   );
 };
 
-export default EventCard;
+export default EventCardEdit;
