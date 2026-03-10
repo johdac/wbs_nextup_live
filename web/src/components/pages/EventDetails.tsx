@@ -55,16 +55,14 @@ export const EventDetails = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        {/* TOP - image of the band */}
-        <div
-          className="h-72 w-full bg-cover bg-center bg-no-repeat rounded-xl"
-          style={{ backgroundImage: `url(${event.coverImage})` }}
-        >
-          <div className="flex items-center backdrop-blur-xs h-full rounded-xl">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase text-white">
-              {event.title}
-            </h1>
+      <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
+        {/* image of the band */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight uppercase text-white">
+            {event.title}
+          </h1>
+          <div>
+            <img src={event.coverImage} alt={event.title} className="w-full rounded-xl max-w-md lg:max-w-full" />
           </div>
         </div>
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -159,9 +157,13 @@ export const EventDetails = () => {
             <div>
               <div className="flex flex-row pb-1 items-center">
                 <MapPinHouse className="mr-1 h-5 w-5" />
-                <div className="text-lg">ADDRESS</div>
+                <div className="text-lg">LOCATION</div>
               </div>
-              <div>{event.location.address ?? "-"}</div>
+              <Link to={`/venue/${event.location.id}`}>
+                <div className="hover:text-purple cursor-pointer">{event.location.name}</div>
+              </Link>
+              <div>{event.location.address}</div>
+              <div>{event.location.city}</div>
             </div>
 
             <div>

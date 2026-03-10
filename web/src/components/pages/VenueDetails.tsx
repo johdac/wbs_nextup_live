@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { eventsService, type EventCardLocation } from "../../services/eventsApi";
+import { locationsService, type Location } from "../../services/locationsApi";
 import { Link } from "lucide-react";
 import { EventByLocation } from "../layout/EventsByLocation";
 
 export const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [location, setLocation] = useState<EventCardLocation | null>(null);
+  const [location, setLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +22,7 @@ export const VenueDetails = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await eventsService.getLocationById(id);
+        const data = await locationsService.getLocationById(id);
         setLocation(data);
       } catch (err) {
         setError("Failed to load location");
@@ -38,12 +38,25 @@ export const VenueDetails = () => {
   if (error) return <p>{error}</p>;
   if (!location) return <p>Location not found</p>;
 
+  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(location.address)}&output=embed`;
+
   return (
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}
-          <div className="grid grid-cols-1">{/* Map */}</div>
+          <div className="grid grid-cols-1">
+            <div className="w-full overflow-hidden rounded-lg border-0">
+              <iframe
+                src={mapEmbedUrl}
+                width="100%"
+                height="260"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+          </div>
           {/* right */}
           <div className="md:col-span-2 flex flex-col items-start gap-3">
             <div className="grid grid-cols-2 md:grid-cols-3">
@@ -54,14 +67,15 @@ export const VenueDetails = () => {
 
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
-              {location.address ? <div className="space-y-3">{location.address}</div> : null}
+              <div>{location.address}</div>
+              <div>{location.city}</div>
             </div>
-            <div className="">
+            <div>
               <a
                 href={location.city}
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
               >
-                <Link /> <div>Link</div>
+                <Link /> <div>Website</div>
               </a>
             </div>
           </div>

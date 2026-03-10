@@ -1,12 +1,10 @@
 import EventCard from "./EventCard";
-import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
 const EVENT_FALLBACK_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
 
-export const EventByLocation = ({ locationId }: { locationId: string }) => {
+export const EventByLocation = ({ locationId }: { locationId: string | any }) => {
   const {
     data: eventsList = [],
     isLoading,
