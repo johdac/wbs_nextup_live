@@ -8,7 +8,10 @@ import { EventDetails } from "./components/pages/EventDetails";
 import { ArtistDetails } from "./components/pages/ArtistDetails";
 import { CreateEvent } from "./components/pages/CreateEvent";
 import { ManagedLocations } from "./components/pages/ManagedLocations";
+import { ManagedEvents } from "./components/pages/ManagedEvents";
+import { ManagedArtists } from "./components/pages/ManagedArtists";
 import { VenueDetails } from "./components/pages/VenueDetails";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -36,11 +39,35 @@ export const router = createBrowserRouter([
       },
       {
         path: "/create",
-        element: <CreateEvent></CreateEvent>,
+        element: (
+          <ProtectedRoute>
+            <CreateEvent></CreateEvent>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/managed-locations",
-        element: <ManagedLocations></ManagedLocations>,
+        element: (
+          <ProtectedRoute>
+            <ManagedLocations></ManagedLocations>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-events",
+        element: (
+          <ProtectedRoute>
+            <ManagedEvents></ManagedEvents>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-artists",
+        element: (
+          <ProtectedRoute>
+            <ManagedArtists></ManagedArtists>
+          </ProtectedRoute>
+        ),
       },
     ],
   },
