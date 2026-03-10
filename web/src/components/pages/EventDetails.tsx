@@ -57,8 +57,8 @@ export const EventDetails = () => {
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight uppercase text-white">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <h1 className="flex items-center text-5xl md:text-6xl lg:text-7xl font-black tracking-tight uppercase text-white">
             {event.title}
           </h1>
           <div>

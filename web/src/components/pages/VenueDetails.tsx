@@ -67,12 +67,14 @@ export const VenueDetails = () => {
 
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
-              <div>{location.address}</div>
-              <div>{location.city}</div>
+              <p>{location.address}</p>
+              <p>
+                {location.zip} {location.city}
+              </p>
             </div>
             <div>
               <a
-                href={location.city}
+                href={location.websiteUrl}
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
               >
                 <Link /> <div>Website</div>
