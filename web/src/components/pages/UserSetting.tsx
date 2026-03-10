@@ -8,7 +8,7 @@ export const UserSetting = () => {
   return (
     <>
       <div className="container mx-auto">
-        <div className="flex items-center justify-center px-4 min-h-screen md:min-h-full">
+        <div className="pb-10 flex items-center justify-center px-4 min-h-screen md:min-h-full">
           <div className="w-full max-w-md">
             <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
               <div className="flex justify-center">
@@ -99,13 +99,22 @@ export const UserSetting = () => {
         )} */}
 
                 {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
-                >
-                  {loading ? "Saving Account..." : "Save"}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
+                  >
+                    {loading ? "Saving Account..." : "Save"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
