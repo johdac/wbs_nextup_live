@@ -1,0 +1,19 @@
+info:
+  name: searchLocationByCreatedById
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{api}}/locations?createdById=69aea83729ccb2ea0d5b0a12"
+  params:
+    - name: createdById
+      value: 69aea83729ccb2ea0d5b0a12
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
