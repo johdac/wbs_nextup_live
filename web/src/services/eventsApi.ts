@@ -43,6 +43,15 @@ interface EventSearchParams {
   page?: number;
 }
 
+export interface CreateEventInput {
+  locationId: string;
+  artistsIds: string[];
+  title: string;
+  startDate: string; // ISO date string
+  endDate: string; // ISO date string
+  description?: string;
+}
+
 export interface GeoPoint {
   type: "Point";
   coordinates: [number, number];
@@ -171,5 +180,12 @@ export const eventsService = {
 
     const { data } = await eventsApi.get<ApiEvent[]>("/events", { params });
     return data.map((event, index) => transformEventToMusicEvent(event, index));
+  },
+  createEvent: async (eventData: CreateEventInput): Promise<EventListItem> => {
+    const { data } = await eventsApi.post<ApiEvent>("/events", eventData);
+    const hash = eventData.title
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return transformEventToMusicEvent(data, hash);
   },
 };

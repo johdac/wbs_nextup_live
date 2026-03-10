@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, SquarePlus, Heart } from "lucide-react";
+import {
+  Calendar,
+  CirclePlay,
+  MapPin,
+  MapPinHouse,
+  Share2,
+  Play,
+  SquarePlus,
+  Heart,
+} from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
 export const EventsDetail = () => {
@@ -62,7 +71,11 @@ export const EventsDetail = () => {
             {event.title}
           </h1>
           <div>
-            <img src={event.coverImage} alt={event.title} className="w-full rounded-xl max-w-md lg:max-w-full" />
+            <img
+              src={event.coverImage}
+              alt={event.title}
+              className="w-full rounded-xl max-w-md lg:max-w-full"
+            />
           </div>
         </div>
         <div className="grid grid-cols-4 gap-2 items-end w-full pt-4">
@@ -77,7 +90,10 @@ export const EventsDetail = () => {
                 <div className="text-3xl font-bold">ARTISTS</div>
                 <div>
                   {event.artists.map((a) => (
-                    <div key={a.id} className="grid md:grid-cols-2 items-center justify-center py-3 rounded-lg mb-2">
+                    <div
+                      key={a.id}
+                      className="grid md:grid-cols-2 items-center justify-center py-3 rounded-lg mb-2"
+                    >
                       <div>
                         <img
                           src={a.imageUrl}
@@ -90,7 +106,9 @@ export const EventsDetail = () => {
                           <div className="text-xl">{a.name}</div>
                           <div
                             className="text-base text-gray"
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(a.description),
+                            }}
                           />
                           <div>
                             <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
@@ -113,7 +131,9 @@ export const EventsDetail = () => {
                 <div className="text-3xl font-bold">DESCRIPTION</div>
                 <p
                   className="text-lg font-light"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(event.description),
+                  }}
                 />
               </div>
             ) : null}
