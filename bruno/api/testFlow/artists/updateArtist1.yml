@@ -14,6 +14,13 @@ http:
       }
   auth: inherit
 
+runtime:
+  variables:
+    - name: createdArtist1
+      value: 69a9a93a9b9722a31a20022d
+    - name: api
+      value: http://localhost:3000
+
 settings:
   encodeUrl: true
   timeout: 0

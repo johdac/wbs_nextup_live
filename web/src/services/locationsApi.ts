@@ -1,5 +1,12 @@
 import { eventsApi } from "./events.services";
 
+export interface EventCardLocation {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  geo: GeoPoint;
+}
 export interface GeoPoint {
   type: "Point";
   coordinates: [number, number]; // [lng, lat]
@@ -11,7 +18,7 @@ export interface Location {
   name: string;
   geo: GeoPoint;
   zip?: string;
-  address?: string;
+  address?: string | any;
   city?: string;
   country?: string;
   description?: string;
@@ -48,9 +55,7 @@ export const locationsService = {
     const { data } = await eventsApi.get<Location>(`/locations/${id}`);
     return data;
   },
-  createLocation: async (
-    locationData: CreateLocationInput,
-  ): Promise<Location> => {
+  createLocation: async (locationData: CreateLocationInput): Promise<Location> => {
     const { data } = await eventsApi.post<Location>("/locations", locationData);
     return data;
   },
