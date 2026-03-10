@@ -1,7 +1,12 @@
 import "#db";
 import express from "express";
 import { errorHandler } from "#middleware";
-import { artistRoutes, eventRoutes, locationRoutes } from "#routes";
+import {
+  artistRoutes,
+  eventRoutes,
+  locationRoutes,
+  uploadRoutes,
+} from "#routes";
 import cors from "cors";
 
 const app = express();
@@ -22,6 +27,7 @@ app.route("/").get((req, res) => {
 app.use("/events", eventRoutes);
 app.use("/artists", artistRoutes);
 app.use("/locations", locationRoutes);
+app.use("/upload", uploadRoutes);
 app.use("*splat", (req, res) => {
   throw new Error("Not found", { cause: { status: 404 } });
 });
