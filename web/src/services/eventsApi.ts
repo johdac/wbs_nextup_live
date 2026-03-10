@@ -194,11 +194,6 @@ export const eventsService = {
     return transformEventToMusicEvent(data, hash);
   },
 
-  getArtistById: async (id: string): Promise<EventCardArtist> => {
-    const { data } = await eventsApi.get<ApiArtist>(`/artists/${id}`);
-    return transformArtist(data);
-  },
-
   getLocationById: async (id: string): Promise<EventCardLocation> => {
     const { data } = await eventsApi.get<ApiLocation>(`/locations/${id}`);
     return transformLocation(data);

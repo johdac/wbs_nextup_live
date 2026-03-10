@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import DOMPurify from "dompurify";
-import { eventsService, type EventCardArtist } from "../../services/eventsApi";
+import { artistsService, type Artist } from "../../services/artistsApi";
 import { CirclePlay, Link } from "lucide-react";
 import { EventByArtist } from "../layout/EventsByArtist";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [artist, setArtist] = useState<EventCardArtist | null>(null);
+  const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +23,7 @@ export const ArtistDetails = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await eventsService.getArtistById(id);
+        const data = await artistsService.getArtistById(id);
         setArtist(data);
       } catch (err) {
         setError("Failed to load artist");
@@ -46,7 +46,11 @@ export const ArtistDetails = () => {
           {/* left */}
           <div className="grid grid-cols-1">
             {/* image of the artist */}
-            <img src={artist.imageUrl} alt={artist.name} className="rounded-lg w-full h-64 lg:h-full object-cover" />
+            <img
+              src={artist.mainImageUrl}
+              alt={artist.name}
+              className="rounded-lg w-full h-64 lg:h-full object-cover"
+            />
           </div>
           {/* right */}
           <div className="md:col-span-2 flex flex-col items-start gap-3">
@@ -60,7 +64,7 @@ export const ArtistDetails = () => {
             </div>
             <div className="p-1">
               <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                {artist.genre?.length ? artist.genre : "-"}
+                {artist.genres?.length ? artist.genres : "-"}
               </span>
             </div>
             <div className="px-5 py-4 transition-all bg-gray-800/35">

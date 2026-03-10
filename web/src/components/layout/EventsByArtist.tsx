@@ -4,7 +4,7 @@ import { eventsService, type EventListItem } from "../../services/eventsApi";
 
 const EVENT_FALLBACK_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
 
-export const EventByArtist = ({ artistId }: { artistId: string }) => {
+export const EventByArtist = ({ artistId }: { artistId: string | any }) => {
   const {
     data: eventsList = [],
     isLoading,
