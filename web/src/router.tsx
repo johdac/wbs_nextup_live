@@ -8,6 +8,9 @@ import { EventDetails } from "./components/pages/EventDetails";
 import { ArtistDetails } from "./components/pages/ArtistDetails";
 import { CreateEvent } from "./components/pages/CreateEvent";
 import { VenueDetails } from "./components/pages/VenueDetails";
+import { UserSetting } from "./components/pages/UserSetting";
+import { ManagedEvents } from "./components/pages/ManagedEvents";
+import { ManagedArtists } from "./components/pages/ManagedArtist";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +39,18 @@ export const router = createBrowserRouter([
       {
         path: "/create",
         element: <CreateEvent></CreateEvent>,
+      },
+      {
+        path: "/profile",
+        element: <UserSetting></UserSetting>,
+      },
+      {
+        path: "/managed-events",
+        element: <ManagedEvents></ManagedEvents>,
+      },
+      {
+        path: "/managed-artists",
+        element: <ManagedArtists></ManagedArtists>,
       },
     ],
   },
