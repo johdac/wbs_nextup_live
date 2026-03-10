@@ -1,10 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import DOMPurify from "dompurify";
 import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
-import L from "leaflet";
-// @ts-expect-error CSS imports are valid but not typed
-import "leaflet/dist/leaflet.css";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
 export const EventDetails = () => {
@@ -13,10 +10,6 @@ export const EventDetails = () => {
   const [event, setEvent] = useState<EventListItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mapCoordinates, setMapCoordinates] = useState<[number, number] | null>(null);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -31,7 +24,7 @@ export const EventDetails = () => {
         setError(null);
         const data = await eventsService.getEventById(id);
         setEvent(data);
-      } catch {
+      } catch (err) {
         setError("Failed to load event");
       } finally {
         setLoading(false);
@@ -41,94 +34,11 @@ export const EventDetails = () => {
     fetchEvent();
   }, [id]);
 
-  useEffect(() => {
-    if (!event?.location?.address) {
-      setMapCoordinates(null);
-      return;
-    }
-
-    const fetchCoordinates = async () => {
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(event.location.address)}`,
-          {
-            headers: {
-              "User-Agent": "NextUpLive Event Details",
-            },
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error("Geocoding service unavailable");
-        }
-
-        const data: Array<{ lat: string; lon: string }> = await response.json();
-        if (!data.length) {
-          setMapCoordinates(null);
-          return;
-        }
-
-        setMapCoordinates([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
-      } catch {
-        setMapCoordinates(null);
-      }
-    };
-
-    fetchCoordinates();
-  }, [event?.location?.address]);
-
-  useEffect(() => {
-    if (!mapCoordinates) {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-        markerRef.current = null;
-      }
-      return;
-    }
-
-    const [latitude, longitude] = mapCoordinates;
-
-    if (!mapContainerRef.current) {
-      return;
-    }
-
-    if (!mapRef.current) {
-      mapRef.current = L.map(mapContainerRef.current, {
-        zoomControl: false,
-        attributionControl: false,
-      }).setView([latitude, longitude], 15);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-      }).addTo(mapRef.current);
-
-      markerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
-      return;
-    }
-
-    mapRef.current.setView([latitude, longitude], 15);
-    if (markerRef.current) {
-      markerRef.current.setLatLng([latitude, longitude]);
-    } else {
-      markerRef.current = L.marker([latitude, longitude]).addTo(mapRef.current);
-    }
-  }, [mapCoordinates]);
-
-  useEffect(() => {
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-        markerRef.current = null;
-      }
-    };
-  }, []);
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!event) return <p>Event not found</p>;
 
+  //format Date
   const formatDate = (value: string) => {
     const date = new Date(value);
     return Number.isNaN(date.getTime())
@@ -140,6 +50,8 @@ export const EventDetails = () => {
   };
   const startDate = formatDate(event.startDate);
   const endDate = formatDate(event.endDate);
+
+  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(event.location.address)}&output=embed`;
 
   return (
     <div className="container mx-auto">
@@ -204,7 +116,9 @@ export const EventDetails = () => {
                 <div className="text-3xl font-bold">DESCRIPTION</div>
                 <p
                   className="text-lg font-light"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(event.description),
+                  }}
                 />
               </div>
             ) : null}
@@ -256,7 +170,14 @@ export const EventDetails = () => {
                 <div className="text-lg">MAP</div>
               </div>
               <div className="w-full overflow-hidden rounded-lg border-0">
-                <div ref={mapContainerRef} className="w-full h-64" style={{ position: "relative" }} />
+                <iframe
+                  src={mapEmbedUrl}
+                  width="100%"
+                  height="260"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
               </div>
             </div>
             <button>
