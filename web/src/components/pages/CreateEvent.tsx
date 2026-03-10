@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { CalendarIcon, Save, AlertCircle } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
+import { DateTimeRangePicker } from "../ui/date-time-picker";
 import { LocationLayout } from "../layout/LocationLayout";
 import { ArtistLayout } from "../layout/ArtistLayout";
 import { EventFormContext } from "../../context/EventFormContext";
@@ -73,6 +73,7 @@ export const CreateEvent = () => {
   );
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isDateRangePickerOpen, setIsDateRangePickerOpen] = useState(false);
   const searchAbortRef = useRef<AbortController | null>(null);
   const searchDebounceRef = useRef<number | null>(null);
 
@@ -89,7 +90,7 @@ export const CreateEvent = () => {
 
   const { data: locations = [], isLoading: locationsLoading } = useQuery({
     queryKey: ["locations"],
-    queryFn: locationsService.getLocations,
+    queryFn: () => locationsService.getLocations(),
   });
 
   // Create location mutation
@@ -727,7 +728,7 @@ export const CreateEvent = () => {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="relative z-20 min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
@@ -763,7 +764,11 @@ export const CreateEvent = () => {
           {/* Main Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* LEFT BOX - Event Info */}
-            <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6">
+            <div
+              className={`bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6 transition-all duration-300 ${
+                isDateRangePickerOpen ? "pb-120" : ""
+              }`}
+            >
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 <CalendarIcon className="h-6 w-6" />
                 Event Information
@@ -798,48 +803,26 @@ export const CreateEvent = () => {
                 />
               </div>
 
-              {/* Date Pickers */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Start Date & Time *
-                  </label>
-                  <DateTimePicker
-                    value={startDate}
-                    onChange={(newValue) =>
-                      setValue(
-                        "startDate",
-                        newValue ? newValue.toISOString() : "",
-                      )
-                    }
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        className: "mui-white-outline",
-                      },
-                    }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    End Date & Time *
-                  </label>
-                  <DateTimePicker
-                    value={endDate}
-                    onChange={(newValue) =>
-                      setValue(
-                        "endDate",
-                        newValue ? newValue.toISOString() : "",
-                      )
-                    }
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        className: "mui-white-outline",
-                      },
-                    }}
-                  />
-                </div>
+              {/* Date Range Picker */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Event Start & End *
+                </label>
+                <DateTimeRangePicker
+                  startValue={startDate ? startDate.toDate() : null}
+                  endValue={endDate ? endDate.toDate() : null}
+                  onOpenChange={setIsDateRangePickerOpen}
+                  onChange={(nextStart, nextEnd) => {
+                    setValue(
+                      "startDate",
+                      nextStart ? dayjs(nextStart).toISOString() : "",
+                    );
+                    setValue(
+                      "endDate",
+                      nextEnd ? dayjs(nextEnd).toISOString() : "",
+                    );
+                  }}
+                />
               </div>
 
               {/* Save Button */}

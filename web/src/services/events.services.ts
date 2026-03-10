@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "http://localhost:3000";
+const URL = import.meta.env.VITE_API_SERVER_URL;
 const authServiceURL = import.meta.env.VITE_APP_AUTH_SERVER_URL;
 
 export const eventsApi = axios.create({

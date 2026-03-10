@@ -7,10 +7,12 @@ import { Login } from "./components/pages/Login";
 import { EventDetails } from "./components/pages/EventDetails";
 import { ArtistDetails } from "./components/pages/ArtistDetails";
 import { CreateEvent } from "./components/pages/CreateEvent";
-import { VenueDetails } from "./components/pages/VenueDetails";
-import { UserSetting } from "./components/pages/UserSetting";
+import { ManagedLocations } from "./components/pages/ManagedLocations";
 import { ManagedEvents } from "./components/pages/ManagedEvents";
-import { ManagedArtists } from "./components/pages/ManagedArtist";
+import { ManagedArtists } from "./components/pages/ManagedArtists";
+import { VenueDetails } from "./components/pages/VenueDetails";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { UserSetting } from "./components/pages/UserSetting";
 
 export const router = createBrowserRouter([
   {
@@ -38,19 +40,43 @@ export const router = createBrowserRouter([
       },
       {
         path: "/create",
-        element: <CreateEvent></CreateEvent>,
+        element: (
+          <ProtectedRoute>
+            <CreateEvent></CreateEvent>
+          </ProtectedRoute>
+        ),
       },
       {
-        path: "/profile",
-        element: <UserSetting></UserSetting>,
+        path: "/managed-locations",
+        element: (
+          <ProtectedRoute>
+            <ManagedLocations></ManagedLocations>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/managed-events",
-        element: <ManagedEvents></ManagedEvents>,
+        element: (
+          <ProtectedRoute>
+            <ManagedEvents></ManagedEvents>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/managed-artists",
-        element: <ManagedArtists></ManagedArtists>,
+        element: (
+          <ProtectedRoute>
+            <ManagedArtists></ManagedArtists>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <UserSetting></UserSetting>
+          </ProtectedRoute>
+        ),
       },
     ],
   },
