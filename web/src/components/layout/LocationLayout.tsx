@@ -1,8 +1,7 @@
 import { useRef, useEffect, useState, type MutableRefObject } from "react";
-import { MapPin, Loader } from "lucide-react";
+import { ChevronDown, MapPin, Loader } from "lucide-react";
 import L from "leaflet";
 import { useEventFormContext } from "../../context/EventFormContext";
-// @ts-expect-error CSS imports are valid but not typed
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_CREATE_MAP_CENTER: L.LatLngTuple = [52.52, 13.405];
@@ -244,27 +243,31 @@ export const LocationLayout = () => {
         <>
           {/* Location Selector */}
           <div className="mb-4">
-            <select
-              value={selectedLocationId}
-              onChange={(e) => onLocationSelect(e.target.value)}
-              className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition"
-              disabled={locationsLoading}
-              required
-            >
-              <option value="">
-                {locationsLoading
-                  ? "Loading locations..."
-                  : "Select a location"}
-              </option>
-              {locations.map((location) => (
-                <option
-                  key={location.id || location._id}
-                  value={location.id || location._id}
-                >
-                  {location.name} - {location.city || "Unknown City"}
+            <div className="relative">
+              <select
+                value={selectedLocationId}
+                onChange={(e) => onLocationSelect(e.target.value)}
+                className="w-full px-4 py-3 pr-10 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition appearance-none"
+                style={{ backgroundColor: "#110b27" }}
+                disabled={locationsLoading}
+                required
+              >
+                <option value="">
+                  {locationsLoading
+                    ? "Loading locations..."
+                    : "Select a location"}
                 </option>
-              ))}
-            </select>
+                {locations.map((location) => (
+                  <option
+                    key={location.id || location._id}
+                    value={location.id || location._id}
+                  >
+                    {location.name} - {location.city || "Unknown City"}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300" />
+            </div>
           </div>
         </>
       ) : (

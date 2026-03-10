@@ -6,6 +6,7 @@ import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
 import { EventsDetail } from "./components/pages/EventsDetail";
 import { CreateEvent } from "./components/pages/CreateEvent";
+import { ManagedLocations } from "./components/pages/ManagedLocations";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: "/create",
         element: <CreateEvent></CreateEvent>,
+      },
+      {
+        path: "/managed-locations",
+        element: <ManagedLocations></ManagedLocations>,
       },
     ],
   },
