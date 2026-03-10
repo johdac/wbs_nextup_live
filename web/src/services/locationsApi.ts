@@ -42,9 +42,13 @@ export interface CreateLocationInput {
   websiteUrl?: string;
 }
 
+export type UpdateLocationInput = Partial<CreateLocationInput>;
+
 export const locationsService = {
-  getLocations: async (): Promise<Location[]> => {
-    const { data } = await eventsApi.get<Location[]>("/locations");
+  getLocations: async (createdById?: string): Promise<Location[]> => {
+    const { data } = await eventsApi.get<Location[]>("/locations", {
+      params: createdById ? { createdById } : undefined,
+    });
     return data;
   },
   getLocationById: async (id: string): Promise<Location> => {
@@ -54,5 +58,18 @@ export const locationsService = {
   createLocation: async (locationData: CreateLocationInput): Promise<Location> => {
     const { data } = await eventsApi.post<Location>("/locations", locationData);
     return data;
+  },
+  updateLocation: async (
+    id: string,
+    locationData: UpdateLocationInput,
+  ): Promise<Location> => {
+    const { data } = await eventsApi.put<Location>(
+      `/locations/${id}`,
+      locationData,
+    );
+    return data;
+  },
+  deleteLocation: async (id: string): Promise<void> => {
+    await eventsApi.delete(`/locations/${id}`);
   },
 };

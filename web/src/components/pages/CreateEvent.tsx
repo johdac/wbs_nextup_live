@@ -89,7 +89,7 @@ export const CreateEvent = () => {
 
   const { data: locations = [], isLoading: locationsLoading } = useQuery({
     queryKey: ["locations"],
-    queryFn: locationsService.getLocations,
+    queryFn: () => locationsService.getLocations(),
   });
 
   // Create location mutation
