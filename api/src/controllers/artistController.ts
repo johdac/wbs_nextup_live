@@ -1,6 +1,7 @@
 import { Artist, User } from "#models";
 import type { RequestHandler } from "express";
 import { assertExists } from "#utils";
+import { Types } from "mongoose";
 
 export const artistCreate: RequestHandler = async (req, res) => {
   // Setting the createdById value of the request to the current user we attached in authenticate
@@ -12,7 +13,26 @@ export const artistCreate: RequestHandler = async (req, res) => {
 };
 
 export const artistGetAll: RequestHandler = async (req, res) => {
-  const artists = await Artist.find().populate("createdById", "username");
+  const { createdById, page = "1", limit = 20 } = req.query;
+
+  const filter: any = {};
+
+  // Search by createdById
+  if (createdById && typeof createdById === "string") {
+    // TODO this should be moved into params validation middleware
+    if (!Types.ObjectId.isValid(createdById))
+      throw new Error("Invalid createdById", { cause: { status: 400 } });
+    filter.createdById = new Types.ObjectId(createdById);
+  }
+
+  const pageNum = parseInt(page as string);
+  const limitNum = Number(limit) > 100 ? 100 : Number(limit);
+
+  const artists = await Artist.find(filter)
+    .populate("createdById", "username")
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum)
+    .sort({ name: 1 });
   res.json(artists);
 };
 
@@ -39,7 +59,7 @@ export const artistUpdate: RequestHandler = async (req, res) => {
     body: {
       name,
       genres,
-      musicUrls,
+      musicResources,
       imageUrls,
       description,
       mainImageUrl,
@@ -51,7 +71,7 @@ export const artistUpdate: RequestHandler = async (req, res) => {
   assertExists(artist);
   if (name) artist.name = name;
   if (genres) artist.genres = genres;
-  if (musicUrls) artist.musicUrls = musicUrls;
+  if (musicResources) artist.musicResources = musicResources;
   if (imageUrls) artist.imageUrls = imageUrls;
   if (description) artist.description = description;
   if (mainImageUrl) artist.mainImageUrl = mainImageUrl;

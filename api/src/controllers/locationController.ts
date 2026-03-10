@@ -1,6 +1,7 @@
 import { Location, User } from "#models";
 import { assertExists } from "#utils";
 import type { RequestHandler } from "express";
+import { Types } from "mongoose";
 
 export const locationCreate: RequestHandler = async (req, res) => {
   // Setting the createdById value of the request to the current user we attached in authenticate
@@ -12,7 +13,25 @@ export const locationCreate: RequestHandler = async (req, res) => {
 };
 
 export const locationGetAll: RequestHandler = async (req, res) => {
-  const locations = await Location.find().populate("createdById", "username");
+  const { createdById, page = "1", limit = 20 } = req.query;
+  const filter: any = {};
+
+  // Search by createdById
+  if (createdById && typeof createdById === "string") {
+    // TODO this should be moved into params validation middleware
+    if (!Types.ObjectId.isValid(createdById))
+      throw new Error("Invalid createdById", { cause: { status: 400 } });
+    filter.createdById = new Types.ObjectId(createdById);
+  }
+
+  const pageNum = parseInt(page as string);
+  const limitNum = Number(limit) > 100 ? 100 : Number(limit);
+
+  const locations = await Location.find(filter)
+    .populate("createdById", "username")
+    .skip((pageNum - 1) * limitNum)
+    .limit(limitNum)
+    .sort({ name: 1 });
   res.json(locations);
 };
 
