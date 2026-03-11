@@ -89,6 +89,7 @@ interface ApiEvent {
   id?: string;
   title: string;
   description?: string;
+  mainImageUrl?: string;
 
   createdById: ApiUserSummary | string;
 
@@ -109,19 +110,8 @@ interface ApiEvent {
   updatedAt: string;
 }
 
-const EVENT_FESTIVAL_IMAGES = [
-  "/1.avif",
-  "/2.avif",
-  "/3.avif",
-  "/4.avif",
-  "/5.avif",
-];
-
 // Transform API response to MusicEvent format for display
-const transformEventToMusicEvent = (
-  event: ApiEvent,
-  imageIndex: number,
-): EventListItem => {
+const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
   const organizer =
     typeof event.createdById === "object" ? event.createdById : undefined;
   const location =
@@ -151,8 +141,7 @@ const transformEventToMusicEvent = (
         };
       }) || [],
     genre: event.genres?.[0] || "Unknown",
-    coverImage:
-      EVENT_FESTIVAL_IMAGES[imageIndex % EVENT_FESTIVAL_IMAGES.length],
+    coverImage: event.mainImageUrl || "/placeholder.jpeg",
     isPopular: false,
     organizerName: organizer?.username || "Unknown Organizer",
   };
@@ -161,10 +150,7 @@ const transformEventToMusicEvent = (
 export const eventsService = {
   getEventById: async (id: string): Promise<EventListItem> => {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
-    const hash = id
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return transformEventToMusicEvent(data, hash);
+    return transformEventToMusicEvent(data);
   },
   fetchEventsList: async (
     page: number = 1,
@@ -188,15 +174,12 @@ export const eventsService = {
     if (filters?.startUntil) params.startUntil = filters.startUntil;
 
     const { data } = await eventsApi.get<ApiEvent[]>("/events", { params });
-    return data.map((event, index) => transformEventToMusicEvent(event, index));
+    return data.map((event) => transformEventToMusicEvent(event));
   },
 
   createEvent: async (eventData: CreateEventInput): Promise<EventListItem> => {
     const { data } = await eventsApi.post<ApiEvent>("/events", eventData);
-    const hash = eventData.title
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return transformEventToMusicEvent(data, hash);
+    return transformEventToMusicEvent(data);
   },
 
   updateEvent: async (

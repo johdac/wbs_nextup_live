@@ -35,6 +35,15 @@ export interface LocationSearchResult {
   zip?: string;
 }
 
+export interface SavedArtistPreview {
+  name: string;
+  mainImageUrl?: string;
+  description?: string;
+  websiteUrl?: string;
+  genres: string[];
+  youtubeUrls: string[];
+}
+
 export interface EventFormContextValue {
   isCreatingNewLocation: boolean;
   selectedLocationId: string;
@@ -71,6 +80,9 @@ export interface EventFormContextValue {
   selectedArtistIds: string[];
   artistName: string;
   artistGenres: string[];
+  artistDescription: string;
+  artistWebsiteUrl: string;
+  artistMusicUrls: string[];
   artistsLoading: boolean;
   createArtistMutationIsPending: boolean;
   artists: ArtistOption[];
@@ -79,7 +91,16 @@ export interface EventFormContextValue {
   onArtistSelect: (artistId: string) => void;
   onArtistNameChange: (value: string) => void;
   onArtistGenreToggle: (genre: string) => void;
-  onCreateArtist: () => void;
+  onArtistDescriptionChange: (value: string) => void;
+  onArtistWebsiteUrlChange: (value: string) => void;
+  onArtistMusicUrlChange: (index: number, value: string) => void;
+  onAddArtistMusicUrl: () => void;
+  onRemoveArtistMusicUrl: (index: number) => void;
+  onArtistMainImageFileChange: (file: File | null) => void;
+  showSavedArtistPreview: boolean;
+  savedArtistPreview: SavedArtistPreview | null;
+  onEditSavedArtist: () => void;
+  onCreateArtist: () => void | Promise<void>;
 }
 
 export const EventFormContext = createContext<
