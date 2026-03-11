@@ -1,5 +1,5 @@
 import z from "zod";
-import { dateString, mongoId, string128 } from "./rules.ts";
+import { dateString, mongoId, string128, url } from "./rules.ts";
 
 export const eventSchema = z.strictObject({
   locationId: mongoId,
@@ -8,6 +8,7 @@ export const eventSchema = z.strictObject({
   startDate: dateString,
   endDate: dateString,
   description: z.string().optional(),
+  mainImageKey: string128.optional(),
 });
 
 export const eventUpdateSchema = eventSchema

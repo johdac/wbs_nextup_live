@@ -267,7 +267,7 @@ export const Player = () => {
   const canGoNext = currentIndex < playlist.length - 1;
 
   return (
-    <div className="w-full fixed bottom-0 z-20">
+    <div className="w-full fixed bottom-0 z-990">
       <div className="w-full container flex justify-end">
         {playlist.length > 0 && (
           <div className="bg-gradient-to-r from-pink to-yellow  rounded-t-2xl px-4 w-3xl py-2 flex">
