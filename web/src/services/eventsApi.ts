@@ -42,6 +42,7 @@ interface EventSearchParams {
   startAfter?: string; // ISO date string
   startUntil?: string; // ISO date string
   page?: number;
+  limit?: number;
 }
 
 export interface CreateEventInput {
@@ -151,7 +152,10 @@ export const eventsService = {
     return transformEventToMusicEvent(data, hash);
   },
   fetchEventsList: async (page: number = 1, filters?: Omit<EventSearchParams, "page">): Promise<EventListItem[]> => {
-    const params: Record<string, string> = { page: page.toString() };
+    const params: Record<string, string> = {
+      page: page.toString(),
+      limit: (filters?.limit ?? 20).toString(),
+    };
 
     if (filters?.search) params.search = filters.search;
     if (filters?.artistId) params.artistId = filters.artistId;

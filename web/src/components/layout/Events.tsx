@@ -1,13 +1,21 @@
 import EventCard from "./EventCard";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import DateTimeInput from "./DateTimeInput";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
+import { Pagination } from "@mui/material";
 
-const EVENT_FALLBACK_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
+const EVENT_FALLBACK_IMAGES = [
+  "/1.avif",
+  "/2.avif",
+  "/3.avif",
+  "/4.avif",
+  "/5.avif",
+];
+const ITEMS_PER_PAGE = 20;
 
 const EventList = () => {
   const [dateTime, setDateTime] = useState<Date | null>(null);
@@ -15,8 +23,11 @@ const EventList = () => {
   const [searchParams] = useSearchParams();
   const [genre, setGenre] = useState(searchParams.get("genre") || "");
   const [location, setLocation] = useState(searchParams.get("location") || "");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isEventRoute = pathname === "/events";
 
   const genres = [
     { value: "classical", label: "Classical" },
@@ -32,8 +43,20 @@ const EventList = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["events-list"],
-    queryFn: () => eventsService.fetchEventsList(1),
+    queryKey: [
+      "events-list",
+      currentPage,
+      genre,
+      location,
+      dateTime?.toISOString(),
+    ],
+    queryFn: () =>
+      eventsService.fetchEventsList(currentPage, {
+        limit: ITEMS_PER_PAGE,
+        genres: genre ? [genre] : undefined,
+        search: location || undefined,
+        startAfter: dateTime ? dateTime.toISOString() : undefined,
+      }),
     retry: 1,
   });
 
@@ -42,17 +65,9 @@ const EventList = () => {
     if (genre) params.append("genre", genre);
     if (location) params.append("location", location);
 
+    setCurrentPage(1);
     navigate(`/events?${params.toString()}`);
   };
-
-  const filtered = useMemo(() => {
-    let result = eventsList;
-    if (genre) {
-      const selectedGenre = genre.toLowerCase();
-      result = result.filter((event: EventListItem) => event.genre.toLowerCase() === selectedGenre);
-    }
-    return result;
-  }, [eventsList, genre]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -60,7 +75,9 @@ const EventList = () => {
         <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
           All <span className="neon-gradient-text">Upcoming</span> Events
         </h2>
-        <p className="mb-6 font-body text-sm text-white">Your next unforgettable night awaits</p>
+        <p className="mb-6 font-body text-sm text-white">
+          Your next unforgettable night awaits
+        </p>
 
         <div className=" py-4 mb-10 ">
           <div
@@ -130,22 +147,63 @@ const EventList = () => {
         </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
-          {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
-          {!isLoading && filtered.length > 0
-            ? filtered.map((event: EventListItem, index: number) => {
+          {isLoading && (
+            <div className="py-12 text-center font-display text-lg text-white">
+              Loading events...
+            </div>
+          )}
+          {!isLoading && eventsList.length > 0
+            ? eventsList.map((event: EventListItem, index: number) => {
                 const eventWithImage = {
                   ...event,
-                  coverImage: event.coverImage || EVENT_FALLBACK_IMAGES[index % EVENT_FALLBACK_IMAGES.length],
+                  coverImage:
+                    event.coverImage ||
+                    EVENT_FALLBACK_IMAGES[index % EVENT_FALLBACK_IMAGES.length],
                 };
 
-                return <EventCard key={event.id} event={eventWithImage} index={index} />;
+                return (
+                  <EventCard
+                    key={event.id}
+                    event={eventWithImage}
+                    index={index}
+                  />
+                );
               })
             : !isLoading && (
                 <p className="py-12 text-center font-display text-lg text-white">
-                  {error ? "Failed to load events from server" : "No events found"}
+                  {error
+                    ? "Failed to load events from server"
+                    : "No events found"}
                 </p>
               )}
         </div>
+
+        {/* Pagination or Load More Button */}
+        {!isLoading && eventsList.length > 0 && (
+          <div className="mt-12 flex justify-center items-center">
+            {isEventRoute ? (
+              <Pagination
+                className="pagination-style"
+                count={
+                  currentPage + (eventsList.length === ITEMS_PER_PAGE ? 1 : 0)
+                }
+                page={currentPage}
+                onChange={(_, page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                size="large"
+              />
+            ) : (
+              <button
+                onClick={() => navigate("/events")}
+                className="btn-default px-8 py-3"
+              >
+                Load More Events
+              </button>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );
