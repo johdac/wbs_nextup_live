@@ -58,7 +58,7 @@ export const EventDetails = () => {
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-none uppercase break-words">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-none uppercase wrap-break-word">
             {event.title}
           </h1>
           <div className="h-full">
