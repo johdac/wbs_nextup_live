@@ -151,6 +151,21 @@
   border: 1px solid gray;
 }
 
+/* pagination style */
+.pagination-style .MuiPaginationItem-root {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.pagination-style .MuiPaginationItem-root:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.pagination-style .MuiPaginationItem-root.Mui-selected {
+  background-color: var(--color-purple) !important;
+  color: #ffffff !important;
+}
+
 /* Login Modal Dialog Styling */
 .login-modal-paper {
   background-color: #1a1a1a !important;
