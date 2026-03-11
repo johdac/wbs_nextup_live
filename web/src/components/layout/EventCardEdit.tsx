@@ -12,7 +12,6 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
 
   return (
     <div
-      // to={`/event/${event.id}`}
       style={{
         position: "sticky",
         top: "100px",
@@ -49,7 +48,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
       </div>
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
-        <Link to={`/event/${event.id}`}>
+        <Link to={`/managed-events/${event.id}`}>
           <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple hover:scale-105">
             {event.title}
           </h3>
@@ -60,7 +59,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
               return (
                 <div className="flex flex-row px-1 hover:text-purple hover:scale-105">
                   <MicVocal className="mr-1" />
-                  <Link to={`/artist/${artist.id}`}>
+                  <Link to={`/managed-artists/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
                   </Link>
                 </div>
@@ -70,7 +69,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
-          <Link to={`/venue/${event.location.id}`}>
+          <Link to={`/managed-locations/${event.location.id}`}>
             <span className="flex items-center hover:text-purple hover:scale-105">
               <MapPin className="mr-1 h-5 w-5 " />
               {event.location.city}
@@ -88,7 +87,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
         <button
           onClick={() =>
-            navigate(`/managed-events/${event.id}`, {
+            navigate(`/managed-events/${event.id}/edit`, {
               state: { event },
             })
           }

@@ -86,4 +86,7 @@ export const artistsService = {
     const { data } = await eventsApi.get<Artist[]>("/artists", { params });
     return data.map((artist) => transformArtist(artist));
   },
+  deleteArtist: async (id: string): Promise<void> => {
+    await eventsApi.delete(`/artists/${id}`);
+  },
 };

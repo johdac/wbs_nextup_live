@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
+import {
+  Calendar,
+  CirclePlay,
+  MapPin,
+  MapPinHouse,
+  Share2,
+  Play,
+  Heart,
+  ListPlus,
+  Sparkles,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
-export const EventDetails = () => {
+export const EventDetailsEdit = () => {
+  const navigate = useNavigate();
+
   const { id } = useParams<{ id: string }>();
 
   const [event, setEvent] = useState<EventListItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -51,13 +66,51 @@ export const EventDetails = () => {
   const startDate = formatDate(event.startDate);
   const endDate = formatDate(event.endDate);
 
+  const handleDeleteEvent = async () => {
+    if (!window.confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
+
+    try {
+      setDeleteLoading(true);
+      await eventsService.deleteEvent(event.id);
+      navigate("/managed-events");
+    } catch (err) {
+      setError("Failed to delete event");
+      setDeleteLoading(false);
+    }
+  };
+
   const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(event.location.address)}&output=embed`;
 
   return (
     <div className="container mx-auto">
+      {/* ACTION BUTTONS */}
+      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-3 justify-end">
+        <button
+          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center  hover:opacity-80 transition disabled:opacity-50 cursor-pointer"
+          onClick={() =>
+            navigate(`/managed-events/${event.id}/edit`, {
+              state: { event },
+            })
+          }
+        >
+          <div className="flex flex-row pb-1 items-center text-white gap-1">
+            <Pencil className="h-5 w-5" />
+            <div className="text-lg">EDIT</div>
+          </div>
+        </button>
+        <button
+          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center hover:opacity-80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          onClick={handleDeleteEvent}
+          disabled={deleteLoading}
+        >
+          <Trash2 className="h-5 w-5" />
+        </button>
+      </div>
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-stretch">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 items-stretch">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-none uppercase break-words">
             {event.title}
           </h1>
@@ -87,15 +140,11 @@ export const EventDetails = () => {
                       </div>
                       <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
                         <div className="col-span-3 flex flex-col gap-1">
-                          <Link to={`/artist/${a.id}`}>
-                            <div className="text-xl transition-colors duration-100 hover:text-purple cursor-pointer">
-                              {a.name}
-                            </div>
-                            <div
-                              className="text-base text-gray line-clamp-2"
-                              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
-                            />
-                          </Link>
+                          <div className="text-xl">{a.name}</div>
+                          <div
+                            className="text-base text-gray line-clamp-2"
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
+                          />
 
                           <div>
                             <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
@@ -163,9 +212,7 @@ export const EventDetails = () => {
                 <MapPinHouse className="mr-1 h-5 w-5" />
                 <div className="text-lg">LOCATION</div>
               </div>
-              <Link to={`/venue/${event.location.id}`}>
-                <div className="hover:text-purple cursor-pointer">{event.location.name}</div>
-              </Link>
+              <div>{event.location.name}</div>
               <div>{event.location.address}</div>
               <div>{event.location.city}</div>
             </div>

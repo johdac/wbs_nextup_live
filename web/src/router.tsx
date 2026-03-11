@@ -10,10 +10,13 @@ import { CreateEvent } from "./components/pages/CreateEvent";
 import { ManagedLocations } from "./components/pages/ManagedLocations";
 import { ManagedEvents } from "./components/pages/ManagedEvents";
 import { ManagedArtists } from "./components/pages/ManagedArtists";
-import { VenueDetails } from "./components/pages/VenueDetails";
+import { VenueDetails } from "./components/pages/LocationDetails";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserSetting } from "./components/pages/UserSetting";
 import { EditEvent } from "./components/pages/EditEvent";
+import { EventDetailsEdit } from "./components/pages/EventDetailsEdit";
+import { VenueDetailsEdit } from "./components/pages/LocationDetailsEdit";
+import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +59,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "/managed-locations/:id",
+        element: (
+          <ProtectedRoute>
+            <VenueDetailsEdit></VenueDetailsEdit>
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/managed-events",
         element: (
           <ProtectedRoute>
@@ -65,6 +76,10 @@ export const router = createBrowserRouter([
       },
       {
         path: "/managed-events/:id",
+        element: <EventDetailsEdit></EventDetailsEdit>,
+      },
+      {
+        path: "/managed-events/:id/edit",
         element: (
           <ProtectedRoute>
             <EditEvent></EditEvent>
@@ -76,6 +91,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ManagedArtists></ManagedArtists>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-artists/:id",
+        element: (
+          <ProtectedRoute>
+            <ArtistDetailsEdit></ArtistDetailsEdit>
           </ProtectedRoute>
         ),
       },

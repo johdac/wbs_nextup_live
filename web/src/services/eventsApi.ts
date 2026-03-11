@@ -213,4 +213,8 @@ export const eventsService = {
     const { data } = await eventsApi.put<CreateEventInput>(`/events/${id}`, payload);
     return data;
   },
+
+  deleteEvent: async (id: string): Promise<void> => {
+    await eventsApi.delete(`/events/${id}`);
+  },
 };

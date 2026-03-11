@@ -1,11 +1,13 @@
 import EventCardEdit from "../layout/EventCardEdit";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
+import { useAuth } from "../../context/AuthContext";
 
 const EVENT_FALLBACK_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
 
 export const ManagedEvents = () => {
-  const organizerId = "69aeecc32ad76de83eabf47c";
+  const { user } = useAuth();
+  const organizerId = user?._id;
 
   const {
     data: eventsList = [],
