@@ -34,17 +34,17 @@ export const UserSetting = () => {
 
   const updateProfileMutation = useMutation({
     mutationFn: authService.updateMe,
-    onSuccess: (updatedProfile) => {
+    onSuccess: async (updatedProfile) => {
       setSuccess("Profile updated successfully");
       setError("");
       setPassword("");
       setConfirmPassword("");
 
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
 
       setUsername(updatedProfile.username ?? "");
       setEmail(updatedProfile.email ?? "");
-      setRole(updatedProfile.role ?? "user");
+      setRole(updatedProfile.role === "organizer" ? "organizer" : "user");
     },
     onError: (err: unknown) => {
       const error = err as {
@@ -72,9 +72,16 @@ export const UserSetting = () => {
       return;
     }
 
-    if (password && password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+    if (password || confirmPassword) {
+      if (!password || !confirmPassword) {
+        setError("Please fill in both password fields");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
     }
 
     updateProfileMutation.mutate({

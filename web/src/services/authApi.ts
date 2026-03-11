@@ -77,8 +77,8 @@ export const authService = {
   logout: async (refreshToken: string) => {
     await authApi.post("/logout", { refreshToken });
   },
-  updateMe: async (payload: { username: string; email: string; role: string; password?: string }) => {
-    const { data } = await authApi.post("/refresh", payload);
+  updateMe: async (payload: { username: string; email: string; role: "user" | "organizer"; password?: string }) => {
+    const { data } = await authApi.put("/me", payload);
     return data;
   },
 };
