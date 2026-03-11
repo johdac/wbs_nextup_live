@@ -12,10 +12,9 @@ import {
   ListPlus,
   Sparkles,
   Pencil,
-  Trash2,
 } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
-import { ConfirmModal } from "../layout/ConfirmModal";
+import { DeleteBtn } from "../layout/DeleteBtn";
 
 export const EventDetailsEdit = () => {
   const navigate = useNavigate();
@@ -102,23 +101,15 @@ export const EventDetailsEdit = () => {
             <div className="text-lg">EDIT</div>
           </div>
         </button>
-        <button
-          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center hover:opacity-80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          onClick={() => {
-            setItemToDelete(id!);
-            setShowModal(true);
-          }}
-        >
-          <Trash2 className="h-5 w-5" />
-        </button>
+        <DeleteBtn
+          id={id!}
+          title={"Delete Event"}
+          handleDelete={handleDelete}
+          showModal={showModal}
+          setItemToDelete={setItemToDelete}
+          setShowModal={setShowModal}
+        />
       </div>
-      <ConfirmModal
-        open={showModal}
-        title="Delete Event"
-        message="Are you sure you want to delete this?"
-        onConfirm={handleDelete}
-        onCancel={() => setShowModal(false)}
-      />
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 items-stretch">

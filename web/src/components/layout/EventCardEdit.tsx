@@ -2,8 +2,23 @@ import { Pencil, MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
+import { DeleteBtn } from "./DeleteBtn";
 
-const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }) => {
+const EventCardEdit = ({
+  event,
+  index,
+  handleDelete,
+  showModal,
+  setItemToDelete,
+  setShowModal,
+}: {
+  event: EventListItem;
+  index: number;
+  handleDelete: () => void;
+  showModal: boolean;
+  setItemToDelete: (id: string) => void;
+  setShowModal: (show: boolean) => void;
+}) => {
   const navigate = useNavigate();
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
@@ -98,9 +113,17 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
         >
           <div className="flex flex-row pb-1 items-center text-white gap-1 transition-colors duration-100 hover:text-purple">
             <Pencil className="h-6 w-6" />
-            <div className="text-lg">ALL</div>
+            {/* <div className="text-lg">ALL</div> */}
           </div>
         </button>
+        <DeleteBtn
+          id={event.id}
+          title={"Delete Event"}
+          handleDelete={handleDelete}
+          showModal={showModal}
+          setItemToDelete={setItemToDelete}
+          setShowModal={setShowModal}
+        />
       </div>
     </div>
   );
