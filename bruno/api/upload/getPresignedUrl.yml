@@ -6,6 +6,13 @@ info:
 http:
   method: POST
   url: "{{api}}/upload/presign"
+  body:
+    type: json
+    data: |-
+      {
+        "uploadType": "avatar",
+        "mimeType": "image/jpeg"
+      }
   auth: inherit
 
 settings:

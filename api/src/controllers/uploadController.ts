@@ -3,6 +3,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "#lib";
 import crypto from "crypto";
+import type { UploadMimeType, UploadType } from "#schema";
 
 export const uploadPresign: RequestHandler = async (req, res) => {
   // Check that we do have a bucket set in the env
@@ -13,7 +14,10 @@ export const uploadPresign: RequestHandler = async (req, res) => {
   }
 
   // Define the mimeTypes that will be accepted and define upload folders
-  const uploadRules = {
+  const uploadRules: Record<
+    UploadType,
+    { allowedTypes: UploadMimeType[]; folder: string }
+  > = {
     avatar: {
       allowedTypes: ["image/jpeg", "image/png", "image/webp"],
       folder: "avatars",
@@ -29,15 +33,9 @@ export const uploadPresign: RequestHandler = async (req, res) => {
   };
 
   // Check that the request is matching a rule
-  const requestedUploadType: string = req.body.uploadType;
-  const requestedMimeType: string = req.body.mimeType;
-
-  if (!(requestedUploadType in uploadRules)) {
-    throw new Error(`No such uploadRule`, { cause: { status: 404 } });
-  }
-
-  const matchedRule =
-    uploadRules[requestedUploadType as keyof typeof uploadRules];
+  const requestedUploadType: UploadType = req.body.uploadType;
+  const requestedMimeType: UploadMimeType = req.body.mimeType;
+  const matchedRule = uploadRules[requestedUploadType];
 
   if (!matchedRule.allowedTypes.includes(requestedMimeType)) {
     throw new Error(`MimeType is not allowed by uploadRule`, {
@@ -46,12 +44,22 @@ export const uploadPresign: RequestHandler = async (req, res) => {
   }
 
   // Create random image key
-  const key = `uploads/${crypto.randomUUID()}.jpg`;
+  const mimeTypeFileTypeMapping = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+  };
+
+  const id = crypto.randomUUID();
+  const fileSuffix = mimeTypeFileTypeMapping[requestedMimeType];
+  const folder = uploadRules[requestedUploadType].folder;
+
+  const key = `uploads/${folder}/${id}.${fileSuffix}`;
 
   const command = new PutObjectCommand({
     Bucket: r2Bucket,
     Key: key,
-    ContentType: "image/jpeg",
+    ContentType: requestedMimeType,
   });
 
   const url = await getSignedUrl(r2(), command, {

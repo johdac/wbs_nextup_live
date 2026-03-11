@@ -51,6 +51,7 @@ export interface CreateEventInput {
   startDate: string; // ISO date string
   endDate: string; // ISO date string
   description?: string;
+  mainImageKey?: string;
 }
 
 export interface GeoPoint {
@@ -107,12 +108,23 @@ interface ApiEvent {
   updatedAt: string;
 }
 
-const EVENT_FESTIVAL_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
+const EVENT_FESTIVAL_IMAGES = [
+  "/1.avif",
+  "/2.avif",
+  "/3.avif",
+  "/4.avif",
+  "/5.avif",
+];
 
 // Transform API response to MusicEvent format for display
-const transformEventToMusicEvent = (event: ApiEvent, imageIndex: number): EventListItem => {
-  const organizer = typeof event.createdById === "object" ? event.createdById : undefined;
-  const location = typeof event.locationId === "object" ? event.locationId : undefined;
+const transformEventToMusicEvent = (
+  event: ApiEvent,
+  imageIndex: number,
+): EventListItem => {
+  const organizer =
+    typeof event.createdById === "object" ? event.createdById : undefined;
+  const location =
+    typeof event.locationId === "object" ? event.locationId : undefined;
 
   return {
     id: event.id || (event._id as string),
@@ -138,7 +150,8 @@ const transformEventToMusicEvent = (event: ApiEvent, imageIndex: number): EventL
         };
       }) || [],
     genre: event.genres?.[0] || "Unknown",
-    coverImage: EVENT_FESTIVAL_IMAGES[imageIndex % EVENT_FESTIVAL_IMAGES.length],
+    coverImage:
+      EVENT_FESTIVAL_IMAGES[imageIndex % EVENT_FESTIVAL_IMAGES.length],
     isPopular: false,
     organizerName: organizer?.username || "Unknown Organizer",
   };
@@ -167,10 +180,15 @@ const transformLocation = (location: ApiLocation): EventCardLocation => {
 export const eventsService = {
   getEventById: async (id: string): Promise<EventListItem> => {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
-    const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = id
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return transformEventToMusicEvent(data, hash);
   },
-  fetchEventsList: async (page: number = 1, filters?: Omit<EventSearchParams, "page">): Promise<EventListItem[]> => {
+  fetchEventsList: async (
+    page: number = 1,
+    filters?: Omit<EventSearchParams, "page">,
+  ): Promise<EventListItem[]> => {
     const params: Record<string, string> = { page: page.toString() };
 
     if (filters?.search) params.search = filters.search;
@@ -180,7 +198,8 @@ export const eventsService = {
     if (filters?.genres?.length) params.genres = filters.genres.join(",");
     if (filters?.lat !== undefined) params.lat = filters.lat.toString();
     if (filters?.lng !== undefined) params.lng = filters.lng.toString();
-    if (filters?.radius !== undefined) params.radius = filters.radius.toString();
+    if (filters?.radius !== undefined)
+      params.radius = filters.radius.toString();
     if (filters?.startAfter) params.startAfter = filters.startAfter;
     if (filters?.startUntil) params.startUntil = filters.startUntil;
 
@@ -190,7 +209,9 @@ export const eventsService = {
 
   createEvent: async (eventData: CreateEventInput): Promise<EventListItem> => {
     const { data } = await eventsApi.post<ApiEvent>("/events", eventData);
-    const hash = eventData.title.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = eventData.title
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return transformEventToMusicEvent(data, hash);
   },
 

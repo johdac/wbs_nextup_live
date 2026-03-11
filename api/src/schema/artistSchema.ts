@@ -7,8 +7,8 @@ export const artistSchema = z.strictObject({
   genres: z.array(z.enum(GENRES).optional()),
   description: z.string().optional(),
   musicUrls: z.array(url).optional(),
-  mainImageUrl: url.optional(),
-  imageUrls: z.array(url).optional(),
+  mainImageKey: string128.optional(),
+  imageKeys: z.array(string128).optional(),
   websiteUrl: url.optional(),
   musicResources: z
     .array(

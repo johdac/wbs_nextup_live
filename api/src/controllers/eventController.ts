@@ -1,5 +1,5 @@
 import { Event, Location, Artist } from "#models";
-import { assertExists } from "#utils";
+import { assertExists, getPublicFileUrl } from "#utils";
 import type { RequestHandler } from "express";
 import { Types } from "mongoose";
 
@@ -130,30 +130,43 @@ export const eventGetAll: RequestHandler = async (req, res) => {
   const pageNum = parseInt(page as string);
   const limitNum = Number(limit) > 100 ? 100 : Number(limit);
 
-  const events_raw = await Event.find(filter)
+  const eventsDb = await Event.find(filter)
     .populate("createdById", "username")
     .populate("locationId")
     .populate("artistsIds")
     .skip((pageNum - 1) * limitNum)
     .limit(limitNum)
-    .sort({ startDate: 1 });
+    .sort({ startDate: 1 })
+    .lean();
 
-  res.json(events_raw);
+  const events = eventsDb.map((event) => ({
+    ...event,
+    mainImageUrl: getPublicFileUrl(event.mainImageKey),
+  }));
+
+  res.json(events);
 };
 
 export const eventGetOne: RequestHandler = async (req, res) => {
   const {
     params: { id },
   } = req;
+
   const event = await Event.findById(id)
     .populate("createdById", "username")
     .populate("locationId")
-    .populate("artistsIds");
+    .populate("artistsIds")
+    .lean();
+
   if (!event)
     throw new Error(`Event with id of ${id} doesn't exist`, {
       cause: { status: 404 },
     });
-  res.json(event);
+
+  res.json({
+    ...event,
+    mainImageUrl: getPublicFileUrl(event.mainImageKey),
+  });
 };
 
 export const eventUpdate: RequestHandler = async (req, res) => {
@@ -163,7 +176,15 @@ export const eventUpdate: RequestHandler = async (req, res) => {
    * must have stored a user on the request.
    */
   const {
-    body: { locationId, artistsIds, title, startDate, endDate, description },
+    body: {
+      locationId,
+      artistsIds,
+      title,
+      startDate,
+      endDate,
+      description,
+      mainImageKey,
+    },
     event,
   } = req;
 
@@ -202,6 +223,7 @@ export const eventUpdate: RequestHandler = async (req, res) => {
   if (startDate !== undefined) event.startDate = startDate;
   if (endDate !== undefined) event.endDate = endDate;
   if (description !== undefined) event.description = description;
+  if (mainImageKey !== undefined) event.mainImageKey = mainImageKey;
 
   await event.save();
   res.json(event);

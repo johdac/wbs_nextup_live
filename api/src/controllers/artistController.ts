@@ -1,6 +1,6 @@
 import { Artist, User } from "#models";
 import type { RequestHandler } from "express";
-import { assertExists } from "#utils";
+import { assertExists, getPublicFileUrl } from "#utils";
 import { Types } from "mongoose";
 
 export const artistCreate: RequestHandler = async (req, res) => {
@@ -28,11 +28,18 @@ export const artistGetAll: RequestHandler = async (req, res) => {
   const pageNum = parseInt(page as string);
   const limitNum = Number(limit) > 100 ? 100 : Number(limit);
 
-  const artists = await Artist.find(filter)
+  const artistsDb = await Artist.find(filter)
     .populate("createdById", "username")
     .skip((pageNum - 1) * limitNum)
     .limit(limitNum)
-    .sort({ name: 1 });
+    .sort({ name: 1 })
+    .lean();
+
+  const artists = artistsDb.map((artist) => ({
+    ...artist,
+    mainImageUrl: getPublicFileUrl(artist.mainImageKey),
+  }));
+
   res.json(artists);
 };
 
@@ -40,12 +47,17 @@ export const artistGetOne: RequestHandler = async (req, res) => {
   const {
     params: { id },
   } = req;
-  const artist = await Artist.findById(id).populate("createdById", "username");
+
+  const artist = await Artist.findById(id)
+    .populate("createdById", "username")
+    .lean();
+
   if (!artist)
     throw new Error(`Artist with id of ${id} doesn't exist`, {
       cause: { status: 404 },
     });
-  res.json(artist);
+
+  res.json({ ...artist, mainImageUrl: getPublicFileUrl(artist.mainImageKey) });
 };
 
 export const artistUpdate: RequestHandler = async (req, res) => {
@@ -60,9 +72,9 @@ export const artistUpdate: RequestHandler = async (req, res) => {
       name,
       genres,
       musicResources,
-      imageUrls,
+      imageKeys,
       description,
-      mainImageUrl,
+      mainImageKey,
       websiteUrl,
     },
     artist,
@@ -72,9 +84,9 @@ export const artistUpdate: RequestHandler = async (req, res) => {
   if (name) artist.name = name;
   if (genres) artist.genres = genres;
   if (musicResources) artist.musicResources = musicResources;
-  if (imageUrls) artist.imageUrls = imageUrls;
+  if (imageKeys) artist.imageKeys = imageKeys;
   if (description) artist.description = description;
-  if (mainImageUrl) artist.mainImageUrl = mainImageUrl;
+  if (mainImageKey) artist.mainImageKey = mainImageKey;
   if (websiteUrl) artist.websiteUrl = websiteUrl;
 
   await artist.save();

@@ -47,6 +47,7 @@ const eventSchema = new Schema(
     startDate: { type: Date, required: [true, "A start date is required"] },
     endDate: { type: Date, required: [true, "An end date is required"] },
     description: { type: String },
+    mainImageKey: { type: String },
   },
   { timestamps: true },
 );
