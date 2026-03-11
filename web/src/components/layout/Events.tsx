@@ -196,7 +196,10 @@ const EventList = () => {
               />
             ) : (
               <button
-                onClick={() => navigate("/events")}
+                onClick={() => {
+                  navigate("/events");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
                 className="btn-default px-8 py-3"
               >
                 Load More Events
