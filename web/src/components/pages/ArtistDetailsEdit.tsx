@@ -46,11 +46,7 @@ export const ArtistDetailsEdit = () => {
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 justify-end">
         <button
           className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center  hover:opacity-80 transition disabled:opacity-50 cursor-pointer"
-          onClick={() =>
-            navigate(`/managed-artists`, {
-              state: { artist },
-            })
-          }
+          onClick={() => navigate(`/managed-artists/${id}/edit`)}
         >
           <div className="flex flex-row pb-1 items-center text-white gap-1">
             <Pencil className="h-5 w-5" />

@@ -17,6 +17,7 @@ import { EditEvent } from "./components/pages/EditEvent";
 import { EventDetailsEdit } from "./components/pages/EventDetailsEdit";
 import { VenueDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
+import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
 
 export const router = createBrowserRouter([
@@ -100,6 +101,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ArtistDetailsEdit></ArtistDetailsEdit>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-artists/:id/edit",
+        element: (
+          <ProtectedRoute>
+            <EditArtist></EditArtist>
           </ProtectedRoute>
         ),
       },

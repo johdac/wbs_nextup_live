@@ -34,6 +34,8 @@ export interface CreateArtistInput {
   websiteUrl?: string;
 }
 
+export type UpdateArtistInput = Partial<CreateArtistInput>;
+
 export interface ArtistSearchParams {
   search?: string;
   genres?: string[];
@@ -85,6 +87,10 @@ export const artistsService = {
 
     const { data } = await eventsApi.get<Artist[]>("/artists", { params });
     return data.map((artist) => transformArtist(artist));
+  },
+  updateArtist: async (id: string, artistData: UpdateArtistInput): Promise<Artist> => {
+    const { data } = await eventsApi.put<Artist>(`/artists/${id}`, artistData);
+    return data;
   },
   deleteArtist: async (id: string): Promise<void> => {
     await eventsApi.delete(`/artists/${id}`);
