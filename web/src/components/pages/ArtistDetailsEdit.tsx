@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
-import { CirclePlay, Link, Pencil, Trash2 } from "lucide-react";
-import { ConfirmModal } from "../layout/ConfirmModal";
+import { CirclePlay, Link, Pencil } from "lucide-react";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();

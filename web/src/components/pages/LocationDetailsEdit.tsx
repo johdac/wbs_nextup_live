@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { locationsService, type Location } from "../../services/locationsApi";
 import { Link, Pencil, Trash2 } from "lucide-react";
-import { EventByLocation } from "../layout/EventsByLocation";
 
 export const VenueDetailsEdit = () => {
   const navigate = useNavigate();
@@ -12,7 +11,6 @@ export const VenueDetailsEdit = () => {
   const [location, setLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (!id) {
