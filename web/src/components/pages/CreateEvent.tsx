@@ -17,6 +17,8 @@ import type {
   EventFormValues,
 } from "../../types/event";
 import L from "leaflet";
+import { FileUploadField } from "../ui/FileUpload";
+import { uploadFile } from "../../services/uploadApi";
 
 export const CreateEvent = () => {
   const navigate = useNavigate();
@@ -54,6 +56,9 @@ export const CreateEvent = () => {
   const [success, setSuccess] = useState(false);
   const startDate = startDateValue ? dayjs(startDateValue) : null;
   const endDate = endDateValue ? dayjs(endDateValue) : null;
+  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(
+    null,
+  );
 
   // Location form state
   const isCreatingNewLocation = watch("isCreatingNewLocation");
@@ -81,6 +86,9 @@ export const CreateEvent = () => {
   const isCreatingNewArtist = watch("isCreatingNewArtist");
   const artistName = watch("artistName");
   const artistGenres = watch("artistGenres");
+  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(
+    null,
+  );
 
   // Fetch artists and locations
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
@@ -619,7 +627,7 @@ export const CreateEvent = () => {
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError("");
 
     // Validation
@@ -652,6 +660,10 @@ export const CreateEvent = () => {
       return;
     }
 
+    let eventMainImageKey = undefined;
+    if (eventMainImageFile)
+      eventMainImageKey = await uploadFile(eventMainImageFile, "eventImage");
+
     createEventMutation.mutate({
       title,
       description,
@@ -659,6 +671,7 @@ export const CreateEvent = () => {
       artistsIds: selectedArtistIds,
       startDate: startDate?.toISOString() || "",
       endDate: endDate?.toISOString() || "",
+      mainImageKey: eventMainImageKey,
     });
   };
 
@@ -822,6 +835,17 @@ export const CreateEvent = () => {
                       nextEnd ? dayjs(nextEnd).toISOString() : "",
                     );
                   }}
+                />
+              </div>
+
+              {/* Image Upload for Event */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Image Upload
+                </label>
+                <FileUploadField
+                  uploadType="artistImage"
+                  onFileChange={setEventMainImageFile}
                 />
               </div>
 
