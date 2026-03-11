@@ -3,17 +3,15 @@ import { useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
-import { DateTimeRangePicker } from "../ui/date-time-picker";
 import { LocationLayout } from "../layout/LocationLayout";
 import { ArtistLayout } from "../layout/ArtistLayout";
 import { EventFormContext } from "../../context/EventFormContext";
 import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
 import L from "leaflet";
-import { FileUploadField } from "../ui/FileUpload";
 import { uploadFile } from "../../services/uploadApi";
 import { EventLayout } from "../layout/EventLayout";
 

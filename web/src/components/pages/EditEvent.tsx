@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle } from "lucide-react";
+import { CalendarIcon, Save, AlertCircle, Trash2 } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -18,7 +18,6 @@ import { FileUploadField } from "../ui/FileUpload";
 export const EditEvent = () => {
   const location = useLocation();
   const event = location.state?.event as EventListItem | undefined;
-  console.log(event);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setValue, watch, getValues } = useForm<EventFormValues>({
@@ -59,7 +58,6 @@ export const EditEvent = () => {
   const endDate = endDateValue ? dayjs(endDateValue) : null;
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
   const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(null);
-  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(null);
   const [savedArtistPreview, setSavedArtistPreview] = useState<{
     name: string;
     mainImageUrl?: string;
@@ -667,7 +665,12 @@ export const EditEvent = () => {
       },
     });
   };
+  const handleDelete = async () => {
+    if (!event || !event.id) return;
 
+    await eventsService.deleteEvent(event.id);
+    navigate("/managed-events");
+  };
   const eventFormContextValue = {
     isCreatingNewLocation,
     selectedLocationId,
@@ -860,18 +863,31 @@ export const EditEvent = () => {
               {/* Image Upload for Event */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Image Upload</label>
-                <FileUploadField uploadType="artistImage" onFileChange={setEventMainImageFile} />
+                <FileUploadField uploadType="artistImage" onFileChange={() => {}} />
               </div>
 
               {/* Save Button */}
-              <button
-                type="submit"
-                disabled={updateEventMutation.isPending}
-                className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Save className="h-5 w-5" />
-                {updateEventMutation.isPending ? "Saving Event..." : "Update Event"}
-              </button>
+              <div className="flex flex-row gap-2">
+                <button
+                  type="submit"
+                  disabled={updateEventMutation.isPending}
+                  className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="h-5 w-5" />
+                  {updateEventMutation.isPending ? "Saving Event..." : "Update Event"}
+                </button>
+                {selectedLocationId && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="inline-flex cursor-pointer items-center justify-center px-3 py-2 rounded-lg bg-purple-600 border border-purple-500/50 text-white hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    aria-label="Delete selected location"
+                    title="Delete selected location"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </form>
