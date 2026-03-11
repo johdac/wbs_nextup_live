@@ -42,6 +42,7 @@ interface EventSearchParams {
   startAfter?: string; // ISO date string
   startUntil?: string; // ISO date string
   page?: number;
+  limit?: number;
 }
 
 export interface CreateEventInput {
@@ -157,26 +158,6 @@ const transformEventToMusicEvent = (
   };
 };
 
-const transformArtist = (artist: ApiArtist): EventCardArtist => {
-  return {
-    id: artist.id || artist._id || "",
-    name: artist.name || "",
-    genre: artist.genres?.[0] || "Unknown",
-    description: artist.description || "",
-    imageUrl: "/placeholder.svg",
-    websiteUrl: artist.websiteUrl || "",
-  };
-};
-
-const transformLocation = (location: ApiLocation): EventCardLocation => {
-  return {
-    id: location.id || location._id || "",
-    name: location.name || "",
-    city: location.city || "",
-    address: location.address || "",
-  };
-};
-
 export const eventsService = {
   getEventById: async (id: string): Promise<EventListItem> => {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
@@ -189,7 +170,10 @@ export const eventsService = {
     page: number = 1,
     filters?: Omit<EventSearchParams, "page">,
   ): Promise<EventListItem[]> => {
-    const params: Record<string, string> = { page: page.toString() };
+    const params: Record<string, string> = {
+      page: page.toString(),
+      limit: (filters?.limit ?? 20).toString(),
+    };
 
     if (filters?.search) params.search = filters.search;
     if (filters?.artistId) params.artistId = filters.artistId;
@@ -215,8 +199,18 @@ export const eventsService = {
     return transformEventToMusicEvent(data, hash);
   },
 
-  getLocationById: async (id: string): Promise<EventCardLocation> => {
-    const { data } = await eventsApi.get<ApiLocation>(`/locations/${id}`);
-    return transformLocation(data);
+  updateEvent: async (
+    id: string,
+    payload: {
+      title: string;
+      description: string;
+      locationId: string;
+      artistsIds: string[];
+      startDate: string;
+      endDate: string;
+    },
+  ) => {
+    const { data } = await eventsApi.put(`/events/${id}`, payload);
+    return data;
   },
 };

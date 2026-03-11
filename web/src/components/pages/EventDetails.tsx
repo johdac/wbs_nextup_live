@@ -57,12 +57,16 @@ export const EventDetails = () => {
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <h1 className="flex items-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight uppercase text-white">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 items-stretch">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-none uppercase break-words">
             {event.title}
           </h1>
-          <div>
-            <img src={event.coverImage} alt={event.title} className="w-full rounded-xl max-w-md lg:max-w-full" />
+          <div className="h-full">
+            <img
+              src={event.coverImage}
+              alt={event.title}
+              className="w-full h-full rounded-xl max-w-md md:max-w-full object-cover"
+            />
           </div>
         </div>
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">

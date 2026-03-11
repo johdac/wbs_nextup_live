@@ -43,36 +43,36 @@ export const VenueDetails = () => {
   return (
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="w-full max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* left */}
-          <div className="grid grid-cols-1">
-            <div className="w-full overflow-hidden rounded-lg border-0">
-              <iframe
-                src={mapEmbedUrl}
-                width="100%"
-                height="260"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </div>
+          <div className="w-full overflow-hidden rounded-lg border-0">
+            <iframe
+              src={mapEmbedUrl}
+              width="100%"
+              height="260"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
           </div>
           {/* right */}
-          <div className="md:col-span-2 flex flex-col items-start gap-3">
-            <div className="grid grid-cols-2 md:grid-cols-3">
-              <h1 className="md:col-span-2 flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
+          <div className="flex flex-col items-start gap-3">
+            <div className="grid">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase text-white">
                 {location.name}
               </h1>
             </div>
 
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
-              <div>{location.address}</div>
-              <div>{location.city}</div>
+              <p>{location.address}</p>
+              <p>
+                {location.zip} {location.city}
+              </p>
             </div>
             <div>
               <a
-                href={location.city}
+                href={location.websiteUrl}
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
               >
                 <Link /> <div>Website</div>

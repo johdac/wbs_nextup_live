@@ -1,15 +1,10 @@
-import { Play, MapPin, Heart, MicVocal } from "lucide-react";
+import { Pencil, MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
 
-const EventCard = ({
-  event,
-  index,
-}: {
-  event: EventListItem;
-  index: number;
-}) => {
+const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }) => {
+  const navigate = useNavigate();
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -25,14 +20,13 @@ const EventCard = ({
         backgroundImage: 'url("/bg.jpg")',
       }}
       className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
+      // className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg sm:border sm:border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
     >
       {/* DATE STICKER ON DESKTOP ONLY */}
       <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">
-          {monthStr}
-        </span>
+        <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -48,9 +42,7 @@ const EventCard = ({
 
         {/* DATE STICKER ON MOBILE ONLY */}
         <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider">
-            {monthStr}
-          </span>
+          <span className="text-xs font-bold uppercase tracking-wider">{monthStr}</span>
           <span className="text-xl font-black leading-none">{dayStr}</span>
           <span className="text-xs font-bold">{yearStr}</span>
         </div>
@@ -94,11 +86,18 @@ const EventCard = ({
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <Play className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
-        <Heart className="h-6 w-6 text-white hover:text-red-500" />
+        <button
+          onClick={() =>
+            navigate(`/managed-events/${event.id}`, {
+              state: { event },
+            })
+          }
+        >
+          <Pencil className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
+        </button>
       </div>
     </div>
   );
 };
 
-export default EventCard;
+export default EventCardEdit;
