@@ -852,7 +852,7 @@ export const CreateEvent = () => {
               setValue={setValue}
               setIsDateRangePickerOpen={setIsDateRangePickerOpen}
               setEventMainImageFile={setEventMainImageFile}
-              createEventMutation={createEventMutation}
+              EventMutation={createEventMutation}
             />
           </div>
         </form>

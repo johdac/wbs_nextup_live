@@ -13,7 +13,7 @@ interface EventLayoutProps {
   setValue: (field: keyof EventFormValues, value: any) => void;
   setIsDateRangePickerOpen: (open: boolean) => void;
   setEventMainImageFile: (file: File | null) => void;
-  createEventMutation: {
+  EventMutation: {
     isPending: boolean;
   };
 }
@@ -27,7 +27,7 @@ export const EventLayout = ({
   setValue,
   setIsDateRangePickerOpen,
   setEventMainImageFile,
-  createEventMutation,
+  EventMutation,
 }: EventLayoutProps) => {
   return (
     <div
@@ -88,11 +88,11 @@ export const EventLayout = ({
       {/* Save Button */}
       <button
         type="submit"
-        disabled={createEventMutation.isPending}
+        disabled={EventMutation.isPending}
         className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Save className="h-5 w-5" />
-        {createEventMutation.isPending ? "Creating Event..." : "Save Event"}
+        {EventMutation.isPending ? "Creating Event..." : "Save Event"}
       </button>
     </div>
   );
