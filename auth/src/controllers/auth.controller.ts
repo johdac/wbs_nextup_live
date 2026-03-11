@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { ACCESS_JWT_SECRET, REFRESH_TOKEN_TTL, SALT_ROUNDS } from "#config";
+import { SALT_ROUNDS } from "#config";
 import { User, RefreshToken } from "#models";
 import bcrypt from "bcrypt";
 import { assertExists, createTokens } from "#utils";
