@@ -17,7 +17,7 @@ export function FileUploadField({ uploadType, onFileChange }: Props) {
     <div>
       <div
         {...getRootProps()}
-        className="border p-6 text-center cursor-pointer text-white rounded-lg"
+        className="border py-4 text-center cursor-pointer text-white rounded-lg"
       >
         <input {...getInputProps()} />
 

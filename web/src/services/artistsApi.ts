@@ -29,7 +29,7 @@ export interface CreateArtistInput {
     url: string;
     title: string;
   }[];
-  mainImageUrl?: string;
+  mainImageKey?: string;
   imageUrls?: string[];
   websiteUrl?: string;
 }

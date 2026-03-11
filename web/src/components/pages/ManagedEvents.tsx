@@ -2,8 +2,6 @@ import EventCardEdit from "../layout/EventCardEdit";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 
-const EVENT_FALLBACK_IMAGES = ["/1.avif", "/2.avif", "/3.avif", "/4.avif", "/5.avif"];
-
 export const ManagedEvents = () => {
   const organizerId = "69aeecc32ad76de83eabf47c";
 
@@ -29,11 +27,7 @@ export const ManagedEvents = () => {
             {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
             {!isLoading && eventsList.length > 0
               ? eventsList.map((event: EventListItem, index: number) => {
-                  const eventWithImage = {
-                    ...event,
-                    coverImage: event.coverImage || EVENT_FALLBACK_IMAGES[index % EVENT_FALLBACK_IMAGES.length],
-                  };
-                  return <EventCardEdit key={event.id} event={eventWithImage} index={index} />;
+                  return <EventCardEdit key={event.id} event={event} index={index} />;
                 })
               : !isLoading && (
                   <p className="py-12 text-center font-display text-lg text-white">
