@@ -1,16 +1,4 @@
-import {
-  Sparkles,
-  Heart,
-  Plus,
-  UserPlus,
-  Menu,
-  X,
-  LogOut,
-  User,
-  CalendarRange,
-  MapPin,
-  Mic2,
-} from "lucide-react";
+import { Sparkles, Heart, Plus, UserPlus, Menu, X, LogOut, User, CalendarRange, MapPin, Mic2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -32,16 +20,11 @@ export const Header = () => {
   const currentRole = user?.role ?? user?.roles?.[0] ?? roleFromStorage;
   const isOrganizer = currentRole === "organizer";
   const hideCreateNew = signedIn && currentRole === "user";
-  const navItems = hideCreateNew
-    ? baseNavItems
-    : [...baseNavItems, organizerNavItem];
+  const navItems = hideCreateNew ? baseNavItems : [...baseNavItems, organizerNavItem];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        userDropdownRef.current &&
-        !userDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
         setUserDropdownOpen(false);
       }
     };
@@ -92,7 +75,7 @@ export const Header = () => {
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 top-16 w-48 bg-purple rounded-lg shadow-xl py-2 z-50 border border-purple-500/50">
+                  <div className="absolute right-0 top-16 w-52 bg-purple rounded-lg shadow-xl py-2 z-50 border border-purple-500/50">
                     <Link
                       to="/profile"
                       onClick={() => setUserDropdownOpen(false)}
@@ -167,10 +150,7 @@ export const Header = () => {
         ${open ? "translate-x-0" : "translate-x-full"}`}
           >
             {/* X Button inside drawer */}
-            <button
-              onClick={() => setOpen(false)}
-              className="self-end m-4 p-2 rounded-full hover:bg-purple-dark"
-            >
+            <button onClick={() => setOpen(false)} className="self-end m-4 p-2 rounded-full hover:bg-purple-dark">
               <X size={24} />
             </button>
 

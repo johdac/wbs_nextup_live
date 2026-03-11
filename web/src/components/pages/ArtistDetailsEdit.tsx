@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
 import { CirclePlay, Link, Pencil, Trash2 } from "lucide-react";
+import { ConfirmModal } from "../layout/ConfirmModal";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();
@@ -12,7 +13,6 @@ export const ArtistDetailsEdit = () => {
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -41,21 +41,6 @@ export const ArtistDetailsEdit = () => {
   if (error) return <p>{error}</p>;
   if (!artist) return <p>Artist not found</p>;
 
-  const handleDeleteEvent = async () => {
-    if (!window.confirm("Are you sure you want to delete this artist?")) {
-      return;
-    }
-
-    try {
-      setDeleteLoading(true);
-      await artistsService.deleteArtist(id!);
-      navigate("/managed-artists");
-    } catch (err) {
-      setError("Failed to delete artist");
-      setDeleteLoading(false);
-    }
-  };
-
   return (
     <div className="container mx-auto pb-10">
       {/* ACTION BUTTONS */}
@@ -73,14 +58,8 @@ export const ArtistDetailsEdit = () => {
             <div className="text-lg">EDIT</div>
           </div>
         </button>
-        <button
-          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center hover:opacity-80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          onClick={handleDeleteEvent}
-          disabled={deleteLoading}
-        >
-          <Trash2 className="h-5 w-5" />
-        </button>
       </div>
+
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}

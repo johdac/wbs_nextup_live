@@ -15,6 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
+import { ConfirmModal } from "../layout/ConfirmModal";
 
 export const EventDetailsEdit = () => {
   const navigate = useNavigate();
@@ -24,7 +25,8 @@ export const EventDetailsEdit = () => {
   const [event, setEvent] = useState<EventListItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -66,18 +68,18 @@ export const EventDetailsEdit = () => {
   const startDate = formatDate(event.startDate);
   const endDate = formatDate(event.endDate);
 
-  const handleDeleteEvent = async () => {
-    if (!window.confirm("Are you sure you want to delete this event?")) {
-      return;
-    }
+  const handleDelete = async () => {
+    if (!itemToDelete) return;
 
     try {
-      setDeleteLoading(true);
-      await eventsService.deleteEvent(event.id);
+      await eventsService.deleteEvent(itemToDelete);
       navigate("/managed-events");
     } catch (err) {
       setError("Failed to delete event");
-      setDeleteLoading(false);
+      console.error(err);
+    } finally {
+      setShowModal(false);
+      setItemToDelete(null);
     }
   };
 
@@ -102,12 +104,21 @@ export const EventDetailsEdit = () => {
         </button>
         <button
           className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center hover:opacity-80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          onClick={handleDeleteEvent}
-          disabled={deleteLoading}
+          onClick={() => {
+            setItemToDelete(id!);
+            setShowModal(true);
+          }}
         >
           <Trash2 className="h-5 w-5" />
         </button>
       </div>
+      <ConfirmModal
+        open={showModal}
+        title="Delete Event"
+        message="Are you sure you want to delete this?"
+        onConfirm={handleDelete}
+        onCancel={() => setShowModal(false)}
+      />
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 items-stretch">

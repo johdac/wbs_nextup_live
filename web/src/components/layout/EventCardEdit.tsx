@@ -92,7 +92,10 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
             })
           }
         >
-          <Pencil className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
+          <div className="flex flex-row pb-1 items-center text-white gap-1 transition-colors duration-100 hover:text-purple">
+            <Pencil className="h-6 w-6" />
+            <div className="text-lg">ALL</div>
+          </div>
         </button>
       </div>
     </div>

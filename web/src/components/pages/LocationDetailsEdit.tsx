@@ -41,21 +41,6 @@ export const VenueDetailsEdit = () => {
   if (error) return <p>{error}</p>;
   if (!location) return <p>Location not found</p>;
 
-  const handleDeleteEvent = async () => {
-    if (!window.confirm("Are you sure you want to delete this location?")) {
-      return;
-    }
-
-    try {
-      setDeleteLoading(true);
-      await locationsService.deleteLocation(id!);
-      navigate("/managed-locations");
-    } catch (err) {
-      setError("Failed to delete location");
-      setDeleteLoading(false);
-    }
-  };
-
   const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(location.address)}&output=embed`;
 
   return (
@@ -74,13 +59,6 @@ export const VenueDetailsEdit = () => {
             <Pencil className="h-5 w-5" />
             <div className="text-lg">EDIT</div>
           </div>
-        </button>
-        <button
-          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center hover:opacity-80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          onClick={handleDeleteEvent}
-          disabled={deleteLoading}
-        >
-          <Trash2 className="h-5 w-5" />
         </button>
       </div>
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
