@@ -42,6 +42,9 @@ export const CreateEvent = () => {
       isCreatingNewArtist: false,
       artistName: "",
       artistGenres: [],
+      artistDescription: "",
+      artistWebsiteUrl: "",
+      artistMusicUrls: [""],
     },
   });
 
@@ -59,6 +62,19 @@ export const CreateEvent = () => {
   const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(
     null,
   );
+  const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
+  const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(
+    null,
+  );
+  const [savedArtistPreview, setSavedArtistPreview] = useState<{
+    name: string;
+    mainImageUrl?: string;
+    description?: string;
+    websiteUrl?: string;
+    genres: string[];
+    youtubeUrls: string[];
+  } | null>(null);
+  const artistPreviewObjectUrlRef = useRef<string | null>(null);
 
   // Location form state
   const isCreatingNewLocation = watch("isCreatingNewLocation");
@@ -82,10 +98,22 @@ export const CreateEvent = () => {
   const searchAbortRef = useRef<AbortController | null>(null);
   const searchDebounceRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (artistPreviewObjectUrlRef.current) {
+        URL.revokeObjectURL(artistPreviewObjectUrlRef.current);
+        artistPreviewObjectUrlRef.current = null;
+      }
+    };
+  }, []);
+
   // Artist form state
   const isCreatingNewArtist = watch("isCreatingNewArtist");
   const artistName = watch("artistName");
   const artistGenres = watch("artistGenres");
+  const artistDescription = watch("artistDescription");
+  const artistWebsiteUrl = watch("artistWebsiteUrl");
+  const artistMusicUrls = watch("artistMusicUrls");
   const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(
     null,
   );
@@ -134,14 +162,46 @@ export const CreateEvent = () => {
   const createArtistMutation = useMutation({
     mutationFn: artistsService.createArtist,
     onSuccess: (newArtist) => {
+      if (artistPreviewObjectUrlRef.current) {
+        URL.revokeObjectURL(artistPreviewObjectUrlRef.current);
+        artistPreviewObjectUrlRef.current = null;
+      }
+
+      const fallbackLocalImageUrl = artistMainImageFile
+        ? URL.createObjectURL(artistMainImageFile)
+        : undefined;
+
+      if (fallbackLocalImageUrl) {
+        artistPreviewObjectUrlRef.current = fallbackLocalImageUrl;
+      }
+
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       const newArtistId = newArtist.id || newArtist._id || "";
       const prev = getValues("selectedArtistIds");
       setValue("selectedArtistIds", [...prev, newArtistId]);
       setValue("isCreatingNewArtist", false);
+      setLastCreatedArtistId(newArtistId);
+      setShowSavedArtistPreview(true);
+      setSavedArtistPreview({
+        name: newArtist.name,
+        mainImageUrl:
+          newArtist.mainImageUrl ||
+          newArtist.imageUrls?.[0] ||
+          fallbackLocalImageUrl,
+        description: newArtist.description,
+        websiteUrl: newArtist.websiteUrl,
+        genres: newArtist.genres || [],
+        youtubeUrls: (newArtist.musicResources || []).map(
+          (resource) => resource.url,
+        ),
+      });
       // Clear artist form
       setValue("artistName", "");
       setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [""]);
+      setArtistMainImageFile(null);
     },
     onError: (err: Error | unknown) => {
       const error = err as {
@@ -587,12 +647,13 @@ export const CreateEvent = () => {
 
   // Handle artist selection toggle
   const handleArtistSelect = (artistId: string) => {
-    const prev = getValues("selectedArtistIds");
+    const normalizedArtistId = String(artistId);
+    const prev = getValues("selectedArtistIds").map((id) => String(id));
     setValue(
       "selectedArtistIds",
-      prev.includes(artistId)
-        ? prev.filter((id) => id !== artistId)
-        : [...prev, artistId],
+      prev.includes(normalizedArtistId)
+        ? prev.filter((id) => id !== normalizedArtistId)
+        : [...prev, normalizedArtistId],
     );
   };
 
@@ -606,11 +667,15 @@ export const CreateEvent = () => {
   };
 
   // Handle creating new artist
-  const handleCreateArtist = () => {
+  const handleCreateArtist = async () => {
     setError("");
 
     // Validate artist fields
     if (!artistName.trim()) {
+      if (selectedArtistIds.length > 0) {
+        return;
+      }
+
       setError("Artist name is required");
       return;
     }
@@ -620,9 +685,40 @@ export const CreateEvent = () => {
       return;
     }
 
+    const validMusicUrls = artistMusicUrls
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0);
+
+    const invalidYoutubeUrl = validMusicUrls.find((url) => {
+      const normalized = url.toLowerCase();
+      return !(
+        normalized.includes("youtube.com") || normalized.includes("youtu.be")
+      );
+    });
+
+    if (invalidYoutubeUrl) {
+      setError("Music Url must be a valid YouTube link");
+      return;
+    }
+
+    let artistMainImageKey = undefined;
+    if (artistMainImageFile) {
+      artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+    }
+
     createArtistMutation.mutate({
       name: artistName,
       genres: artistGenres,
+      description: artistDescription?.trim() || undefined,
+      websiteUrl: artistWebsiteUrl?.trim() || undefined,
+      mainImageKey: artistMainImageKey,
+      musicResources:
+        validMusicUrls.length > 0
+          ? validMusicUrls.map((url) => ({
+              url,
+              title: "YouTube",
+            }))
+          : undefined,
     });
   };
 
@@ -645,6 +741,10 @@ export const CreateEvent = () => {
     }
     if (!selectedLocationId) {
       setError("Please select or create a location");
+      return;
+    }
+    if (selectedArtistIds.length === 0 && !artistName.trim()) {
+      setError("Artist name can not be empty");
       return;
     }
     if (selectedArtistIds.length === 0) {
@@ -705,8 +805,9 @@ export const CreateEvent = () => {
       setValue("locationLat", "");
       setValue("locationLng", "");
     },
-    onToggleSelectExistingLocation: () =>
-      setValue("isCreatingNewLocation", false),
+    onToggleSelectExistingLocation: () => {
+      setValue("isCreatingNewLocation", false);
+    },
     onLocationSelect: handleLocationSelect,
     onLocationNameChange: (value: string) => setValue("locationName", value),
     onLocationAddressChange: (value: string) =>
@@ -725,6 +826,9 @@ export const CreateEvent = () => {
     selectedArtistIds,
     artistName,
     artistGenres,
+    artistDescription,
+    artistWebsiteUrl,
+    artistMusicUrls,
     artistsLoading,
     createArtistMutationIsPending: createArtistMutation.isPending,
     artists,
@@ -732,17 +836,63 @@ export const CreateEvent = () => {
       setValue("isCreatingNewArtist", true);
       setValue("artistName", "");
       setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [""]);
+      setArtistMainImageFile(null);
     },
     onToggleSelectExistingArtist: () => setValue("isCreatingNewArtist", false),
     onArtistSelect: handleArtistSelect,
     onArtistNameChange: (value: string) => setValue("artistName", value),
     onArtistGenreToggle: handleArtistGenreToggle,
+    onArtistDescriptionChange: (value: string) =>
+      setValue("artistDescription", value),
+    onArtistWebsiteUrlChange: (value: string) =>
+      setValue("artistWebsiteUrl", value),
+    onArtistMusicUrlChange: (index: number, value: string) => {
+      const next = [...getValues("artistMusicUrls")];
+      next[index] = value;
+      setValue("artistMusicUrls", next);
+    },
+    onAddArtistMusicUrl: () =>
+      setValue("artistMusicUrls", [...getValues("artistMusicUrls"), ""]),
+    onRemoveArtistMusicUrl: (index: number) => {
+      const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
+      setValue("artistMusicUrls", next.length > 0 ? next : [""]);
+    },
+    onArtistMainImageFileChange: setArtistMainImageFile,
+    showSavedArtistPreview,
+    savedArtistPreview,
+    onEditSavedArtist: () => {
+      if (savedArtistPreview) {
+        setValue("artistName", savedArtistPreview.name || "");
+        setValue("artistDescription", savedArtistPreview.description || "");
+        setValue("artistWebsiteUrl", savedArtistPreview.websiteUrl || "");
+        setValue("artistGenres", savedArtistPreview.genres || []);
+        setValue(
+          "artistMusicUrls",
+          savedArtistPreview.youtubeUrls?.length > 0
+            ? savedArtistPreview.youtubeUrls
+            : [""],
+        );
+      }
+
+      if (lastCreatedArtistId) {
+        const next = getValues("selectedArtistIds").filter(
+          (id) => String(id) !== String(lastCreatedArtistId),
+        );
+        setValue("selectedArtistIds", next);
+      }
+
+      setShowSavedArtistPreview(false);
+      setArtistMainImageFile(null);
+    },
     onCreateArtist: handleCreateArtist,
   };
 
   return (
     <div className="relative z-20 min-h-screen py-8">
-      <div className="container mx-auto px-4">
+      <div className="w-full container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-black text-white mb-2">
@@ -769,14 +919,21 @@ export const CreateEvent = () => {
         )}
 
         <form
+          className="max-w-4xl mx-auto"
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmit();
           }}
         >
           {/* Main Grid Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* LEFT BOX - Event Info */}
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-6">
+              <EventFormContext.Provider value={eventFormContextValue}>
+                <LocationLayout />
+
+                <ArtistLayout />
+              </EventFormContext.Provider>
+            </div>
             <div
               className={`bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6 transition-all duration-300 ${
                 isDateRangePickerOpen ? "pb-120" : ""
@@ -860,17 +1017,6 @@ export const CreateEvent = () => {
                   ? "Creating Event..."
                   : "Save Event"}
               </button>
-            </div>
-
-            {/* RIGHT SIDE - Location and Artists */}
-            <div className="space-y-6">
-              <EventFormContext.Provider value={eventFormContextValue}>
-                {/* TOP RIGHT BOX - Location */}
-                <LocationLayout />
-
-                {/* BOTTOM RIGHT BOX - Artists */}
-                <ArtistLayout />
-              </EventFormContext.Provider>
             </div>
           </div>
         </form>

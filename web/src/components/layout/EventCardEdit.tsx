@@ -33,6 +33,10 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
           <img
             src={event.coverImage}
             alt={event.title}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/placeholder.jpeg";
+            }}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (

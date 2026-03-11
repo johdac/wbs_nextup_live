@@ -8,13 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { Pagination } from "@mui/material";
 
-const EVENT_FALLBACK_IMAGES = [
-  "/1.avif",
-  "/2.avif",
-  "/3.avif",
-  "/4.avif",
-  "/5.avif",
-];
 const ITEMS_PER_PAGE = 20;
 
 const EventList = () => {
@@ -154,20 +147,7 @@ const EventList = () => {
           )}
           {!isLoading && eventsList.length > 0
             ? eventsList.map((event: EventListItem, index: number) => {
-                const eventWithImage = {
-                  ...event,
-                  coverImage:
-                    event.coverImage ||
-                    EVENT_FALLBACK_IMAGES[index % EVENT_FALLBACK_IMAGES.length],
-                };
-
-                return (
-                  <EventCard
-                    key={event.id}
-                    event={eventWithImage}
-                    index={index}
-                  />
-                );
+                return <EventCard key={event.id} event={event} index={index} />;
               })
             : !isLoading && (
                 <p className="py-12 text-center font-display text-lg text-white">

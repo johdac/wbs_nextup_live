@@ -47,4 +47,7 @@ export type EventFormValues = {
   isCreatingNewArtist: boolean;
   artistName: string;
   artistGenres: string[];
+  artistDescription: string;
+  artistWebsiteUrl: string;
+  artistMusicUrls: string[];
 };

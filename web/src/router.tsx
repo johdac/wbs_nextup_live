@@ -17,6 +17,7 @@ import { EditEvent } from "./components/pages/EditEvent";
 import { EventDetailsEdit } from "./components/pages/EventDetailsEdit";
 import { VenueDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
+import NotFound from "./components/pages/notFound";
 
 export const router = createBrowserRouter([
   {
@@ -109,6 +110,10 @@ export const router = createBrowserRouter([
             <UserSetting></UserSetting>
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
