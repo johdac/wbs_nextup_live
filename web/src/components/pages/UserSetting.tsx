@@ -1,9 +1,104 @@
 import { User, Lock, Mail, CircleAlert } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { authService } from "../../services/authApi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const UserSetting = () => {
-  const [errors, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"user" | "organizer">("user");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const {
+    data: profile,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["me"],
+    queryFn: authService.getMe,
+  });
+
+  useEffect(() => {
+    if (!profile) return;
+
+    setUsername(profile.username ?? "");
+    setEmail(profile.email ?? "");
+    setRole(profile.role === "organizer" ? "organizer" : "user");
+  }, [profile]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: authService.updateMe,
+    onSuccess: async (updatedProfile) => {
+      setSuccess("Profile updated successfully");
+      setError("");
+      setPassword("");
+      setConfirmPassword("");
+
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+
+      setUsername(updatedProfile.username ?? "");
+      setEmail(updatedProfile.email ?? "");
+      setRole(updatedProfile.role === "organizer" ? "organizer" : "user");
+    },
+    onError: (err: unknown) => {
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+
+      setSuccess("");
+      setError(error?.response?.data?.message || error?.message || "Failed to update profile");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!username.trim()) {
+      setError("Username is required");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    if (password || confirmPassword) {
+      if (!password || !confirmPassword) {
+        setError("Please fill in both password fields");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+    }
+
+    updateProfileMutation.mutate({
+      username,
+      email,
+      role,
+      ...(password ? { password } : {}),
+    });
+  };
+
+  if (isLoading) {
+    return <div className="container mx-auto p-6 text-white">Loading profile...</div>;
+  }
+
+  if (isError) {
+    return <div className="container mx-auto p-6 text-red-500">Failed to load profile.</div>;
+  }
 
   return (
     <>
@@ -12,12 +107,11 @@ export const UserSetting = () => {
           <div className="w-full max-w-md">
             <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
               <div className="flex justify-center">
-                <h2 className="mb-2 flex items-center font-display text-2xl font-bold tracking-widersm:text-3xl">
-                  <User className="h-8 w-8 mr-2" />
-                  <div className="text-3xl font-bold">PROFILE</div>
+                <h2 className="mb-2 flex items-center font-display text-3xl font-bold tracking-widersm:text-3xl">
+                  Update Profile
                 </h2>
               </div>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 {/* Username */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-secondary-foreground mb-1 block">Username</label>
@@ -25,11 +119,12 @@ export const UserSetting = () => {
                     <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       placeholder="Enter your username"
                       className="input-default pl-10  focus:border-primary w-full"
                     />
                   </div>
-                  {/* {errors.username && <p className="text-red-800 text-xs">{errors.username.message}</p>} */}
                 </div>
 
                 {/* Email */}
@@ -39,11 +134,12 @@ export const UserSetting = () => {
                     <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="john@gmail.com"
                       className="input-default pl-10  focus:border-primary w-full"
                     />
                   </div>
-                  {/* {errors.email && <p className="text-red-800 text-xs">{errors.email.message}</p>} */}
                 </div>
 
                 {/* Password */}
@@ -53,11 +149,12 @@ export const UserSetting = () => {
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       className="input-default pl-10  focus:border-primary w-full"
                     />
                   </div>
-                  {/* {errors.password && <p className="text-red-800 text-xs">{errors.password.message}</p>} */}
                 </div>
 
                 {/* Confirm Password */}
@@ -67,11 +164,12 @@ export const UserSetting = () => {
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
                       className="input-default pl-10 focus:border-primary w-full"
                     />
                   </div>
-                  {/* {errors.confirmPassword && <p className="text-red-800 text-xs">{errors.confirmPassword.message}</p>} */}
                 </div>
 
                 {/* Role Selection */}
@@ -81,40 +179,49 @@ export const UserSetting = () => {
                   </label> */}
                   <div className="flex gap-6">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" value="user" className="w-4 h-4 cursor-pointer" />
+                      <input
+                        type="radio"
+                        value="user"
+                        checked={role === "user"}
+                        onChange={(e) => setRole(e.target.value as "user" | "organizer")}
+                        className="w-4 h-4 cursor-pointer"
+                      />
                       <span className="text-sm">Event Attendee</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" value="organizer" className="w-4 h-4 cursor-pointer" />
+                      <input
+                        type="radio"
+                        value="organizer"
+                        checked={role === "organizer"}
+                        onChange={(e) => setRole(e.target.value as "user" | "organizer")}
+                        className="w-4 h-4 cursor-pointer"
+                      />
                       <span className="text-sm">Event Organizer</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Error Message */}
-                {/* {error && (
-          <div className="p-3 flex items-center rounded-lg bg-red-500/20 border border-red-500 text-red-800 text-sm">
-            <CircleAlert className="text-red pr-2" /> {error}
-          </div>
-        )} */}
+                {error && (
+                  <div className="p-3 flex items-center rounded-lg bg-red-500/20 border border-red-500 text-red-800 text-sm">
+                    <CircleAlert className="text-red pr-2" /> {error}
+                  </div>
+                )}
+                {success && (
+                  <div className="rounded-lg border border-green-500 bg-green-500/20 p-3 text-sm text-green-700">
+                    {success}
+                  </div>
+                )}
 
                 {/* Submit Button */}
-                <div className="flex gap-2">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
-                  >
-                    {loading ? "Saving Account..." : "Save"}
-                  </button>
-                </div>
+
+                <button
+                  type="submit"
+                  disabled={updateProfileMutation.isPending}
+                  className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
+                >
+                  {updateProfileMutation.isPending ? "Saving Profile..." : "Update Profile"}
+                </button>
               </form>
             </div>
           </div>

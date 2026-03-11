@@ -1,9 +1,6 @@
 import { z } from "zod/v4";
 
-const emailSchema = z
-  .email({ error: "Please provide a valid email address." })
-  .trim()
-  .toLowerCase();
+const emailSchema = z.email({ error: "Please provide a valid email address." }).trim().toLowerCase();
 
 const basePasswordSchema = z
   .string({ error: "Password must be a string" })
@@ -44,6 +41,14 @@ export const loginSchema = z.object({
   email: emailSchema,
   password: basePasswordSchema,
 });
+
 export const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1),
+});
+
+export const updateMeSchema = z.object({
+  username: z.string().min(1),
+  email: z.string().email(),
+  role: z.enum(["user", "organizer"]),
+  password: z.string().min(8).optional(),
 });

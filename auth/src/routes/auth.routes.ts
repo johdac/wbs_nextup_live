@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { login, logout, me, refresh, register } from "#controllers";
-import { validateBodyZod } from "#middleware";
-import { loginSchema, registerSchema, refreshTokenSchema } from "#schemas"; // TODO: use the schemas for validation
+import { login, logout, me, refresh, register, update } from "#controllers";
+import { requireAuth, validateBodyZod } from "#middleware";
+import { loginSchema, registerSchema, refreshTokenSchema, updateMeSchema } from "#schemas"; // TODO: use the schemas for validation
 
 const authRoutes = Router();
 
@@ -13,6 +13,8 @@ authRoutes.post("/refresh", validateBodyZod(refreshTokenSchema), refresh);
 
 authRoutes.delete("/logout", validateBodyZod(refreshTokenSchema), logout);
 
-authRoutes.get("/me", me);
+authRoutes.get("/me", requireAuth, me);
+
+authRoutes.put("/me", requireAuth, validateBodyZod(updateMeSchema), update);
 
 export default authRoutes;

@@ -1,8 +1,8 @@
 import type { RequestHandler } from "express";
-import { ACCESS_JWT_SECRET, REFRESH_TOKEN_TTL, SALT_ROUNDS } from "#config";
+import { SALT_ROUNDS } from "#config";
 import { User, RefreshToken } from "#models";
 import bcrypt from "bcrypt";
-import { createTokens } from "#utils";
+import { assertExists, createTokens } from "#utils";
 import jwt from "jsonwebtoken";
 import type { registerSchema, loginSchema, refreshTokenSchema } from "#schemas";
 import { z } from "zod";
@@ -27,17 +27,21 @@ interface AuthTokenResponseDTO extends TokenPairResponseDTO {
 type UserProfileDTO = {
   email: string;
   username: string;
+  password?: string;
   _id: InstanceType<typeof Types.ObjectId>;
   role: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export const register: RequestHandler<
-  {},
-  AuthTokenResponseDTO,
-  registerDTO
-> = async (req, res) => {
+type UpdateProfileDTO = {
+  email?: string;
+  username?: string;
+  password?: string;
+  role?: "user" | "organizer";
+};
+
+export const register: RequestHandler<{}, AuthTokenResponseDTO, registerDTO> = async (req, res) => {
   const { username, email, password, role } = req.body;
   const emailExists = await User.exists({ email });
   if (emailExists)
@@ -61,8 +65,7 @@ export const register: RequestHandler<
   });
 
   const [refreshToken, accessToken] = await createTokens(user);
-  if (!refreshToken || !accessToken)
-    throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
+  if (!refreshToken || !accessToken) throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
   res.status(201).json({
     message: `${username} Registered!`,
     accessToken,
@@ -71,25 +74,19 @@ export const register: RequestHandler<
   });
 };
 
-export const login: RequestHandler<{}, AuthTokenResponseDTO, loginDTO> = async (
-  req,
-  res,
-) => {
+export const login: RequestHandler<{}, AuthTokenResponseDTO, loginDTO> = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user)
-    throw new Error("Incorrect credentials", { cause: { status: 401 } });
+  if (!user) throw new Error("Incorrect credentials", { cause: { status: 401 } });
 
   const match = await bcrypt.compare(password, user.password);
 
-  if (!match)
-    throw new Error("Incorrect credentials", { cause: { status: 401 } });
+  if (!match) throw new Error("Incorrect credentials", { cause: { status: 401 } });
   await RefreshToken.deleteMany({ userId: user._id });
   // generate refresh and access tokens
   const [refreshToken, accessToken] = await createTokens(user);
-  if (!refreshToken || !accessToken)
-    throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
+  if (!refreshToken || !accessToken) throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
   res.json({
     message: "Welcome back!",
     refreshToken,
@@ -98,22 +95,15 @@ export const login: RequestHandler<{}, AuthTokenResponseDTO, loginDTO> = async (
   });
 };
 
-export const refresh: RequestHandler<
-  {},
-  TokenPairResponseDTO,
-  refreshTokenDTO
-> = async (req, res) => {
+export const refresh: RequestHandler<{}, TokenPairResponseDTO, refreshTokenDTO> = async (req, res) => {
   const { refreshToken } = req.body;
   const storedToken = await RefreshToken.findOne({ token: refreshToken });
-  if (!storedToken)
-    throw new Error("Please sign in again", { cause: { status: 403 } });
+  if (!storedToken) throw new Error("Please sign in again", { cause: { status: 403 } });
   await RefreshToken.findByIdAndDelete(storedToken._id);
   const user = await User.findById(storedToken.userId);
-  if (!user)
-    throw new Error("User account not found!", { cause: { status: 403 } });
+  if (!user) throw new Error("User account not found!", { cause: { status: 403 } });
   const [newRefreshToken, newAccessToken] = await createTokens(user);
-  if (!newRefreshToken || !newAccessToken)
-    throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
+  if (!newRefreshToken || !newAccessToken) throw new Error("Promblem creating Tokens", { cause: { status: 500 } });
   res.json({
     message: "Refreshed",
     refreshToken: newRefreshToken,
@@ -121,52 +111,62 @@ export const refresh: RequestHandler<
   });
 };
 
-export const logout: RequestHandler<
-  {},
-  SuccessMessage,
-  refreshTokenDTO
-> = async (req, res) => {
+export const logout: RequestHandler<{}, SuccessMessage, refreshTokenDTO> = async (req, res) => {
   const { refreshToken } = req.body;
   await RefreshToken.deleteOne({ token: refreshToken });
   res.json({ message: "You are signed out successfully! " });
 };
 
-export const me: RequestHandler<{}, UserProfileDTO> = async (
-  req,
-  res,
-  next,
-) => {
-  const authHeader = req.header("authorization");
-  console.log("authHeader:", authHeader);
-  const accessToken = authHeader && authHeader.split(" ")[1];
-  if (!accessToken) throw Error("Please sign in", { cause: { status: 401 } });
+export const me: RequestHandler<{}, UserProfileDTO> = async (req, res) => {
+  const user = req.user;
 
-  try {
-    const decoded = jwt.verify(
-      accessToken,
-      ACCESS_JWT_SECRET,
-    ) as jwt.JwtPayload;
-    console.log(decoded);
+  assertExists(user);
 
-    if (!decoded.sub)
-      throw new Error("Invalid or expired access token", {
-        cause: { status: 401 },
+  const userObject = user.toObject();
+  delete userObject.password;
+
+  res.json(userObject);
+};
+
+export const update: RequestHandler<{}, any, UpdateProfileDTO> = async (req, res) => {
+  const {
+    body: { username, email, password, role },
+    user,
+  } = req;
+
+  assertExists(user);
+
+  if (username && username !== user.username) {
+    const usernameExists = await User.exists({ username });
+    if (usernameExists) {
+      throw new Error("Username is already taken, choose another one!", {
+        cause: { status: 409 },
       });
-
-    const user = await User.findById(decoded.sub);
-
-    if (!user) throw new Error("User not found", { cause: { status: 404 } });
-
-    res.json(user);
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      next(
-        new Error("Expired access token", {
-          cause: { status: 401, code: "ACCESS_TOKEN_EXPIRED" },
-        }),
-      );
-    } else {
-      next(new Error("Invalid access token.", { cause: { status: 401 } }));
     }
+    user.username = username;
   }
+
+  if (email && email !== user.email) {
+    const emailExists = await User.exists({ email });
+    if (emailExists) {
+      throw new Error("The email has already been taken", {
+        cause: { status: 409 },
+      });
+    }
+    user.email = email;
+  }
+
+  if (password) {
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    user.password = await bcrypt.hash(password, salt);
+  }
+
+  if (role !== undefined) user.role = role;
+
+  await user.save();
+
+  const userObject = user.toObject();
+  delete userObject.password;
+
+  res.json(userObject);
 };

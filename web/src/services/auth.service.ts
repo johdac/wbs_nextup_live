@@ -25,6 +25,11 @@ authApi.interceptors.response.use(
       try {
         const currRefreshToken = localStorage.getItem("refreshToken");
 
+        if (!currRefreshToken) {
+          localStorage.clear();
+          window.location.href = "/login";
+          return Promise.reject(new Error("Missing refresh token"));
+        }
         // We use standard axios here to avoid an infinite loop
         // if the refresh call itself fails
         const { data } = await axios.post(`${authServiceURL}/refresh`, {
@@ -36,6 +41,7 @@ authApi.interceptors.response.use(
         localStorage.setItem("refreshToken", data.refreshToken);
 
         // 2. Update the header of the failed request
+        originalRequest.headers = originalRequest.headers ?? {};
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 
         // 3. RETRY the original request with the new token

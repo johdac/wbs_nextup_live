@@ -1,3 +1,4 @@
+import "#types";
 import "#db";
 import cors from "cors";
 import express from "express";

@@ -210,7 +210,7 @@ export const eventsService = {
       endDate: string;
     },
   ) => {
-    const { data } = await eventsApi.put(`/events/${id}`, payload);
+    const { data } = await eventsApi.put<CreateEventInput>(`/events/${id}`, payload);
     return data;
   },
 };
