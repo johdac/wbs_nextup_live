@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { locationsService, type Location } from "../../services/locationsApi";
 import { Link } from "lucide-react";
-import { EventByLocation } from "../layout/EventsByLocation";
+import { EventByLocation } from "../location/EventsByLocation";
 
 export const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();

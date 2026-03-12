@@ -3,7 +3,7 @@ import { Link, useBeforeUnload, useBlocker, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle, ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -13,7 +13,7 @@ import { EventFormContext } from "../../context/EventFormContext";
 import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
 import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
-import { EventInfoForm } from "../layout/EventInfoForm";
+import { EventInfoForm } from "../events/EventInfoForm";
 
 export const CreateEvent = () => {
   const navigate = useNavigate();

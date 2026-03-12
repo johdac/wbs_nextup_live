@@ -1,21 +1,6 @@
 import type { Artist } from "./artistsApi";
+import type { Location } from "./locationsApi";
 import { eventsApi } from "./events.services";
-
-export interface EventCardArtist {
-  id: string;
-  name: string;
-  genre: string;
-  description: string;
-  imageUrl: string;
-  websiteUrl: string;
-}
-
-export interface EventCardLocation {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-}
 
 export interface EventListItem {
   id: string;
@@ -23,10 +8,10 @@ export interface EventListItem {
   description: string;
   startDate: string;
   endDate: string;
-  location: EventCardLocation;
+  location: Location;
   artists: Artist[];
-  genre: string;
-  coverImage: string;
+  genres: string[];
+  mainImageUrl: string;
   isPopular: boolean;
   organizerName: string;
 }
@@ -56,7 +41,7 @@ export interface CreateEventInput {
   mainImageKey?: string;
 }
 
-export interface GeoPoint {
+interface GeoPoint {
   type: "Point";
   coordinates: [number, number];
 }
@@ -67,25 +52,7 @@ interface ApiUserSummary {
   username: string;
 }
 
-interface ApiLocation {
-  _id?: string;
-  id?: string;
-  name: string;
-  city?: string;
-  address?: string;
-}
-
-interface ApiArtist {
-  _id?: string;
-  id?: string;
-  name: string;
-  genres: string[];
-  description?: string;
-  imageUrl: string;
-  websiteUrl: string;
-}
-
-interface ApiEvent {
+export interface ApiEvent {
   _id?: string;
   id?: string;
   title: string;
@@ -94,11 +61,14 @@ interface ApiEvent {
 
   createdById: ApiUserSummary | string;
 
-  locationId: ApiLocation | string;
+  locationId: Location;
   locationName: string;
 
-  artistsIds: ApiArtist[];
+  artistsIds: Artist[];
   artistNames: string[];
+
+  isPopular: boolean;
+  organizerName: string;
 
   genres: string[];
 
@@ -127,20 +97,22 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
       name: event.locationName || location?.name || "Unknown Location",
       address: location?.address || "",
       city: location?.city || "",
+      geo: location?.geo || { type: "Point" as const, coordinates: [0, 0] },
     },
     artists:
       event.artistsIds?.map((artist) => {
         return {
           id: artist.id || artist._id || "",
           name: artist.name || "",
-          genre: artist.genres?.[0] || "Unknown",
+          genres: artist.genres || "Unknown",
           description: artist.description || "",
+          mainImageUrl: artist.mainImageUrl || "/placeholder.svg",
           imageUrl: "/placeholder.svg",
           websiteUrl: artist.websiteUrl || "",
         };
       }) || [],
-    genre: event.genres?.[0] || "Unknown",
-    coverImage: event.mainImageUrl || "/placeholder.jpeg",
+    genres: event.genres || "Unknown",
+    mainImageUrl: event.mainImageUrl || "/placeholder.jpeg",
     isPopular: false,
     organizerName: organizer?.username || "Unknown Organizer",
   };

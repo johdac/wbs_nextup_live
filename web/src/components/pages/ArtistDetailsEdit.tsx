@@ -86,9 +86,7 @@ export const ArtistDetailsEdit = () => {
               <h1 className="md:col-span-2 flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
                 {artist.name}
               </h1>
-              <button className="flex justify-center items-center">
-                <CirclePlay className="w-10 h-10 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
+              <CirclePlay />
             </div>
             <div className="p-1">
               <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">

@@ -4,6 +4,7 @@ import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 import type { Artist } from "../../services/artistsApi";
 
 export const ArtistCard = ({ artist }: { artist: Artist }) => {
+  console.log(artist);
   return (
     <>
       <div key={artist.id} className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5">
@@ -23,9 +24,18 @@ export const ArtistCard = ({ artist }: { artist: Artist }) => {
             </Link>
 
             <div>
-              <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                {artist.genres?.length ? artist.genres : "-"}
-              </span>
+              {artist.genres?.length ? (
+                artist.genres.map((g) => (
+                  <span
+                    key={g}
+                    className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
+                  >
+                    {g}
+                  </span>
+                ))
+              ) : (
+                <span>-</span>
+              )}
             </div>
           </div>
           <CirclePlayBtn />

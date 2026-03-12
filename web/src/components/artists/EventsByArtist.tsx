@@ -1,4 +1,4 @@
-import EventCard from "./EventCard";
+import EventCard from "../layout/EventCard";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
-import { CirclePlay, Link } from "lucide-react";
-import { EventByArtist } from "../layout/EventsByArtist";
+import { Link } from "lucide-react";
+import { EventByArtist } from "../artists/EventsByArtist";
+import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +36,8 @@ export const ArtistDetails = () => {
     fetchArtist();
   }, [id]);
 
+  console.log("detail:", artist);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   if (!artist) return <p>Artist not found</p>;
@@ -58,14 +61,21 @@ export const ArtistDetails = () => {
               <h1 className="md:col-span-2 flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
                 {artist.name}
               </h1>
-              <button className="flex justify-center items-center">
-                <CirclePlay className="w-10 h-10 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
+              <CirclePlayBtn />
             </div>
-            <div className="p-1">
-              <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                {artist.genres?.length ? artist.genres : "-"}
-              </span>
+            <div>
+              {artist.genres?.length ? (
+                artist.genres.map((g) => (
+                  <span
+                    key={g}
+                    className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-2"
+                  >
+                    {g}
+                  </span>
+                ))
+              ) : (
+                <span>-</span>
+              )}
             </div>
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}

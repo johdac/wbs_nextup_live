@@ -11,9 +11,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
   return (
     <div
-      // to={`/event/${event.id}`}
       style={{
-        position: "sticky",
         top: "100px",
         zIndex: index,
         backgroundImage: 'url("/bg.jpg")',
@@ -28,9 +26,9 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
-        {event.coverImage ? (
+        {event.mainImageUrl ? (
           <img
-            src={event.coverImage}
+            src={event.mainImageUrl}
             alt={event.title}
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -60,7 +58,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
           <div className="text-white flex items-center">
             {event.artists.map((artist) => {
               return (
-                <div className="flex flex-row px-1 hover:text-purple hover:scale-105">
+                <div key={artist.id} className="flex flex-row px-1 hover:text-purple hover:scale-105">
                   <MicVocal className="mr-1" />
                   <Link to={`/artist/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
@@ -80,9 +78,20 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
           </Link>
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <span className="rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider">
-            {event.genre}
-          </span>
+          <div>
+            {event.genres?.length ? (
+              event.genres.map((g) => (
+                <span
+                  key={g}
+                  className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
+                >
+                  {g}
+                </span>
+              ))
+            ) : (
+              <span>-</span>
+            )}
+          </div>
         </div>
       </div>
 

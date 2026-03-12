@@ -6,7 +6,7 @@ import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
-import { ArtistCard } from "../layout/ArtistCard";
+import { ArtistCard } from "../artists/ArtistCard";
 import { LikeBtn } from "../buttons/LikeBtn";
 import { PlayBtn } from "../buttons/PlayBtn";
 import { AddToListBtn } from "../buttons/AddToListBtn";
@@ -95,7 +95,7 @@ export const EventDetailsEdit = () => {
           </h1>
           <div className="h-full">
             <img
-              src={event.coverImage}
+              src={event.mainImageUrl}
               alt={event.title}
               className="w-full h-full rounded-xl max-w-md md:max-w-full object-cover"
             />
@@ -149,9 +149,20 @@ export const EventDetailsEdit = () => {
                 <Sparkles className="mr-1 h-5 w-5" />
                 <div className="text-lg">GENRES</div>
               </div>
-              <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                {event.genre?.length ? event.genre : "-"}
-              </span>
+              <div>
+                {event.genres?.length ? (
+                  event.genres.map((g) => (
+                    <span
+                      key={g}
+                      className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
+                    >
+                      {g}
+                    </span>
+                  ))
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             </div>
 
             <div>

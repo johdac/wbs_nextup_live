@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, CirclePlay, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
+import { Calendar, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
+import { ArtistCard } from "../artists/ArtistCard";
 
 export const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +39,8 @@ export const EventDetails = () => {
   if (error) return <p>{error}</p>;
   if (!event) return <p>Event not found</p>;
 
+  console.log(event);
+
   //format Date
   const formatDate = (value: string) => {
     const date = new Date(value);
@@ -63,7 +66,7 @@ export const EventDetails = () => {
           </h1>
           <div className="h-full">
             <img
-              src={event.coverImage}
+              src={event.mainImageUrl}
               alt={event.title}
               className="w-full h-full rounded-xl max-w-md md:max-w-full object-cover"
             />
@@ -78,36 +81,7 @@ export const EventDetails = () => {
                 <div className="text-3xl font-bold">ARTISTS</div>
                 <div>
                   {event.artists.map((a) => (
-                    <div
-                      key={a.id}
-                      className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5"
-                    >
-                      <div>
-                        <img src={a.imageUrl} alt={a.name} className="rounded-lg max-w-md md:max-w-full" />
-                      </div>
-                      <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
-                        <div className="col-span-3 flex flex-col gap-1">
-                          <Link to={`/artist/${a.id}`}>
-                            <div className="text-xl transition-colors duration-100 hover:text-purple cursor-pointer">
-                              {a.name}
-                            </div>
-                            <div
-                              className="text-base text-gray line-clamp-2"
-                              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
-                            />
-                          </Link>
-
-                          <div>
-                            <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                              {event.genre?.length ? event.genre : "-"}
-                            </span>
-                          </div>
-                        </div>
-                        <button className="flex justify-center items-center">
-                          <CirclePlay className="w-10 h-10 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-                        </button>
-                      </div>
-                    </div>
+                    <ArtistCard key={a.id} artist={a} />
                   ))}
                 </div>
               </div>
@@ -153,9 +127,20 @@ export const EventDetails = () => {
                 <Sparkles className="mr-1 h-5 w-5" />
                 <div className="text-lg">GENRES</div>
               </div>
-              <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                {event.genre?.length ? event.genre : "-"}
-              </span>
+              <div>
+                {event.genres?.length ? (
+                  event.genres.map((g) => (
+                    <span
+                      key={g}
+                      className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
+                    >
+                      {g}
+                    </span>
+                  ))
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             </div>
 
             <div>

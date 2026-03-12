@@ -1,6 +1,6 @@
-import EventCard from "./EventCard";
+import EventCard from "../layout/EventCard";
 import { useQuery } from "@tanstack/react-query";
-import { eventsService, type EventListItem } from "../../services/eventsApi";
+import { eventsService, type ApiEvent } from "../../services/eventsApi";
 
 export const EventByLocation = ({ locationId }: { locationId: string | any }) => {
   const {
@@ -23,7 +23,7 @@ export const EventByLocation = ({ locationId }: { locationId: string | any }) =>
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
           {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
           {!isLoading && eventsList.length > 0
-            ? eventsList.map((event: EventListItem, index: number) => {
+            ? eventsList.map((event: ApiEvent, index: number) => {
                 return <EventCard key={event.id} event={event} index={index} />;
               })
             : !isLoading && (
