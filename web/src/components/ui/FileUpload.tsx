@@ -3,11 +3,12 @@ import { useFileUpload } from "../../hooks/useFileUpload";
 type Props = {
   uploadType: "avatar" | "eventImage" | "artistImage";
   onFileChange?: (file: File | null) => void;
+  previewUrl?: string;
 };
 
-export function FileUploadField({ uploadType, onFileChange }: Props) {
+export function FileUploadField({ uploadType, onFileChange, previewUrl }: Props) {
   const { file, preview, getRootProps, getInputProps, isDragActive } =
-    useFileUpload(uploadType);
+    useFileUpload(uploadType, previewUrl);
 
   if (file && onFileChange) {
     onFileChange(file);
