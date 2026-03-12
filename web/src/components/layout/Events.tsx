@@ -8,19 +8,30 @@ import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { Pagination } from "@mui/material";
 
-const ITEMS_PER_PAGE = 20;
+const ROOT_ITEMS_PER_PAGE = 10;
+const EVENTS_ITEMS_PER_PAGE = 20;
 
 const EventList = () => {
   const [dateTime, setDateTime] = useState<Date | null>(null);
   const [radius, setRadius] = useState(1);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [genre, setGenre] = useState(searchParams.get("genre") || "");
   const [location, setLocation] = useState(searchParams.get("location") || "");
-  const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isEventRoute = pathname === "/events";
+
+  const pageParam = Number(searchParams.get("page") || "1");
+  const limitParam = Number(searchParams.get("limit") || String(EVENTS_ITEMS_PER_PAGE));
+
+  const currentPage = isEventRoute && Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+  const itemsPerPage =
+    isEventRoute && Number.isFinite(limitParam) && limitParam > 0
+      ? limitParam
+      : isEventRoute
+        ? EVENTS_ITEMS_PER_PAGE
+        : ROOT_ITEMS_PER_PAGE;
 
   const genres = [
     { value: "classical", label: "Classical" },
@@ -36,10 +47,10 @@ const EventList = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["events-list", currentPage, genre, location, dateTime?.toISOString()],
+    queryKey: ["events-list", currentPage, itemsPerPage, genre, location, dateTime?.toISOString()],
     queryFn: () =>
       eventsService.fetchEventsList(currentPage, {
-        limit: ITEMS_PER_PAGE,
+        limit: itemsPerPage,
         genres: genre ? [genre] : undefined,
         search: location || undefined,
         startAfter: dateTime ? dateTime.toISOString() : undefined,
@@ -52,8 +63,19 @@ const EventList = () => {
     if (genre) params.append("genre", genre);
     if (location) params.append("location", location);
 
-    setCurrentPage(1);
-    navigate(`/events?${params.toString()}`);
+    if (isEventRoute) {
+      params.set("page", "1");
+      params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
+    }
+
+    setSearchParams(params);
+  };
+
+  const updatePage = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(nextPage));
+    params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
+    setSearchParams(params);
   };
 
   return (
@@ -150,10 +172,10 @@ const EventList = () => {
             {isEventRoute ? (
               <Pagination
                 className="pagination-style"
-                count={currentPage + (eventsList.length === ITEMS_PER_PAGE ? 1 : 0)}
+                count={currentPage + (eventsList.length === itemsPerPage ? 1 : 0)}
                 page={currentPage}
                 onChange={(_, page) => {
-                  setCurrentPage(page);
+                  updatePage(page);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 size="large"
@@ -161,12 +183,17 @@ const EventList = () => {
             ) : (
               <button
                 onClick={() => {
-                  navigate("/events");
+                  const params = new URLSearchParams();
+                  if (genre) params.append("genre", genre);
+                  if (location) params.append("location", location);
+                  params.set("page", "1");
+                  params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
+                  navigate(`/events?${params.toString()}`);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="btn-default px-8 py-3"
               >
-                Load More Events
+                Dicover more Events
               </button>
             )}
           </div>
