@@ -72,8 +72,11 @@ const EventList = () => {
     const params = new URLSearchParams();
     if (genre) params.append("genre", genre);
     if (location) params.append("location", location);
-    params.set("page", "1");
-    params.set("limit", String(itemsPerPage));
+
+    if (isEventRoute) {
+      params.set("page", "1");
+      params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
+    }
 
     setSearchParams(params);
   };
@@ -81,7 +84,7 @@ const EventList = () => {
   const updatePage = (nextPage: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", String(nextPage));
-    params.set("limit", String(itemsPerPage));
+    params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
     setSearchParams(params);
   };
 
