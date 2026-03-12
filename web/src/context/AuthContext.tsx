@@ -1,11 +1,19 @@
-import { createContext, useContext, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "../services/authApi";
+import { clearAuthSession, refreshAccessToken } from "../services/tokenRefresh";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const persistAuthSession = (
     accessToken: string,
@@ -19,6 +27,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Initialize auth by refreshing token if available
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const refreshToken = localStorage.getItem("refreshToken");
+      const accessToken = localStorage.getItem("accessToken");
+
+      // If we have an access token, we're already initialized
+      if (accessToken) {
+        setIsInitializing(false);
+        return;
+      }
+
+      // If we have a refresh token, try to refresh the access token
+      if (refreshToken) {
+        try {
+          const data = await refreshAccessToken();
+          persistAuthSession(data.accessToken, data.refreshToken);
+        } catch (error) {
+          // If refresh fails, clear tokens
+          clearAuthSession();
+        }
+      }
+
+      setIsInitializing(false);
+    };
+
+    initializeAuth();
+  }, []);
+
   const {
     data: user,
     isLoading,
@@ -28,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     queryFn: authService.getMe,
     retry: false,
     staleTime: 1000 * 60 * 5,
-    enabled: !!localStorage.getItem("accessToken"),
+    enabled: !isInitializing && !!localStorage.getItem("accessToken"),
   });
 
   // const loginMutation = useMutation({
@@ -101,7 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     user: user || null,
     signedIn: !!user,
-    isLoading: isLoading || isFetching,
+    isLoading: isInitializing || isLoading || isFetching,
     handleSignIn: async (creds: LoginInput) => {
       await loginMutation.mutateAsync(creds);
     },

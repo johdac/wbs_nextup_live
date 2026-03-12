@@ -49,5 +49,8 @@ export type EventFormValues = {
   artistGenres: string[];
   artistDescription: string;
   artistWebsiteUrl: string;
-  artistMusicUrls: string[];
+  artistMusicUrls: {
+    title: string;
+    url: string;
+  }[];
 };
