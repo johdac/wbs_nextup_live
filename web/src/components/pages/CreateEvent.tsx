@@ -901,7 +901,10 @@ export const CreateEvent = () => {
     try {
       let artistMainImageKey = undefined;
       if (artistMainImageFile) {
-        artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+        artistMainImageKey = await uploadFile(
+          artistMainImageFile,
+          "artistImage",
+        );
       }
 
       const artistPayload = {
@@ -1127,8 +1130,8 @@ export const CreateEvent = () => {
     onCancelArtistEdit: () => {
       if (editingArtistId) {
         const normalizedEditingArtistId = String(editingArtistId);
-        const currentSelectedArtistIds = getValues("selectedArtistIds").map((id) =>
-          String(id),
+        const currentSelectedArtistIds = getValues("selectedArtistIds").map(
+          (id) => String(id),
         );
 
         if (!currentSelectedArtistIds.includes(normalizedEditingArtistId)) {
@@ -1214,36 +1217,32 @@ export const CreateEvent = () => {
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Event Title *
-                </label>
+                <label className="label-event-form mb-2">Event Title *</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setValue("title", e.target.value)}
                   placeholder="e.g., Summer Music Festival 2026"
-                  className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+                  className="w-full input-event-form"
                   required
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Description
-                </label>
+                <label className="label-event-form  mb-2">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setValue("description", e.target.value)}
                   placeholder="Describe your event..."
                   rows={4}
-                  className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition resize-none"
+                  className="w-full input-event-form resize-none"
                 />
               </div>
 
               {/* Date Range Picker */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="label-event-form  mb-2">
                   Event Start & End *
                 </label>
                 <DateTimeRangePicker
@@ -1265,9 +1264,7 @@ export const CreateEvent = () => {
 
               {/* Image Upload for Event */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Image Upload
-                </label>
+                <label className="label-event-form  mb-2">Image Upload</label>
                 <FileUploadField
                   uploadType="artistImage"
                   onFileChange={setEventMainImageFile}
