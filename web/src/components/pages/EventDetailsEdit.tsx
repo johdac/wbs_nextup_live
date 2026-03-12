@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import {
-  Calendar,
-  CirclePlay,
-  MapPin,
-  MapPinHouse,
-  Share2,
-  Play,
-  Heart,
-  ListPlus,
-  Sparkles,
-  Pencil,
-} from "lucide-react";
+import { Calendar, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
-import { DeleteBtn } from "../layout/DeleteBtn";
+import { DeleteBtn } from "../buttons/DeleteBtn";
+import { EditBtn } from "../buttons/EditBtn";
+import { ConfirmModal } from "../layout/ConfirmModal";
+import { ArtistCard } from "../layout/ArtistCard";
+import { LikeBtn } from "../buttons/LikeBtn";
+import { PlayBtn } from "../buttons/PlayBtn";
+import { AddToListBtn } from "../buttons/AddToListBtn";
 
 export const EventDetailsEdit = () => {
   const navigate = useNavigate();
@@ -74,7 +69,7 @@ export const EventDetailsEdit = () => {
       await eventsService.deleteEvent(itemToDelete);
       navigate("/managed-events");
     } catch (err) {
-      setError("Failed to delete event");
+      setError("Failed to delete this event");
       console.error(err);
     } finally {
       setShowModal(false);
@@ -87,28 +82,10 @@ export const EventDetailsEdit = () => {
   return (
     <div className="container mx-auto">
       {/* ACTION BUTTONS */}
-      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-3 justify-end">
-        <button
-          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center  hover:opacity-80 transition disabled:opacity-50 cursor-pointer"
-          onClick={() =>
-            navigate(`/managed-events/${event.id}/edit`, {
-              state: { event },
-            })
-          }
-        >
-          <div className="flex flex-row pb-1 items-center text-white gap-1">
-            <Pencil className="h-5 w-5" />
-            <div className="text-lg">EDIT</div>
-          </div>
-        </button>
-        <DeleteBtn
-          id={id!}
-          title={"Delete Event"}
-          handleDelete={handleDelete}
-          showModal={showModal}
-          setItemToDelete={setItemToDelete}
-          setShowModal={setShowModal}
-        />
+      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
+        <EditBtn data={event} path="managed-events" />
+        <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
+        <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
       </div>
       <div className="pb-5 max-w-8xl mt-6 sm:mt-10 sm:px-0 flex flex-col justify-center items-center text-white">
         {/* image of the band */}
@@ -126,43 +103,17 @@ export const EventDetailsEdit = () => {
         </div>
         <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* LEFT SIDE */}
-          <div className="md:col-span-2 grid grid-cols-1 gap-10 md:pr-8">
+          <div className="md:col-span-2 grid grid-cols-1 md:pr-8">
             {/* artists */}
             {event.artists?.length ? (
-              <div className="space-y-3">
+              <div>
                 <div className="text-3xl font-bold">ARTISTS</div>
-                <div>
-                  {event.artists.map((a) => (
-                    <div
-                      key={a.id}
-                      className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5"
-                    >
-                      <div>
-                        <img src={a.imageUrl} alt={a.name} className="rounded-lg max-w-md md:max-w-full" />
-                      </div>
-                      <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
-                        <div className="col-span-3 flex flex-col gap-1">
-                          <div className="text-xl">{a.name}</div>
-                          <div
-                            className="text-base text-gray line-clamp-2"
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(a.description) }}
-                          />
-
-                          <div>
-                            <span className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                              {event.genre?.length ? event.genre : "-"}
-                            </span>
-                          </div>
-                        </div>
-                        <button className="flex justify-center items-center">
-                          <CirclePlay className="w-10 h-10 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {event.artists.map((a) => (
+                  <ArtistCard artist={a} />
+                ))}
               </div>
             ) : null}
+
             {/* description */}
             {event.description ? (
               <div className="space-y-3">
@@ -179,15 +130,9 @@ export const EventDetailsEdit = () => {
           {/* RIGHT SIDE */}
           <aside className="flex flex-col items-start gap-10 p-6 rounded-xl transition-all bg-gray-800/35">
             <div className="flex gap-4 items-center">
-              <button>
-                <Heart className="w-8 h-8 transition-colors duration-100 hover:text-red-500 hover:scale-115 cursor-pointer" />
-              </button>
-              <button>
-                <Play className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
-              <button>
-                <ListPlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-              </button>
+              <LikeBtn />
+              <PlayBtn />
+              <AddToListBtn />
             </div>
             <div>
               <div className="flex flex-row pb-1 items-center">
