@@ -4,7 +4,7 @@ import { DateTimeRangePicker } from "../ui/date-time-picker";
 import { FileUploadField } from "../ui/FileUpload";
 import type { EventFormValues } from "../../types/event";
 
-interface EventLayoutProps {
+interface EventInfoFormProps {
   title: string;
   description: string;
   startDate: dayjs.Dayjs | null;
@@ -18,7 +18,7 @@ interface EventLayoutProps {
   };
 }
 
-export const EventLayout = ({
+export const EventInfoForm = ({
   title,
   description,
   startDate,
@@ -28,7 +28,7 @@ export const EventLayout = ({
   setIsDateRangePickerOpen,
   setEventMainImageFile,
   EventMutation,
-}: EventLayoutProps) => {
+}: EventInfoFormProps) => {
   return (
     <div
       className={`bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6 transition-all duration-300 ${
