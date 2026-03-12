@@ -7,6 +7,13 @@ export interface ArtistOption {
   name: string;
   genres: string[];
   description?: string;
+  websiteUrl?: string;
+  mainImageUrl?: string;
+  imageUrls?: string[];
+  musicResources?: {
+    url: string;
+    title: string;
+  }[];
   createdById?: {
     _id: string;
     username: string;
@@ -41,7 +48,10 @@ export interface SavedArtistPreview {
   description?: string;
   websiteUrl?: string;
   genres: string[];
-  youtubeUrls: string[];
+  musicResources: {
+    title: string;
+    url: string;
+  }[];
 }
 
 export interface EventFormContextValue {
@@ -82,7 +92,11 @@ export interface EventFormContextValue {
   artistGenres: string[];
   artistDescription: string;
   artistWebsiteUrl: string;
-  artistMusicUrls: string[];
+  artistMusicUrls: {
+    title: string;
+    url: string;
+  }[];
+  artistMainImagePreviewUrl?: string;
   artistsLoading: boolean;
   createArtistMutationIsPending: boolean;
   artists: ArtistOption[];
@@ -93,13 +107,19 @@ export interface EventFormContextValue {
   onArtistGenreToggle: (genre: string) => void;
   onArtistDescriptionChange: (value: string) => void;
   onArtistWebsiteUrlChange: (value: string) => void;
-  onArtistMusicUrlChange: (index: number, value: string) => void;
+  onArtistMusicUrlChange: (
+    index: number,
+    field: "title" | "url",
+    value: string,
+  ) => void;
   onAddArtistMusicUrl: () => void;
   onRemoveArtistMusicUrl: (index: number) => void;
   onArtistMainImageFileChange: (file: File | null) => void;
   showSavedArtistPreview: boolean;
+  savedArtistPreviewId: string | null;
   savedArtistPreview: SavedArtistPreview | null;
   onEditSavedArtist: () => void;
+  onLoadArtistForEdit: (artistId: string) => void;
   onCreateArtist: () => void | Promise<void>;
 }
 

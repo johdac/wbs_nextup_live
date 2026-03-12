@@ -74,6 +74,13 @@ export const artistsService = {
     const { data } = await eventsApi.post<Artist>("/artists", artistData);
     return data;
   },
+  updateArtist: async (
+    id: string,
+    artistData: Partial<CreateArtistInput>,
+  ): Promise<Artist> => {
+    const { data } = await eventsApi.put<Artist>(`/artists/${id}`, artistData);
+    return data;
+  },
   fetchArtistsList: async (
     page: number = 1,
     filters?: Omit<ArtistSearchParams, "page">,

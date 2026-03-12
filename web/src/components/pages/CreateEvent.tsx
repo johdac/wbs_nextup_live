@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useBeforeUnload, useBlocker, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle } from "lucide-react";
+import { CalendarIcon, Save, AlertCircle, ArrowLeft } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -44,7 +44,7 @@ export const CreateEvent = () => {
       artistGenres: [],
       artistDescription: "",
       artistWebsiteUrl: "",
-      artistMusicUrls: [""],
+      artistMusicUrls: [{ title: "", url: "" }],
     },
   });
 
@@ -63,16 +63,20 @@ export const CreateEvent = () => {
     null,
   );
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
-  const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(
-    null,
-  );
+  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<
+    string | null
+  >(null);
+  const [editingArtistId, setEditingArtistId] = useState<string | null>(null);
   const [savedArtistPreview, setSavedArtistPreview] = useState<{
     name: string;
     mainImageUrl?: string;
     description?: string;
     websiteUrl?: string;
     genres: string[];
-    youtubeUrls: string[];
+    musicResources: {
+      title: string;
+      url: string;
+    }[];
   } | null>(null);
   const artistPreviewObjectUrlRef = useRef<string | null>(null);
 
@@ -117,6 +121,93 @@ export const CreateEvent = () => {
   const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(
     null,
   );
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<
+    string | undefined
+  >(undefined);
+
+  const hasUnsavedChanges = useMemo(() => {
+    const hasEventChanges =
+      title.trim().length > 0 ||
+      description.trim().length > 0 ||
+      !!eventMainImageFile;
+
+    const hasLocationChanges =
+      isCreatingNewLocation ||
+      selectedLocationId.length > 0 ||
+      locationName.trim().length > 0 ||
+      locationAddress.trim().length > 0 ||
+      locationCity.trim().length > 0 ||
+      locationZip.trim().length > 0 ||
+      locationCountry.trim().length > 0 ||
+      locationLat.trim().length > 0 ||
+      locationLng.trim().length > 0;
+
+    const hasArtistChanges =
+      isCreatingNewArtist ||
+      selectedArtistIds.length > 0 ||
+      artistName.trim().length > 0 ||
+      artistGenres.length > 0 ||
+      artistDescription.trim().length > 0 ||
+      artistWebsiteUrl.trim().length > 0 ||
+      artistMusicUrls.some(
+        (item) => item.title.trim().length > 0 || item.url.trim().length > 0,
+      ) ||
+      !!artistMainImageFile;
+
+    return hasEventChanges || hasLocationChanges || hasArtistChanges;
+  }, [
+    title,
+    description,
+    eventMainImageFile,
+    isCreatingNewLocation,
+    selectedLocationId,
+    locationName,
+    locationAddress,
+    locationCity,
+    locationZip,
+    locationCountry,
+    locationLat,
+    locationLng,
+    isCreatingNewArtist,
+    selectedArtistIds,
+    artistName,
+    artistGenres,
+    artistDescription,
+    artistWebsiteUrl,
+    artistMusicUrls,
+    artistMainImageFile,
+  ]);
+
+  const shouldWarnOnLeave = hasUnsavedChanges && !success;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      shouldWarnOnLeave && currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useBeforeUnload(
+    (event) => {
+      if (!shouldWarnOnLeave) return;
+      event.preventDefault();
+      event.returnValue = "";
+    },
+    { capture: true },
+  );
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+
+    const confirmLeave = window.confirm(
+      "You have unsaved changes. Are you sure you want to leave this page?",
+    );
+
+    if (confirmLeave) {
+      blocker.proceed();
+      return;
+    }
+
+    blocker.reset();
+  }, [blocker]);
 
   // Fetch artists and locations
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
@@ -177,10 +268,14 @@ export const CreateEvent = () => {
 
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       const newArtistId = newArtist.id || newArtist._id || "";
-      const prev = getValues("selectedArtistIds");
-      setValue("selectedArtistIds", [...prev, newArtistId]);
+      const prev = getValues("selectedArtistIds").map((id) => String(id));
+      setValue(
+        "selectedArtistIds",
+        prev.includes(newArtistId) ? prev : [...prev, newArtistId],
+      );
       setValue("isCreatingNewArtist", false);
-      setLastCreatedArtistId(newArtistId);
+      setSavedArtistPreviewId(newArtistId);
+      setEditingArtistId(null);
       setShowSavedArtistPreview(true);
       setSavedArtistPreview({
         name: newArtist.name,
@@ -191,17 +286,19 @@ export const CreateEvent = () => {
         description: newArtist.description,
         websiteUrl: newArtist.websiteUrl,
         genres: newArtist.genres || [],
-        youtubeUrls: (newArtist.musicResources || []).map(
-          (resource) => resource.url,
-        ),
+        musicResources: (newArtist.musicResources || []).map((resource) => ({
+          title: resource.title || "",
+          url: resource.url,
+        })),
       });
       // Clear artist form
       setValue("artistName", "");
       setValue("artistGenres", []);
       setValue("artistDescription", "");
       setValue("artistWebsiteUrl", "");
-      setValue("artistMusicUrls", [""]);
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImageFile(null);
+      setArtistMainImagePreviewUrl(undefined);
     },
     onError: (err: Error | unknown) => {
       const error = err as {
@@ -212,6 +309,62 @@ export const CreateEvent = () => {
         error?.response?.data?.message ||
           error?.message ||
           "Failed to create artist",
+      );
+    },
+  });
+
+  const updateArtistMutation = useMutation({
+    mutationFn: ({
+      id,
+      artistData,
+    }: {
+      id: string;
+      artistData: Parameters<typeof artistsService.updateArtist>[1];
+    }) => artistsService.updateArtist(id, artistData),
+    onSuccess: (updatedArtist, variables) => {
+      if (artistPreviewObjectUrlRef.current) {
+        URL.revokeObjectURL(artistPreviewObjectUrlRef.current);
+        artistPreviewObjectUrlRef.current = null;
+      }
+
+      const fallbackLocalImageUrl = artistMainImageFile
+        ? URL.createObjectURL(artistMainImageFile)
+        : undefined;
+
+      if (fallbackLocalImageUrl) {
+        artistPreviewObjectUrlRef.current = fallbackLocalImageUrl;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["artists"] });
+      const updatedArtistId =
+        updatedArtist.id || updatedArtist._id || variables.id;
+      const prev = getValues("selectedArtistIds").map((id) => String(id));
+      setValue(
+        "selectedArtistIds",
+        prev.includes(updatedArtistId) ? prev : [...prev, updatedArtistId],
+      );
+      setValue("isCreatingNewArtist", false);
+      setSavedArtistPreviewId(null);
+      setEditingArtistId(null);
+      setShowSavedArtistPreview(false);
+      setSavedArtistPreview(null);
+      setValue("artistName", "");
+      setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
+      setArtistMainImageFile(null);
+      setArtistMainImagePreviewUrl(undefined);
+    },
+    onError: (err: Error | unknown) => {
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update artist",
       );
     },
   });
@@ -666,6 +819,44 @@ export const CreateEvent = () => {
     );
   };
 
+  const handleLoadArtistForEdit = (artistId: string) => {
+    const normalizedArtistId = String(artistId);
+    const targetArtist = artists.find(
+      (artist) => String(artist.id || artist._id || "") === normalizedArtistId,
+    );
+
+    if (!targetArtist) {
+      return;
+    }
+
+    setValue("artistName", targetArtist.name || "");
+    setValue("artistDescription", targetArtist.description || "");
+    setValue("artistWebsiteUrl", targetArtist.websiteUrl || "");
+    setValue("artistGenres", targetArtist.genres || []);
+    setValue(
+      "artistMusicUrls",
+      targetArtist.musicResources?.length
+        ? targetArtist.musicResources.map((resource) => ({
+            title: resource.title || "",
+            url: resource.url,
+          }))
+        : [{ title: "", url: "" }],
+    );
+    setArtistMainImagePreviewUrl(
+      targetArtist.mainImageUrl || targetArtist.imageUrls?.[0] || undefined,
+    );
+    setEditingArtistId(normalizedArtistId);
+
+    const next = getValues("selectedArtistIds")
+      .map((id) => String(id))
+      .filter((id) => id !== normalizedArtistId);
+    setValue("selectedArtistIds", next);
+
+    setShowSavedArtistPreview(false);
+    setArtistMainImageFile(null);
+    setValue("isCreatingNewArtist", true);
+  };
+
   // Handle creating new artist
   const handleCreateArtist = async () => {
     setError("");
@@ -685,18 +876,21 @@ export const CreateEvent = () => {
       return;
     }
 
-    const validMusicUrls = artistMusicUrls
-      .map((url) => url.trim())
-      .filter((url) => url.length > 0);
+    const validMusicResources = artistMusicUrls
+      .map((item) => ({
+        title: item.title.trim(),
+        url: item.url.trim(),
+      }))
+      .filter((item) => item.url.length > 0);
 
-    const invalidYoutubeUrl = validMusicUrls.find((url) => {
-      const normalized = url.toLowerCase();
+    const invalidYoutubeResource = validMusicResources.find((item) => {
+      const normalized = item.url.toLowerCase();
       return !(
         normalized.includes("youtube.com") || normalized.includes("youtu.be")
       );
     });
 
-    if (invalidYoutubeUrl) {
+    if (invalidYoutubeResource) {
       setError("Music Url must be a valid YouTube link");
       return;
     }
@@ -706,20 +900,30 @@ export const CreateEvent = () => {
       artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
     }
 
-    createArtistMutation.mutate({
+    const artistPayload = {
       name: artistName,
       genres: artistGenres,
       description: artistDescription?.trim() || undefined,
       websiteUrl: artistWebsiteUrl?.trim() || undefined,
       mainImageKey: artistMainImageKey,
       musicResources:
-        validMusicUrls.length > 0
-          ? validMusicUrls.map((url) => ({
-              url,
-              title: "YouTube",
+        validMusicResources.length > 0
+          ? validMusicResources.map((item) => ({
+              url: item.url,
+              title: item.title || "YouTube",
             }))
           : undefined,
-    });
+    };
+
+    if (editingArtistId) {
+      await updateArtistMutation.mutateAsync({
+        id: editingArtistId,
+        artistData: artistPayload,
+      });
+      return;
+    }
+
+    await createArtistMutation.mutateAsync(artistPayload);
   };
 
   // Handle form submission
@@ -829,8 +1033,10 @@ export const CreateEvent = () => {
     artistDescription,
     artistWebsiteUrl,
     artistMusicUrls,
+    artistMainImagePreviewUrl,
     artistsLoading,
-    createArtistMutationIsPending: createArtistMutation.isPending,
+    createArtistMutationIsPending:
+      createArtistMutation.isPending || updateArtistMutation.isPending,
     artists,
     onToggleCreateNewArtist: () => {
       setValue("isCreatingNewArtist", true);
@@ -838,8 +1044,10 @@ export const CreateEvent = () => {
       setValue("artistGenres", []);
       setValue("artistDescription", "");
       setValue("artistWebsiteUrl", "");
-      setValue("artistMusicUrls", [""]);
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImageFile(null);
+      setArtistMainImagePreviewUrl(undefined);
+      setEditingArtistId(null);
     },
     onToggleSelectExistingArtist: () => setValue("isCreatingNewArtist", false),
     onArtistSelect: handleArtistSelect,
@@ -849,19 +1057,38 @@ export const CreateEvent = () => {
       setValue("artistDescription", value),
     onArtistWebsiteUrlChange: (value: string) =>
       setValue("artistWebsiteUrl", value),
-    onArtistMusicUrlChange: (index: number, value: string) => {
+    onArtistMusicUrlChange: (
+      index: number,
+      field: "title" | "url",
+      value: string,
+    ) => {
       const next = [...getValues("artistMusicUrls")];
-      next[index] = value;
+      next[index] = {
+        ...next[index],
+        [field]: value,
+      };
       setValue("artistMusicUrls", next);
     },
     onAddArtistMusicUrl: () =>
-      setValue("artistMusicUrls", [...getValues("artistMusicUrls"), ""]),
+      setValue("artistMusicUrls", [
+        ...getValues("artistMusicUrls"),
+        { title: "", url: "" },
+      ]),
     onRemoveArtistMusicUrl: (index: number) => {
       const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
-      setValue("artistMusicUrls", next.length > 0 ? next : [""]);
+      setValue(
+        "artistMusicUrls",
+        next.length > 0 ? next : [{ title: "", url: "" }],
+      );
     },
-    onArtistMainImageFileChange: setArtistMainImageFile,
+    onArtistMainImageFileChange: (file: File | null) => {
+      setArtistMainImageFile(file);
+      if (file) {
+        setArtistMainImagePreviewUrl(undefined);
+      }
+    },
     showSavedArtistPreview,
+    savedArtistPreviewId,
     savedArtistPreview,
     onEditSavedArtist: () => {
       if (savedArtistPreview) {
@@ -871,28 +1098,36 @@ export const CreateEvent = () => {
         setValue("artistGenres", savedArtistPreview.genres || []);
         setValue(
           "artistMusicUrls",
-          savedArtistPreview.youtubeUrls?.length > 0
-            ? savedArtistPreview.youtubeUrls
-            : [""],
+          savedArtistPreview.musicResources?.length > 0
+            ? savedArtistPreview.musicResources
+            : [{ title: "", url: "" }],
         );
       }
 
-      if (lastCreatedArtistId) {
+      if (savedArtistPreviewId) {
         const next = getValues("selectedArtistIds").filter(
-          (id) => String(id) !== String(lastCreatedArtistId),
+          (id) => String(id) !== String(savedArtistPreviewId),
         );
         setValue("selectedArtistIds", next);
       }
 
+      setEditingArtistId(savedArtistPreviewId);
       setShowSavedArtistPreview(false);
       setArtistMainImageFile(null);
+      setArtistMainImagePreviewUrl(savedArtistPreview?.mainImageUrl);
     },
+    onLoadArtistForEdit: handleLoadArtistForEdit,
     onCreateArtist: handleCreateArtist,
   };
 
   return (
-    <div className="relative z-20 min-h-screen py-8">
-      <div className="w-full container mx-auto px-4">
+    <div className="container z-20 min-h-screen py-8">
+      <div className="text-white">
+        <Link to="/">
+          <ArrowLeft></ArrowLeft>
+        </Link>
+      </div>
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-black text-white mb-2">
@@ -919,7 +1154,7 @@ export const CreateEvent = () => {
         )}
 
         <form
-          className="max-w-4xl mx-auto"
+          className=""
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmit();

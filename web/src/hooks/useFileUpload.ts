@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { uploadFile } from "../services/uploadApi";
 
 type UploadType = "avatar" | "eventImage" | "artistImage";
 
-export function useFileUpload(uploadType: UploadType) {
+export function useFileUpload(
+  uploadType: UploadType,
+  initialPreviewUrl?: string,
+) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPreview(initialPreviewUrl ?? null);
+    }
+  }, [file, initialPreviewUrl]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -18,6 +28,10 @@ export function useFileUpload(uploadType: UploadType) {
     onDrop: (files) => {
       const f = files[0];
       if (!f) return;
+
+      if (preview?.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
 
       setFile(f);
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearAuthSession, refreshAccessToken } from "./tokenRefresh";
 
 const authServiceURL = import.meta.env.VITE_APP_AUTH_SERVER_URL;
 export const authApi = axios.create({
@@ -23,22 +24,7 @@ authApi.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const currRefreshToken = localStorage.getItem("refreshToken");
-
-        if (!currRefreshToken) {
-          localStorage.clear();
-          window.location.href = "/login";
-          return Promise.reject(new Error("Missing refresh token"));
-        }
-        // We use standard axios here to avoid an infinite loop
-        // if the refresh call itself fails
-        const { data } = await axios.post(`${authServiceURL}/refresh`, {
-          refreshToken: currRefreshToken,
-        });
-
-        // 1. Update storage with the NEW pair from your backend
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
+        const data = await refreshAccessToken();
 
         // 2. Update the header of the failed request
         originalRequest.headers = originalRequest.headers ?? {};
@@ -48,7 +34,7 @@ authApi.interceptors.response.use(
         return authApi(originalRequest);
       } catch (refreshError) {
         // If the refresh token is expired or deleted, the user MUST log in again
-        localStorage.clear();
+        clearAuthSession();
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
