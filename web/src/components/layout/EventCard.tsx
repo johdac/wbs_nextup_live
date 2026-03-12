@@ -1,7 +1,9 @@
-import { Play, MapPin, Heart, MicVocal } from "lucide-react";
+import { Play, MapPin, Heart, MicVocal, ListPlus } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
+import { usePlayer } from "../../features/player/PlayerContext";
+import type { PlaylistItem } from "../../features/player/playerTypes";
 
 const EventCard = ({
   event,
@@ -14,6 +16,38 @@ const EventCard = ({
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
   const yearStr = format(new Date(event.startDate), "yyyy");
+
+  // Player integration
+  const { addManyToPlaylist } = usePlayer();
+
+  const mergedMusicResources: PlaylistItem[] = [];
+  event.artists.forEach((artist) => {
+    artist.musicResources?.forEach((resource) => {
+      const obj = {
+        played: false,
+        song: {
+          id: resource.id,
+          artist: {
+            id: artist.id,
+            name: artist.name,
+          },
+          sourceUrl: resource.url,
+          title: resource.title,
+        },
+        event: {
+          id: event.id,
+          location: {
+            id: event.location.id,
+            name: event.location.name,
+            city: event.location.city,
+          },
+          start: event.startDate,
+          favoritedEvent: false,
+        },
+      };
+      mergedMusicResources.push(obj);
+    });
+  });
 
   return (
     <div
@@ -100,6 +134,10 @@ const EventCard = ({
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
         <Play className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
         <Heart className="h-6 w-6 text-white hover:text-red-500" />
+        <ListPlus
+          className="h-6 w-6 text-white hover:text-red-500"
+          onClick={() => addManyToPlaylist(mergedMusicResources)}
+        />
       </div>
     </div>
   );

@@ -1,5 +1,11 @@
 import { eventsApi } from "./events.services";
 
+interface MusicResource {
+  url: string;
+  title: string;
+  id: string;
+}
+
 export interface EventCardArtist {
   id: string;
   name: string;
@@ -7,6 +13,7 @@ export interface EventCardArtist {
   description: string;
   imageUrl: string;
   websiteUrl: string;
+  musicResources?: MusicResource[];
 }
 
 export interface EventCardLocation {
@@ -82,6 +89,7 @@ interface ApiArtist {
   description?: string;
   imageUrl: string;
   websiteUrl: string;
+  musicResources?: MusicResource[];
 }
 
 interface ApiEvent {
@@ -138,6 +146,7 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
           description: artist.description || "",
           imageUrl: "/placeholder.svg",
           websiteUrl: artist.websiteUrl || "",
+          musicResources: artist.musicResources,
         };
       }) || [],
     genre: event.genres?.[0] || "Unknown",
@@ -193,7 +202,10 @@ export const eventsService = {
       endDate: string;
     },
   ) => {
-    const { data } = await eventsApi.put<CreateEventInput>(`/events/${id}`, payload);
+    const { data } = await eventsApi.put<CreateEventInput>(
+      `/events/${id}`,
+      payload,
+    );
     return data;
   },
 };
