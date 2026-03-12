@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { Pencil } from "lucide-react";
 import { artistsService } from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
-import { DeleteBtn } from "../layout/DeleteBtn";
+import { DeleteBtn } from "../buttons/DeleteBtn";
 
 export const ManagedArtists = () => {
   const navigate = useNavigate();
@@ -85,9 +85,6 @@ export const ManagedArtists = () => {
                   </button>
                   <DeleteBtn
                     id={artist.id || artist._id || ""}
-                    title={"Delete Artist"}
-                    handleDelete={handleDelete}
-                    showModal={showModal}
                     setItemToDelete={setItemToDelete}
                     setShowModal={setShowModal}
                   />

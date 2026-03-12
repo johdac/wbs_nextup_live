@@ -1,3 +1,4 @@
+import type { Artist } from "./artistsApi";
 import { eventsApi } from "./events.services";
 
 export interface EventCardArtist {
@@ -23,7 +24,7 @@ export interface EventListItem {
   startDate: string;
   endDate: string;
   location: EventCardLocation;
-  artists: EventCardArtist[];
+  artists: Artist[];
   genre: string;
   coverImage: string;
   isPopular: boolean;
@@ -112,10 +113,8 @@ interface ApiEvent {
 
 // Transform API response to MusicEvent format for display
 const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
-  const organizer =
-    typeof event.createdById === "object" ? event.createdById : undefined;
-  const location =
-    typeof event.locationId === "object" ? event.locationId : undefined;
+  const organizer = typeof event.createdById === "object" ? event.createdById : undefined;
+  const location = typeof event.locationId === "object" ? event.locationId : undefined;
 
   return {
     id: event.id || (event._id as string),
@@ -152,10 +151,7 @@ export const eventsService = {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
     return transformEventToMusicEvent(data);
   },
-  fetchEventsList: async (
-    page: number = 1,
-    filters?: Omit<EventSearchParams, "page">,
-  ): Promise<EventListItem[]> => {
+  fetchEventsList: async (page: number = 1, filters?: Omit<EventSearchParams, "page">): Promise<EventListItem[]> => {
     const params: Record<string, string> = {
       page: page.toString(),
       limit: (filters?.limit ?? 20).toString(),
@@ -168,8 +164,7 @@ export const eventsService = {
     if (filters?.genres?.length) params.genres = filters.genres.join(",");
     if (filters?.lat !== undefined) params.lat = filters.lat.toString();
     if (filters?.lng !== undefined) params.lng = filters.lng.toString();
-    if (filters?.radius !== undefined)
-      params.radius = filters.radius.toString();
+    if (filters?.radius !== undefined) params.radius = filters.radius.toString();
     if (filters?.startAfter) params.startAfter = filters.startAfter;
     if (filters?.startUntil) params.startUntil = filters.startUntil;
 

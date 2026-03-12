@@ -13,7 +13,7 @@ import { EventFormContext } from "../../context/EventFormContext";
 import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
 import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
-import { EventLayout } from "../layout/EventLayout";
+import { EventInfoForm } from "../layout/EventInfoForm";
 
 export const CreateEvent = () => {
   const navigate = useNavigate();
@@ -841,7 +841,7 @@ export const CreateEvent = () => {
                 <ArtistLayout />
               </EventFormContext.Provider>
             </div>
-            <EventLayout
+            <EventInfoForm
               title={title}
               description={description}
               startDate={startDate}

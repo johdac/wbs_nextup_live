@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
-import { CirclePlay, Link, Pencil } from "lucide-react";
+import { CirclePlay, Link } from "lucide-react";
+import { EditBtn } from "../buttons/EditBtn";
+import { DeleteBtn } from "../buttons/DeleteBtn";
+import { ConfirmModal } from "../layout/ConfirmModal";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();
@@ -12,6 +15,8 @@ export const ArtistDetailsEdit = () => {
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -40,19 +45,28 @@ export const ArtistDetailsEdit = () => {
   if (error) return <p>{error}</p>;
   if (!artist) return <p>Artist not found</p>;
 
+  const handleDelete = async () => {
+    if (!itemToDelete) return;
+
+    try {
+      await artistsService.deleteArtist(itemToDelete);
+      navigate("/managed-artists");
+    } catch (err) {
+      setError("Failed to delete this artist");
+      console.error(err);
+    } finally {
+      setShowModal(false);
+      setItemToDelete(null);
+    }
+  };
+
   return (
     <div className="container mx-auto pb-10">
       {/* ACTION BUTTONS */}
-      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 justify-end">
-        <button
-          className="px-5 border border-gray text-white font-bold py-2 rounded-lg flex items-center justify-center  hover:opacity-80 transition disabled:opacity-50 cursor-pointer"
-          onClick={() => navigate(`/managed-artists/${id}/edit`)}
-        >
-          <div className="flex flex-row pb-1 items-center text-white gap-1">
-            <Pencil className="h-5 w-5" />
-            <div className="text-lg">EDIT</div>
-          </div>
-        </button>
+      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
+        <EditBtn data={artist} path="managed-artists" />
+        <DeleteBtn id={artist.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
+        <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
       </div>
 
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">

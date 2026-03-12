@@ -1,9 +1,26 @@
-import { Play, MapPin, Heart, MicVocal } from "lucide-react";
+import { MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
+import { DeleteBtn } from "../buttons/DeleteBtn";
+import { EditBtn } from "../buttons/EditBtn";
+import { ConfirmModal } from "./ConfirmModal";
 
-const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
+const EventCardManaged = ({
+  event,
+  index,
+  handleDelete,
+  showModal,
+  setItemToDelete,
+  setShowModal,
+}: {
+  event: EventListItem;
+  index: number;
+  handleDelete: () => void;
+  showModal: boolean;
+  setItemToDelete: (id: string) => void;
+  setShowModal: (show: boolean) => void;
+}) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -11,7 +28,6 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
   return (
     <div
-      // to={`/event/${event.id}`}
       style={{
         position: "sticky",
         top: "100px",
@@ -19,9 +35,10 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
         backgroundImage: 'url("/bg.jpg")',
       }}
       className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
+      // className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg sm:border sm:border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
     >
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white shadow-xs">
+      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
         <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
@@ -51,7 +68,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
       </div>
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
-        <Link to={`/event/${event.id}`}>
+        <Link to={`/managed-events/${event.id}`}>
           <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple hover:scale-105">
             {event.title}
           </h3>
@@ -62,7 +79,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
               return (
                 <div className="flex flex-row px-1 hover:text-purple hover:scale-105">
                   <MicVocal className="mr-1" />
-                  <Link to={`/artist/${artist.id}`}>
+                  <Link to={`/managed-artists/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
                   </Link>
                 </div>
@@ -72,7 +89,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
-          <Link to={`/venue/${event.location.id}`}>
+          <Link to={`/managed-locations/${event.location.id}`}>
             <span className="flex items-center hover:text-purple hover:scale-105">
               <MapPin className="mr-1 h-5 w-5 " />
               {event.location.city}
@@ -88,11 +105,12 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <Play className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
-        <Heart className="h-6 w-6 text-white hover:text-red-500" />
+        <EditBtn data={event} path="managed-events" />
+        <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
+        <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
       </div>
     </div>
   );
 };
 
-export default EventCard;
+export default EventCardManaged;

@@ -807,7 +807,6 @@ export const EditEvent = () => {
             <div className="space-y-6">
               <EventFormContext.Provider value={eventFormContextValue}>
                 <LocationLayout />
-
                 <ArtistLayout />
               </EventFormContext.Provider>
             </div>

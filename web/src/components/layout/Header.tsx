@@ -95,20 +95,20 @@ export const Header = () => {
                           <span>Managed Events</span>
                         </Link>
                         <Link
-                          to="/managed-locations"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
-                        >
-                          <MapPin className="h-4 w-4" />
-                          <span>Managed Locations</span>
-                        </Link>
-                        <Link
                           to="/managed-artists"
                           onClick={() => setUserDropdownOpen(false)}
                           className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
                         >
                           <Mic2 className="h-4 w-4" />
                           <span>Managed Artists</span>
+                        </Link>
+                        <Link
+                          to="/managed-locations"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center px-4 py-3 hover:bg-hover-purple transition gap-2 text-white"
+                        >
+                          <MapPin className="h-4 w-4" />
+                          <span>Managed Locations</span>
                         </Link>
                       </>
                     )}

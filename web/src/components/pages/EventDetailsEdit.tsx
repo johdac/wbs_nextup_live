@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
+import { Calendar, MapPin, MapPinHouse, Share2, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { EditBtn } from "../buttons/EditBtn";
