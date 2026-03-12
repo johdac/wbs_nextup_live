@@ -285,7 +285,7 @@ export const LocationLayout = () => {
                   value={searchInput}
                   onChange={(e) => onLocationSearch(e.target.value)}
                   placeholder="Search address, place, business..."
-                  className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+                  className="w-full px-4 py-3 input-event-form"
                 />
 
                 {isSearching && (

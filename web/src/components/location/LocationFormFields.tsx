@@ -43,68 +43,58 @@ export const LocationFormFields = ({
     <div className="space-y-3 mb-4">
       {topSlot}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Name *
-        </label>
+        <label className="label-event-form mb-1">Name *</label>
         <input
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="e.g., Central Arena"
-          className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+          className="w-full input-event-form"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Address
-        </label>
+        <label className="label-event-form mb-1">Address</label>
         <input
           type="text"
           value={address}
           onChange={(e) => onAddressChange(e.target.value)}
           placeholder="e.g., 123 Main St"
-          className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+          className="w-full input-event-form"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            City
-          </label>
+          <label className="label-event-form mb-1">City</label>
           <input
             type="text"
             value={city}
             onChange={(e) => onCityChange(e.target.value)}
             placeholder="e.g., Berlin"
-            className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+            className="w-full input-event-form"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Zip
-          </label>
+          <label className="label-event-form mb-1">Zip</label>
           <input
             type="text"
             value={zip}
             onChange={(e) => onZipChange(e.target.value)}
             placeholder="e.g., 10115"
-            className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+            className="w-full input-event-form"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Country
-        </label>
+        <label className="label-event-form mb-1">Country</label>
         <input
           type="text"
           value={country}
           onChange={(e) => onCountryChange(e.target.value)}
           placeholder="e.g., Germany"
-          className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+          className="w-full input-event-form"
         />
       </div>
 
@@ -118,7 +108,7 @@ export const LocationFormFields = ({
         type="button"
         onClick={onSubmit}
         disabled={isSubmitting}
-        className="w-full cursor-pointer bg-purple-600 text-white font-medium py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full px-3 py-2 btn-secondary"
       >
         {isSubmitting ? pendingLabel : submitLabel}
       </button>
