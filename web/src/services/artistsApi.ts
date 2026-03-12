@@ -38,7 +38,7 @@ export interface ArtistSearchParams {
   search?: string;
   genres?: string[];
   page?: number;
-  createdById?: number;
+  createdById?: string;
 }
 
 export interface EventCardArtist {
@@ -62,8 +62,10 @@ const transformArtist = (artist: Artist): EventCardArtist => {
 };
 
 export const artistsService = {
-  getArtists: async (): Promise<Artist[]> => {
-    const { data } = await eventsApi.get<Artist[]>("/artists");
+  getArtists: async (createdById?: string): Promise<Artist[]> => {
+    const { data } = await eventsApi.get<Artist[]>("/artists", {
+      params: createdById ? { createdById } : undefined,
+    });
     return data;
   },
   getArtistById: async (id: string): Promise<Artist> => {

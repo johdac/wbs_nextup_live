@@ -67,6 +67,7 @@ export const CreateEvent = () => {
     string | null
   >(null);
   const [editingArtistId, setEditingArtistId] = useState<string | null>(null);
+  const [isSavingArtist, setIsSavingArtist] = useState(false);
   const [savedArtistPreview, setSavedArtistPreview] = useState<{
     name: string;
     mainImageUrl?: string;
@@ -178,7 +179,7 @@ export const CreateEvent = () => {
     artistMainImageFile,
   ]);
 
-  const shouldWarnOnLeave = hasUnsavedChanges && !success;
+  const shouldWarnOnLeave = hasUnsavedChanges && !success && !isSavingArtist;
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -212,7 +213,7 @@ export const CreateEvent = () => {
   // Fetch artists and locations
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
     queryKey: ["artists"],
-    queryFn: artistsService.getArtists,
+    queryFn: () => artistsService.getArtists(),
   });
 
   const { data: locations = [], isLoading: locationsLoading } = useQuery({
@@ -895,35 +896,41 @@ export const CreateEvent = () => {
       return;
     }
 
-    let artistMainImageKey = undefined;
-    if (artistMainImageFile) {
-      artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+    setIsSavingArtist(true);
+
+    try {
+      let artistMainImageKey = undefined;
+      if (artistMainImageFile) {
+        artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+      }
+
+      const artistPayload = {
+        name: artistName,
+        genres: artistGenres,
+        description: artistDescription?.trim() || undefined,
+        websiteUrl: artistWebsiteUrl?.trim() || undefined,
+        mainImageKey: artistMainImageKey,
+        musicResources:
+          validMusicResources.length > 0
+            ? validMusicResources.map((item) => ({
+                url: item.url,
+                title: item.title || "YouTube",
+              }))
+            : undefined,
+      };
+
+      if (editingArtistId) {
+        await updateArtistMutation.mutateAsync({
+          id: editingArtistId,
+          artistData: artistPayload,
+        });
+        return;
+      }
+
+      await createArtistMutation.mutateAsync(artistPayload);
+    } finally {
+      setIsSavingArtist(false);
     }
-
-    const artistPayload = {
-      name: artistName,
-      genres: artistGenres,
-      description: artistDescription?.trim() || undefined,
-      websiteUrl: artistWebsiteUrl?.trim() || undefined,
-      mainImageKey: artistMainImageKey,
-      musicResources:
-        validMusicResources.length > 0
-          ? validMusicResources.map((item) => ({
-              url: item.url,
-              title: item.title || "YouTube",
-            }))
-          : undefined,
-    };
-
-    if (editingArtistId) {
-      await updateArtistMutation.mutateAsync({
-        id: editingArtistId,
-        artistData: artistPayload,
-      });
-      return;
-    }
-
-    await createArtistMutation.mutateAsync(artistPayload);
   };
 
   // Handle form submission
@@ -1117,6 +1124,32 @@ export const CreateEvent = () => {
       setArtistMainImagePreviewUrl(savedArtistPreview?.mainImageUrl);
     },
     onLoadArtistForEdit: handleLoadArtistForEdit,
+    onCancelArtistEdit: () => {
+      if (editingArtistId) {
+        const normalizedEditingArtistId = String(editingArtistId);
+        const currentSelectedArtistIds = getValues("selectedArtistIds").map((id) =>
+          String(id),
+        );
+
+        if (!currentSelectedArtistIds.includes(normalizedEditingArtistId)) {
+          setValue("selectedArtistIds", [
+            ...currentSelectedArtistIds,
+            normalizedEditingArtistId,
+          ]);
+        }
+
+        if (
+          savedArtistPreviewId &&
+          normalizedEditingArtistId === String(savedArtistPreviewId) &&
+          savedArtistPreview
+        ) {
+          setShowSavedArtistPreview(true);
+        }
+      }
+
+      setEditingArtistId(null);
+      setValue("isCreatingNewArtist", false);
+    },
     onCreateArtist: handleCreateArtist,
   };
 
