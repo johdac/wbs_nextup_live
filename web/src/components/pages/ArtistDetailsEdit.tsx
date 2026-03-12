@@ -64,7 +64,8 @@ export const ArtistDetailsEdit = () => {
     <div className="container mx-auto pb-10">
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
-        <EditBtn data={artist} path="managed-artists" />
+        {/* error to be solved */}
+        {/* <EditBtn data={artist} path="managed-artists" /> */}
         <DeleteBtn id={artist.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
         <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
       </div>
