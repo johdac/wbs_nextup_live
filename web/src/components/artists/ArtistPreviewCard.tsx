@@ -20,8 +20,12 @@ export const ArtistPreviewCard = ({
       <div className="flex items-center gap-4">
         <div className="w-full h-20 sm:w-30 sm:h-30 shrink-0 overflow-hidden rounded-md">
           <img
-            src={mainImageUrl || "/placeholder.jpeg"}
+            src={mainImageUrl}
             alt={name}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/placeholder.jpeg";
+            }}
             className="h-full w-full rounded-lg object-cover border border-purple-500/30"
           />
         </div>

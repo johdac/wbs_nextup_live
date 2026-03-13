@@ -79,6 +79,10 @@ export const ArtistDetailsEdit = () => {
             <img
               src={artist.mainImageUrl}
               alt={artist.name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/placeholder.jpeg";
+              }}
               className="rounded-lg w-full h-64 lg:h-full object-cover"
             />
           </div>
