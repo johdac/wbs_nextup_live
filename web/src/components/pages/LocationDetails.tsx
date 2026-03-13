@@ -81,7 +81,7 @@ export const VenueDetails = () => {
           </div>
         </div>
       </div>
-      <EventByLocation locationId={location.id} />
+      <EventByLocation locationId={location.id || location.id || ""} />
     </div>
   );
 };
