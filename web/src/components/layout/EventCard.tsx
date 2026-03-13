@@ -3,13 +3,7 @@ import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
 
-const EventCard = ({
-  event,
-  index,
-}: {
-  event: EventListItem;
-  index: number;
-}) => {
+const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -17,9 +11,7 @@ const EventCard = ({
 
   return (
     <div
-      // to={`/event/${event.id}`}
       style={{
-        position: "sticky",
         top: "100px",
         zIndex: index,
         backgroundImage: 'url("/bg.jpg")',
@@ -27,18 +19,16 @@ const EventCard = ({
       className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
     >
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
+      <div className="sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">
-          {monthStr}
-        </span>
+        <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
-        {event.coverImage ? (
+        {event.mainImageUrl ? (
           <img
-            src={event.coverImage}
+            src={event.mainImageUrl}
             alt={event.title}
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -52,9 +42,7 @@ const EventCard = ({
 
         {/* DATE STICKER ON MOBILE ONLY */}
         <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider">
-            {monthStr}
-          </span>
+          <span className="text-xs font-bold uppercase tracking-wider">{monthStr}</span>
           <span className="text-xl font-black leading-none">{dayStr}</span>
           <span className="text-xs font-bold">{yearStr}</span>
         </div>
@@ -70,7 +58,7 @@ const EventCard = ({
           <div className="text-white flex items-center">
             {event.artists.map((artist) => {
               return (
-                <div className="flex flex-row px-1 hover:text-purple hover:scale-105">
+                <div key={artist.id} className="flex flex-row px-1 hover:text-purple hover:scale-105">
                   <MicVocal className="mr-1" />
                   <Link to={`/artist/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
@@ -90,9 +78,20 @@ const EventCard = ({
           </Link>
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <span className="rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider">
-            {event.genre}
-          </span>
+          <div>
+            {event.genres?.length ? (
+              event.genres.map((g) => (
+                <span
+                  key={g}
+                  className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
+                >
+                  {g}
+                </span>
+              ))
+            ) : (
+              <span>-</span>
+            )}
+          </div>
         </div>
       </div>
 

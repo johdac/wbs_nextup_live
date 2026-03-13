@@ -34,6 +34,8 @@ export interface CreateArtistInput {
   websiteUrl?: string;
 }
 
+export type UpdateArtistInput = Partial<CreateArtistInput>;
+
 export interface ArtistSearchParams {
   search?: string;
   genres?: string[];
@@ -46,20 +48,9 @@ export interface EventCardArtist {
   name: string;
   genre: string;
   description: string;
-  imageUrl: string;
+  mainImageUrl: string;
   websiteUrl: string;
 }
-
-const transformArtist = (artist: Artist): EventCardArtist => {
-  return {
-    id: artist.id || artist._id || "",
-    name: artist.name || "",
-    genre: artist.genres?.[0] || "Unknown",
-    description: artist.description || "",
-    imageUrl: "/placeholder.svg",
-    websiteUrl: artist.websiteUrl || "",
-  };
-};
 
 export const artistsService = {
   getArtists: async (createdById?: string): Promise<Artist[]> => {
@@ -76,23 +67,11 @@ export const artistsService = {
     const { data } = await eventsApi.post<Artist>("/artists", artistData);
     return data;
   },
-  updateArtist: async (
-    id: string,
-    artistData: Partial<CreateArtistInput>,
-  ): Promise<Artist> => {
+  updateArtist: async (id: string, artistData: Partial<UpdateArtistInput>): Promise<Artist> => {
     const { data } = await eventsApi.put<Artist>(`/artists/${id}`, artistData);
     return data;
   },
-  fetchArtistsList: async (
-    page: number = 1,
-    filters?: Omit<ArtistSearchParams, "page">,
-  ): Promise<EventCardArtist[]> => {
-    const params: Record<string, string> = { page: page.toString() };
-
-    if (filters?.search) params.search = filters.search;
-    if (filters?.genres?.length) params.genres = filters.genres.join(",");
-
-    const { data } = await eventsApi.get<Artist[]>("/artists", { params });
-    return data.map((artist) => transformArtist(artist));
+  deleteArtist: async (id: string): Promise<void> => {
+    await eventsApi.delete(`/artists/${id}`);
   },
 };

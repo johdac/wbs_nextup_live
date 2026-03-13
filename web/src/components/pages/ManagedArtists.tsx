@@ -6,15 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { artistsService, type Artist } from "../../services/artistsApi";
 import { uploadFile } from "../../services/uploadApi";
 
-const GENRES = [
-  "classical",
-  "electronic",
-  "hiphop",
-  "jazz",
-  "pop",
-  "rock",
-  "world",
-] as const;
+const GENRES = ["classical", "electronic", "hiphop", "jazz", "pop", "rock", "world"] as const;
 
 const defaultMusicItem = { title: "", url: "" };
 
@@ -35,12 +27,8 @@ export const ManagedArtists = () => {
   const [artistWebsiteUrl, setArtistWebsiteUrl] = useState("");
   const [artistGenres, setArtistGenres] = useState<string[]>([]);
   const [artistMusicUrls, setArtistMusicUrls] = useState([defaultMusicItem]);
-  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(
-    null,
-  );
-  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<
-    string | undefined
-  >(undefined);
+  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(null);
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<string | undefined>(undefined);
   const [artistNameError, setArtistNameError] = useState("");
   const [error, setError] = useState("");
 
@@ -65,13 +53,8 @@ export const ManagedArtists = () => {
   });
 
   const updateArtistMutation = useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: Parameters<typeof artistsService.updateArtist>[1];
-    }) => artistsService.updateArtist(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: Parameters<typeof artistsService.updateArtist>[1] }) =>
+      artistsService.updateArtist(id, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["managed-artists", userId],
@@ -82,13 +65,9 @@ export const ManagedArtists = () => {
     },
   });
 
-  const isSaving =
-    createArtistMutation.isPending || updateArtistMutation.isPending;
+  const isSaving = createArtistMutation.isPending || updateArtistMutation.isPending;
 
-  const sortedArtists = useMemo(
-    () => [...artists].sort((a, b) => a.name.localeCompare(b.name)),
-    [artists],
-  );
+  const sortedArtists = useMemo(() => [...artists].sort((a, b) => a.name.localeCompare(b.name)), [artists]);
 
   const resetForm = () => {
     setArtistName("");
@@ -123,9 +102,7 @@ export const ManagedArtists = () => {
         : [defaultMusicItem],
     );
     setArtistMainImageFile(null);
-    setArtistMainImagePreviewUrl(
-      artist.mainImageUrl || artist.imageUrls?.[0] || undefined,
-    );
+    setArtistMainImagePreviewUrl(artist.mainImageUrl || artist.imageUrls?.[0] || undefined);
     setArtistNameError("");
     setError("");
     setIsFormOpen(true);
@@ -151,9 +128,7 @@ export const ManagedArtists = () => {
       }))
       .filter((item) => item.url.length > 0);
 
-    const invalidResource = normalizedResources.find(
-      (resource) => !isYoutubeUrl(resource.url),
-    );
+    const invalidResource = normalizedResources.find((resource) => !isYoutubeUrl(resource.url));
 
     if (invalidResource) {
       setError("Music Url must be a valid YouTube link");
@@ -193,9 +168,7 @@ export const ManagedArtists = () => {
       <div className="container mx-auto px-4">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-black text-white mb-2">
-              Managed Artists
-            </h1>
+            <h1 className="text-4xl font-black text-white mb-2">Managed Artists</h1>
             <p className="text-gray-400">Edit your saved artists</p>
           </div>
           <button
@@ -208,9 +181,7 @@ export const ManagedArtists = () => {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-300">
-            {error}
-          </div>
+          <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-300">{error}</div>
         )}
 
         {isFormOpen && (
@@ -234,9 +205,7 @@ export const ManagedArtists = () => {
               onArtistWebsiteUrlChange={setArtistWebsiteUrl}
               onArtistGenreToggle={(genre) => {
                 setArtistGenres((prev) =>
-                  prev.includes(genre)
-                    ? prev.filter((item) => item !== genre)
-                    : [...prev, genre],
+                  prev.includes(genre) ? prev.filter((item) => item !== genre) : [...prev, genre],
                 );
               }}
               onArtistMusicUrlChange={(index, field, value) => {
@@ -249,9 +218,7 @@ export const ManagedArtists = () => {
                   return next;
                 });
               }}
-              onAddArtistMusicUrl={() =>
-                setArtistMusicUrls((prev) => [...prev, { ...defaultMusicItem }])
-              }
+              onAddArtistMusicUrl={() => setArtistMusicUrls((prev) => [...prev, { ...defaultMusicItem }])}
               onRemoveArtistMusicUrl={(index) =>
                 setArtistMusicUrls((prev) => {
                   const next = prev.filter((_, i) => i !== index);

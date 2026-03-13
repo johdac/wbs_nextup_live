@@ -1,27 +1,33 @@
-import { Pencil, MapPin, MicVocal } from "lucide-react";
+import { MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
+import { DeleteBtn } from "../buttons/DeleteBtn";
+import { EditBtn } from "../buttons/EditBtn";
+import { ConfirmModal } from "../layout/ConfirmModal";
 
-const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }) => {
-  const navigate = useNavigate();
+const EventPreviewCard = ({
+  event,
+  index,
+  handleDelete,
+  showModal,
+  setItemToDelete,
+  setShowModal,
+}: {
+  event: EventListItem;
+  index: number;
+  handleDelete: () => void;
+  showModal: boolean;
+  setItemToDelete: (id: string) => void;
+  setShowModal: (show: boolean) => void;
+}) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
   const yearStr = format(new Date(event.startDate), "yyyy");
 
   return (
-    <div
-      // to={`/event/${event.id}`}
-      style={{
-        position: "sticky",
-        top: "100px",
-        zIndex: index,
-        backgroundImage: 'url("/bg.jpg")',
-      }}
-      className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
-      // className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg sm:border sm:border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
-    >
+    <div className="managed-card">
       {/* DATE STICKER ON DESKTOP ONLY */}
       <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
@@ -30,9 +36,9 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
-        {event.coverImage ? (
+        {event.mainImageUrl ? (
           <img
-            src={event.coverImage}
+            src={event.mainImageUrl}
             alt={event.title}
             onError={(e) => {
               e.currentTarget.onerror = null;
@@ -53,7 +59,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
       </div>
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
-        <Link to={`/event/${event.id}`}>
+        <Link to={`/managed-events/${event.id}`}>
           <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple hover:scale-105">
             {event.title}
           </h3>
@@ -64,7 +70,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
               return (
                 <div className="flex flex-row px-1 hover:text-purple hover:scale-105">
                   <MicVocal className="mr-1" />
-                  <Link to={`/artist/${artist.id}`}>
+                  <Link to={`/managed-artists/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
                   </Link>
                 </div>
@@ -74,7 +80,7 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
-          <Link to={`/venue/${event.location.id}`}>
+          <Link to={`/managed-locations/${event.location.id}`}>
             <span className="flex items-center hover:text-purple hover:scale-105">
               <MapPin className="mr-1 h-5 w-5 " />
               {event.location.city}
@@ -82,26 +88,31 @@ const EventCardEdit = ({ event, index }: { event: EventListItem; index: number }
           </Link>
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <span className="rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider">
-            {event.genre}
-          </span>
+          <div>
+            {event.genres?.length ? (
+              event.genres.map((g) => (
+                <span
+                  key={g}
+                  className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
+                >
+                  {g}
+                </span>
+              ))
+            ) : (
+              <span>-</span>
+            )}
+          </div>
         </div>
       </div>
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <button
-          onClick={() =>
-            navigate(`/managed-events/${event.id}`, {
-              state: { event },
-            })
-          }
-        >
-          <Pencil className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
-        </button>
+        <EditBtn data={event} path="managed-events" />
+        <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
+        <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
       </div>
     </div>
   );
 };
 
-export default EventCardEdit;
+export default EventPreviewCard;
