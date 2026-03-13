@@ -57,15 +57,13 @@ export const ArtistForm = ({
   return (
     <div className="space-y-5 mb-4">
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Artist Name *
-        </label>
+        <label className="label-event-form mb-1">Artist Name *</label>
         <input
           type="text"
           value={artistName}
           onChange={(e) => onArtistNameChange(e.target.value)}
           placeholder="e.g., The Rolling Stones"
-          className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+          className="w-full  input-event-form"
         />
         {artistNameError && (
           <p className="text-sm text-red-400 mt-1 mb-2 ml-2">
@@ -75,22 +73,18 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Description
-        </label>
+        <label className="label-event-form mb-1">Description</label>
         <textarea
           value={artistDescription}
           onChange={(e) => onArtistDescriptionChange(e.target.value)}
           placeholder="Artist description"
           rows={3}
-          className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition resize-none"
+          className="w-full input-event-form resize-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Music Resources
-        </label>
+        <label className="label-event-form mb-2">Music Resources</label>
         <div className="space-y-2">
           {artistMusicUrls.map((musicItem, index) => (
             <div key={`music-url-${index}`} className="flex gap-2">
@@ -101,7 +95,7 @@ export const ArtistForm = ({
                   onArtistMusicUrlChange(index, "title", e.target.value)
                 }
                 placeholder="Title (e.g. Live at Wembley)"
-                className="w-1/3 px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+                className="w-1/3 input-event-form"
               />
               <input
                 type="url"
@@ -110,7 +104,7 @@ export const ArtistForm = ({
                   onArtistMusicUrlChange(index, "url", e.target.value)
                 }
                 placeholder="https://youtube.com/... or https://youtu.be/..."
-                className="w-2/3 px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+                className="w-2/3 input-event-form"
               />
               {artistMusicUrls.length > 1 && (
                 <button
@@ -134,22 +128,18 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-1">
-          Website Url
-        </label>
+        <label className="label-event-form mb-1">Website Url</label>
         <input
           type="url"
           value={artistWebsiteUrl}
           onChange={(e) => onArtistWebsiteUrlChange(e.target.value)}
           placeholder="https://artist-website.com"
-          className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+          className="w-full input-event-form"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Artist Image Upload
-        </label>
+        <label className="label-event-form mb-2">Artist Image Upload</label>
         <FileUploadField
           uploadType="artistImage"
           onFileChange={onArtistMainImageFileChange}
@@ -158,7 +148,7 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="label-event-form mb-2">
           Genres * (select at least one)
         </label>
         <div className="flex flex-wrap gap-2">
@@ -168,9 +158,7 @@ export const ArtistForm = ({
               type="button"
               onClick={() => onArtistGenreToggle(genre)}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                artistGenres.includes(genre)
-                  ? "bg-purple-500 text-white"
-                  : "bg-black/40 text-gray-400 hover:bg-black/60 border border-purple-500/30"
+                artistGenres.includes(genre) ? "btn-tertiary" : "btn-cancel"
               }`}
             >
               {genre}
@@ -180,18 +168,14 @@ export const ArtistForm = ({
       </div>
 
       <div className="flex h-11 gap-2 mt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 cursor-pointer bg-black/40 text-gray-300 font-medium rounded-lg hover:bg-black/60 border border-purple-500/30 transition"
-        >
+        <button type="button" onClick={onCancel} className="flex-1 btn-cancel">
           Cancel
         </button>
         <button
           type="button"
           onClick={onSave}
           disabled={isSaving}
-          className="flex-1 cursor-pointer bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 btn-secondary"
         >
           {isSaving ? "Saving..." : saveLabel}
         </button>
