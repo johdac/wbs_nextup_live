@@ -4,6 +4,7 @@ import DOMPurify from "dompurify";
 import { Calendar, MapPin, MapPinHouse, Share2, Play, Heart, ListPlus, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { ArtistCard } from "../artists/ArtistCard";
+import { GenresTag } from "../ui/GenresTag";
 
 export const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -127,20 +128,7 @@ export const EventDetails = () => {
                 <Sparkles className="mr-1 h-5 w-5" />
                 <div className="text-lg">GENRES</div>
               </div>
-              <div>
-                {event.genres?.length ? (
-                  event.genres.map((g) => (
-                    <span
-                      key={g}
-                      className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
-                    >
-                      {g}
-                    </span>
-                  ))
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
+              <GenresTag data={event} />
             </div>
 
             <div>

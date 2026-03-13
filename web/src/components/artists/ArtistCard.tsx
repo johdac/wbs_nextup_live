@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import DOMPurify from "dompurify";
 import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 import type { Artist } from "../../services/artistsApi";
+import { GenresTag } from "../ui/GenresTag";
 
 export const ArtistCard = ({ artist }: { artist: Artist }) => {
   return (
@@ -29,21 +30,7 @@ export const ArtistCard = ({ artist }: { artist: Artist }) => {
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description || "") }}
               />
             </Link>
-
-            <div>
-              {artist.genres?.length ? (
-                artist.genres.map((g) => (
-                  <span
-                    key={g}
-                    className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
-                  >
-                    {g}
-                  </span>
-                ))
-              ) : (
-                <span>-</span>
-              )}
-            </div>
+            <GenresTag data={artist} />
           </div>
           <CirclePlayBtn />
         </div>

@@ -2,6 +2,7 @@ import { Play, MapPin, Heart, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
+import { GenresTag } from "../ui/GenresTag";
 
 const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
@@ -77,22 +78,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
             </span>
           </Link>
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <div>
-            {event.genres?.length ? (
-              event.genres.map((g) => (
-                <span
-                  key={g}
-                  className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
-                >
-                  {g}
-                </span>
-              ))
-            ) : (
-              <span>-</span>
-            )}
-          </div>
-        </div>
+        <GenresTag data={event} />
       </div>
 
       {/* ACTION BUTTONS */}

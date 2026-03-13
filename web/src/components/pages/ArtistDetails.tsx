@@ -5,6 +5,7 @@ import { artistsService, type Artist } from "../../services/artistsApi";
 import { Link } from "lucide-react";
 import { EventByArtist } from "../artists/EventsByArtist";
 import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
+import { GenresTag } from "../ui/GenresTag";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,20 +68,8 @@ export const ArtistDetails = () => {
               </h1>
               <CirclePlayBtn />
             </div>
-            <div>
-              {artist.genres?.length ? (
-                artist.genres.map((g) => (
-                  <span
-                    key={g}
-                    className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-2"
-                  >
-                    {g}
-                  </span>
-                ))
-              ) : (
-                <span>-</span>
-              )}
-            </div>
+            <GenresTag data={artist} />
+
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
               {artist.description ? (

@@ -5,17 +5,16 @@ import type { EventListItem } from "../../services/eventsApi";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
+import { GenresTag } from "../ui/GenresTag";
 
 const EventPreviewCard = ({
   event,
-  index,
   handleDelete,
   showModal,
   setItemToDelete,
   setShowModal,
 }: {
   event: EventListItem;
-  index: number;
   handleDelete: () => void;
   showModal: boolean;
   setItemToDelete: (id: string) => void;
@@ -36,19 +35,18 @@ const EventPreviewCard = ({
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
-        {event.mainImageUrl ? (
-          <img
-            src={event.mainImageUrl}
-            alt={event.title}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/placeholder.jpeg";
-            }}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          <div className="absolute inset-0 neon-gradient-bg opacity-60" />
-        )}
+        <img
+          src={event.mainImageUrl || "/placeholder.jpeg"}
+          alt={event.title}
+          onError={(e) => {
+            const current = e.currentTarget;
+            if (!current.src.endsWith("placeholder.jpeg")) {
+              current.onerror = null;
+              current.src = "/placeholder.jpeg";
+            }
+          }}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
 
         {/* DATE STICKER ON MOBILE ONLY */}
         <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
@@ -87,22 +85,7 @@ const EventPreviewCard = ({
             </span>
           </Link>
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <div>
-            {event.genres?.length ? (
-              event.genres.map((g) => (
-                <span
-                  key={g}
-                  className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
-                >
-                  {g}
-                </span>
-              ))
-            ) : (
-              <span>-</span>
-            )}
-          </div>
-        </div>
+        <GenresTag data={event} />
       </div>
 
       {/* ACTION BUTTONS */}
