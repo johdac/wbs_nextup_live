@@ -266,7 +266,7 @@
   }
 
   .managed-card {
-    @apply flex justify-between items-center rounded-lg border border-purple-500/30 bg-black/20 p-4;
+    @apply flex justify-between items-center rounded-lg border border-purple-500/30 bg-black/20 p-4 gap-4;
   }
 }
 
