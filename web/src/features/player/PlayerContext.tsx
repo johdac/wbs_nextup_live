@@ -64,26 +64,17 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     setPlayerState("playing");
   };
 
-  const playNext = () => {};
-
-  // const goNext = () => {
-  //   if (playlist.length === 0) return;
-  //   const current = playlist[currentIndex];
-  //   if (current) {
-  //     setPlayed((prev) => [...prev, current]);
-  //   }
-  //   if (currentIndex >= playlist.length - 1) {
-  //     setNowPlayingTitle("—");
-  //     setNowPlayingVendor("");
-  //     setEmbedUrl("");
-  //     setCurrentIndex(playlist.length);
-  //     destroyCurrentPlayer();
-  //     return;
-  //   }
-  //   const newIndex = currentIndex + 1;
-  //   setCurrentIndex(newIndex);
-  //   showTrack(playlist[newIndex], true);
-  // };
+  const playNext = () => {
+    if (playlist.length === 0) return;
+    console.log(
+      "currentIndex",
+      currentIndex,
+      "playlist.length",
+      playlist.length,
+    );
+    if (currentIndex >= playlist.length - 1) setCurrentIndex(-1);
+    else setCurrentIndex((prev) => prev + 1);
+  };
 
   const playPrev = () => {};
 

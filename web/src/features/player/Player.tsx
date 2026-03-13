@@ -1,6 +1,9 @@
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Chip } from "../../components/ui/Chip";
 import { useEffect, useRef } from "react";
 import { usePlayer } from "../../features/player/PlayerContext";
+import { format } from "date-fns";
+import { Link } from "react-router";
 
 export const Player = () => {
   // We manage the player state in context and get it here
@@ -29,12 +32,8 @@ export const Player = () => {
    * We do not add the song url to the player though, that happens in the
    */
   useEffect(() => {
-    if (!currentSong) {
-      console.log("no current song in playlist");
-      return;
-    }
-    console.log("current song found", currentSong);
     destroyAllPlayers();
+    if (!currentSong) return;
     if (currentSong.song.vendor === "youtube")
       initYoutubePlayer(playerState === "playing");
     if (currentSong.song.vendor === "soundcloud")
@@ -151,7 +150,7 @@ export const Player = () => {
               </button>
 
               <button
-                // onClick={goNext}
+                onClick={playNext}
                 disabled={!canGoNext}
                 className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
               >
@@ -177,15 +176,36 @@ export const Player = () => {
             )}
 
             {/* Song Info */}
-            <div className="pb-">
-              <p className=" text-sm mb-0.5 mt-1">
-                Now Playing{" "}
-                <span className="">
-                  {currentIndex + 1} / {playlist.length}
-                </span>
+            <div className="">
+              <p className=" text-xs mt-1">
+                Now Playing {currentIndex + 1} / {playlist.length}
               </p>
-              <div className="text-lg font-bold text-white mb-2"></div>
+              <div className="text-md font-bold mb-0.5">
+                {currentSong?.song.artist.name} – {currentSong?.song.title}
+              </div>
+              <div className="text-sm mb-2.5 ">
+                {currentSong?.event && (
+                  <>
+                    <Link to={`/event/${currentSong.event.id}`}>
+                      <div className="flex">
+                        <Chip
+                          className={"mr-1"}
+                          string={format(
+                            new Date(currentSong.event.start),
+                            "dd MMM",
+                          )}
+                        />
+                        {currentSong.event.location.city},{" "}
+                        {currentSong.event.location.name}
+                      </div>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
+
+            {/* Actions */}
+            <div></div>
           </div>
         )}
       </div>
