@@ -1,5 +1,9 @@
 import axios from "axios";
-import { clearAuthSession, refreshAccessToken } from "./tokenRefresh";
+import {
+  clearAuthSession,
+  isRefreshTokenInvalidError,
+  refreshAccessToken,
+} from "./tokenRefresh";
 
 const authServiceURL = import.meta.env.VITE_APP_AUTH_SERVER_URL;
 export const authApi = axios.create({
@@ -18,9 +22,20 @@ authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const requestUrl = String(originalRequest?.url || "");
+    const isAuthEndpoint =
+      requestUrl.includes("/login") ||
+      requestUrl.includes("/register") ||
+      requestUrl.includes("/refresh") ||
+      requestUrl.includes("/logout");
 
-    // Check for 401 (Unauthorized)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const shouldTryRefresh =
+      !isAuthEndpoint &&
+      !!originalRequest &&
+      !originalRequest._retry &&
+      (error.response?.status === 401 || error.response?.status === 403);
+
+    if (shouldTryRefresh) {
       originalRequest._retry = true;
 
       try {
@@ -33,9 +48,10 @@ authApi.interceptors.response.use(
         // 3. RETRY the original request with the new token
         return authApi(originalRequest);
       } catch (refreshError) {
-        // If the refresh token is expired or deleted, the user MUST log in again
-        clearAuthSession();
-        window.location.href = "/login";
+        if (isRefreshTokenInvalidError(refreshError)) {
+          clearAuthSession();
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }

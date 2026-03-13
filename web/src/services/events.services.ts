@@ -1,5 +1,9 @@
 import axios from "axios";
-import { clearAuthSession, refreshAccessToken } from "./tokenRefresh";
+import {
+  clearAuthSession,
+  isRefreshTokenInvalidError,
+  refreshAccessToken,
+} from "./tokenRefresh";
 
 const URL = import.meta.env.VITE_API_SERVER_URL;
 
@@ -19,9 +23,16 @@ eventsApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const requestUrl = String(originalRequest?.url || "");
+    const isRefreshEndpoint = requestUrl.includes("/refresh");
 
-    // Check for 401 (Unauthorized)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const shouldTryRefresh =
+      !isRefreshEndpoint &&
+      !!originalRequest &&
+      !originalRequest._retry &&
+      (error.response?.status === 401 || error.response?.status === 403);
+
+    if (shouldTryRefresh) {
       originalRequest._retry = true;
 
       try {
@@ -34,9 +45,10 @@ eventsApi.interceptors.response.use(
         // RETRY the original request with the new token
         return eventsApi(originalRequest);
       } catch (refreshError) {
-        // If refresh token is expired or deleted, user MUST log in again
-        clearAuthSession();
-        window.location.href = "/login";
+        if (isRefreshTokenInvalidError(refreshError)) {
+          clearAuthSession();
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }

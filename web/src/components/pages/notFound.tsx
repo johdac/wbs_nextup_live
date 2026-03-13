@@ -26,7 +26,7 @@ const NotFound = () => {
 
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Link to="/">
-              <button className="rounded-lg cursor-pointer bg-purple-600 px-8 py-3 font-semibold text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-transform hover:scale-105 active:scale-95">
+              <button className="rounded-lg cursor-pointer bg-primary px-8 py-3 font-semibold text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-transform hover:scale-105 active:scale-95">
                 Return to Homepage
               </button>
             </Link>

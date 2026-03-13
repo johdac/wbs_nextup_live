@@ -214,6 +214,9 @@
 @import "tailwindcss";
 
 @theme {
+  --color-primary: hsl(246, 55%, 43%);
+  --color-secondary: hsl(246, 67%, 26%);
+
   --color-purple: hsl(246, 55%, 43%);
   --color-pink: hsl(336, 100%, 65%);
   --color-orange: hsl(15, 100%, 66%);
@@ -223,7 +226,6 @@
   --color-background: hsl(222 47% 6%);
   --color-foreground: #ffffff;
 
-  --color-secondary: hsl(223, 7%, 21%);
   --color-secondary-foreground: hsl(240, 0%, 44%);
 
   --color-hover-purple: hsl(246, 67%, 26%);
@@ -254,7 +256,7 @@
     @apply bg-purple text-white font-medium hover:bg-purple/80 transition cursor-pointer px-4 py-2 rounded-lg;
   }
   .btn-secondary {
-    @apply cursor-pointer bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-tertiary {
     @apply bg-purple-500 text-white;
