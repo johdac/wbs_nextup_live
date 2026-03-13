@@ -10,6 +10,7 @@ import { ArtistCard } from "../artists/ArtistCard";
 import { LikeBtn } from "../buttons/LikeBtn";
 import { PlayBtn } from "../buttons/PlayBtn";
 import { AddToListBtn } from "../buttons/AddToListBtn";
+import { GenresTag } from "../ui/GenresTag";
 
 export const EventDetailsEdit = () => {
   const navigate = useNavigate();
@@ -149,20 +150,7 @@ export const EventDetailsEdit = () => {
                 <Sparkles className="mr-1 h-5 w-5" />
                 <div className="text-lg">GENRES</div>
               </div>
-              <div>
-                {event.genres?.length ? (
-                  event.genres.map((g) => (
-                    <span
-                      key={g}
-                      className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
-                    >
-                      {g}
-                    </span>
-                  ))
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
+              <GenresTag data={event} />
             </div>
 
             <div>

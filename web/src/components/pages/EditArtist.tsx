@@ -1,30 +1,35 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Save, AlertCircle, Trash2 } from "lucide-react";
-import { artistsService, type Artist, type UpdateArtistInput } from "../../services/artistsApi";
+import { AlertCircle } from "lucide-react";
+import { artistsService, type CreateArtistInput, type UpdateArtistInput } from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
-import { FileUploadField } from "../ui/FileUpload";
+import { ArtistForm } from "../artists/ArtistForm";
+import { EventFormContext } from "../../context/EventFormContext";
 
-const GENRES = ["classical", "electronic", "hiphop", "jazz", "pop", "rock", "world"] as const;
+type ArtistMusicUrl = { title: string; url: string };
+
+type ArtistFormValues = {
+  artistName: string;
+  artistGenres: string[];
+  artistDescription: string;
+  artistWebsiteUrl: string;
+  artistMusicUrls: ArtistMusicUrl[];
+};
 
 export const EditArtist = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const location = useLocation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const passedArtist = location.state?.artist as Artist | undefined;
-
-  const { setValue, watch, getValues } = useForm({
+  const { setValue, watch, getValues } = useForm<ArtistFormValues>({
     defaultValues: {
       artistName: "",
-      artistGenres: [] as string[],
+      artistGenres: [],
       artistDescription: "",
       artistWebsiteUrl: "",
-      artistMusicUrls: [""] as string[],
+      artistMusicUrls: [{ title: "", url: "" }],
     },
   });
 
@@ -36,38 +41,45 @@ export const EditArtist = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingArtistId, setEditingArtistId] = useState<string | null>(null);
+  const [savedArtistPreview, setSavedArtistPreview] = useState<{
+    name: string;
+    mainImageUrl?: string;
+    description?: string;
+    websiteUrl?: string;
+    genres: string[];
+    musicResources: { title: string; url: string }[];
+  } | null>(null);
+  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<string | null>(null);
+  const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<string | undefined>(undefined);
 
-  // Fetch artist details
-  const { data: artist, isLoading } = useQuery({
-    queryKey: ["artist", id],
-    queryFn: () => (id ? artistsService.getArtistById(id) : null),
-    enabled: !!id && !passedArtist,
+  const { data: artists = [], isLoading: artistsLoading } = useQuery({
+    queryKey: ["artists"],
+    queryFn: () => artistsService.getArtists(),
   });
 
-  const currentArtist = passedArtist || artist;
-
-  // Initialize form with artist data
-  useEffect(() => {
-    if (currentArtist) {
-      setValue("artistName", currentArtist.name || "");
-      setValue("artistGenres", currentArtist.genres || []);
-      setValue("artistDescription", currentArtist.description || "");
-      setValue("artistWebsiteUrl", currentArtist.websiteUrl || "");
-      setValue("artistMusicUrls", currentArtist.musicResources?.map((m) => m.url) || [""]);
-    }
-  }, [currentArtist, setValue]);
-
-  // Update artist mutation
   const updateArtistMutation = useMutation({
     mutationFn: (data: UpdateArtistInput) =>
-      id ? artistsService.updateArtist(id, data) : Promise.reject("No artist ID"),
-    onSuccess: () => {
+      editingArtistId ? artistsService.updateArtist(editingArtistId, data) : Promise.reject("No artist id"),
+    onSuccess: (updatedArtist) => {
       setSuccess(true);
-      queryClient.invalidateQueries({ queryKey: ["artist", id] });
       queryClient.invalidateQueries({ queryKey: ["artists"] });
+      setSavedArtistPreviewId(updatedArtist.id || updatedArtist._id || null);
+      setSavedArtistPreview({
+        name: updatedArtist.name,
+        mainImageUrl: updatedArtist.mainImageUrl,
+        description: updatedArtist.description,
+        websiteUrl: updatedArtist.websiteUrl,
+        genres: updatedArtist.genres || [],
+        musicResources: (updatedArtist.musicResources || []).map((item) => ({
+          title: item.title || "",
+          url: item.url,
+        })),
+      });
       setTimeout(() => {
-        navigate(`/managed-artists`);
+        navigate("/managed-artists");
       }, 1500);
     },
     onError: (err: Error | unknown) => {
@@ -76,20 +88,34 @@ export const EditArtist = () => {
     },
   });
 
-  // Delete artist mutation
-  const deleteArtistMutation = useMutation({
-    mutationFn: () => (id ? artistsService.deleteArtist(id) : Promise.reject("No artist ID")),
-    onSuccess: () => {
+  const createArtistMutation = useMutation({
+    mutationFn: (data: CreateArtistInput) => artistsService.createArtist(data),
+    onSuccess: (newArtist) => {
+      setSuccess(true);
       queryClient.invalidateQueries({ queryKey: ["artists"] });
-      navigate("/managed-artists");
+      setSavedArtistPreviewId(newArtist.id || newArtist._id || null);
+      setSavedArtistPreview({
+        name: newArtist.name,
+        mainImageUrl: newArtist.mainImageUrl,
+        description: newArtist.description,
+        websiteUrl: newArtist.websiteUrl,
+        genres: newArtist.genres || [],
+        musicResources: (newArtist.musicResources || []).map((item) => ({
+          title: item.title || "",
+          url: item.url,
+        })),
+      });
+      setTimeout(() => {
+        navigate("/managed-artists");
+      }, 1500);
     },
     onError: (err: Error | unknown) => {
       const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error?.response?.data?.message || error?.message || "Failed to delete artist");
+      setError(error?.response?.data?.message || error?.message || "Failed to create artist");
     },
   });
 
-  const handleSaveArtist = async () => {
+  const handleSave = async () => {
     setError("");
 
     if (!artistName.trim()) {
@@ -102,20 +128,53 @@ export const EditArtist = () => {
       return;
     }
 
-    const updateData: UpdateArtistInput = {
+    const musicResources = artistMusicUrls
+      .filter((item) => item.url.trim())
+      .map((item) => ({ url: item.url.trim(), title: item.title.trim() || "YouTube" }));
+
+    const payload: UpdateArtistInput = {
       name: artistName,
       genres: artistGenres,
-      description: artistDescription,
-      websiteUrl: artistWebsiteUrl,
-      musicResources: artistMusicUrls.filter(Boolean).map((url) => ({ url, title: url })),
+      description: artistDescription || undefined,
+      websiteUrl: artistWebsiteUrl || undefined,
+      musicResources: musicResources.length > 0 ? musicResources : undefined,
     };
 
-    updateArtistMutation.mutate(updateData);
+    setIsSaving(true);
+    try {
+      if (editingArtistId) {
+        await updateArtistMutation.mutateAsync(payload);
+      } else {
+        const createPayload: CreateArtistInput = {
+          name: artistName,
+          genres: artistGenres,
+          description: artistDescription || undefined,
+          websiteUrl: artistWebsiteUrl || undefined,
+          musicResources: musicResources.length > 0 ? musicResources : undefined,
+        };
+        await createArtistMutation.mutateAsync(createPayload);
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDeleteArtist = () => {
-    deleteArtistMutation.mutate();
-    setShowDeleteModal(false);
+  const handleLoadArtistForEdit = (artistId: string) => {
+    const target = artists.find((a) => String(a.id || a._id || "") === String(artistId));
+    if (!target) return;
+
+    setEditingArtistId(String(artistId));
+    setValue("artistName", target.name || "");
+    setValue("artistGenres", target.genres || []);
+    setValue("artistDescription", target.description || "");
+    setValue("artistWebsiteUrl", target.websiteUrl || "");
+    setValue(
+      "artistMusicUrls",
+      target.musicResources?.length
+        ? target.musicResources.map((item) => ({ title: item.title || "", url: item.url || "" }))
+        : [{ title: "", url: "" }],
+    );
+    setArtistMainImagePreviewUrl(target.mainImageUrl || undefined);
   };
 
   const handleToggleGenre = (genre: string) => {
@@ -125,7 +184,7 @@ export const EditArtist = () => {
 
   const handleAddMusicUrl = () => {
     const prev = getValues("artistMusicUrls");
-    setValue("artistMusicUrls", [...prev, ""]);
+    setValue("artistMusicUrls", [...prev, { title: "", url: "" }]);
   };
 
   const handleRemoveMusicUrl = (index: number) => {
@@ -136,28 +195,138 @@ export const EditArtist = () => {
     );
   };
 
-  const handleMusicUrlChange = (index: number, value: string) => {
+  const handleMusicUrlChange = (index: number, field: "title" | "url", value: string) => {
     const prev = getValues("artistMusicUrls");
-    const updated = [...prev];
-    updated[index] = value;
-    setValue("artistMusicUrls", updated);
+    const next = [...prev];
+    next[index] = {
+      ...next[index],
+      [field]: value,
+    };
+    setValue("artistMusicUrls", next);
   };
 
-  // Check if user is authorized to edit this artist
-  const isAuthorized =
-    !currentArtist?.createdById ||
-    currentArtist.createdById._id === user?._id ||
-    currentArtist.createdById._id === user?._id;
+  const handleArtistMainImageFileChange = (file: File | null) => {
+    if (artistMainImagePreviewUrl) {
+      URL.revokeObjectURL(artistMainImagePreviewUrl);
+      setArtistMainImagePreviewUrl(undefined);
+    }
+    if (file) {
+      setArtistMainImagePreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
-  if (isLoading) return <div className="text-white">Loading...</div>;
-  if (!currentArtist) return <div className="text-white">Artist not found</div>;
-  if (!isAuthorized) return <div className="text-red-500">You are not authorized to edit this artist</div>;
+  const isAuthorized = useMemo(() => {
+    if (!user) return false;
+    return true;
+  }, [user]);
+
+  const eventFormContextValue = {
+    isCreatingNewLocation: false,
+    selectedLocationId: "",
+    locationName: "",
+    locationAddress: "",
+    locationCity: "",
+    locationZip: "",
+    locationCountry: "",
+    locationLat: "",
+    locationLng: "",
+    isGeocodingLocation: false,
+    locationsLoading: false,
+    createLocationMutationIsPending: false,
+    locations: [],
+    selectedLocation: undefined,
+    searchInput: "",
+    searchResults: [],
+    isSearching: false,
+    showSearchResults: false,
+    onToggleCreateNewLocation: () => {},
+    onToggleSelectExistingLocation: () => {},
+    onLocationSelect: () => {},
+    onLocationNameChange: () => {},
+    onLocationAddressChange: () => {},
+    onLocationCityChange: () => {},
+    onLocationZipChange: () => {},
+    onLocationCountryChange: () => {},
+    onCreateLocation: () => {},
+    onMapClick: () => {},
+    onLocationSearch: () => {},
+    onSelectSearchResult: () => {},
+    isCreatingNewArtist: !editingArtistId,
+    selectedArtistIds: [],
+    artistName,
+    artistGenres,
+    artistDescription,
+    artistWebsiteUrl,
+    artistMusicUrls,
+    artistMainImagePreviewUrl,
+    artistsLoading,
+    createArtistMutationIsPending: isSaving,
+    artists,
+    onToggleCreateNewArtist: () => {
+      setEditingArtistId(null);
+      setValue("artistName", "");
+      setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
+      setArtistMainImagePreviewUrl(undefined);
+      setShowSavedArtistPreview(false);
+    },
+    onToggleSelectExistingArtist: () => {
+      setEditingArtistId(null);
+      setShowSavedArtistPreview(false);
+    },
+    onArtistSelect: () => {
+      // no-op for standalone artist edit page
+    },
+    onArtistNameChange: (value: string) => setValue("artistName", value),
+    onArtistGenreToggle: handleToggleGenre,
+    onArtistDescriptionChange: (value: string) => setValue("artistDescription", value),
+    onArtistWebsiteUrlChange: (value: string) => setValue("artistWebsiteUrl", value),
+    onArtistMusicUrlChange: handleMusicUrlChange,
+    onAddArtistMusicUrl: handleAddMusicUrl,
+    onRemoveArtistMusicUrl: handleRemoveMusicUrl,
+    onArtistMainImageFileChange: handleArtistMainImageFileChange,
+    showSavedArtistPreview,
+    savedArtistPreviewId,
+    savedArtistPreview,
+    onEditSavedArtist: () => {
+      if (savedArtistPreview) {
+        setValue("artistName", savedArtistPreview.name || "");
+        setValue("artistDescription", savedArtistPreview.description || "");
+        setValue("artistWebsiteUrl", savedArtistPreview.websiteUrl || "");
+        setValue("artistGenres", savedArtistPreview.genres || []);
+        setValue(
+          "artistMusicUrls",
+          savedArtistPreview.musicResources?.length
+            ? savedArtistPreview.musicResources.map((resource) => ({
+                title: resource.title || "",
+                url: resource.url,
+              }))
+            : [{ title: "", url: "" }],
+        );
+      }
+
+      setShowSavedArtistPreview(false);
+    },
+    onLoadArtistForEdit: handleLoadArtistForEdit,
+    onCancelArtistEdit: () => {
+      setEditingArtistId(null);
+      setShowSavedArtistPreview(false);
+    },
+    onCreateArtist: handleSave,
+  };
+
+  if (!isAuthorized) {
+    return <div className="text-red-500">You are not authorized to edit artists</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-black text-white mb-2">Edit Artist</h1>
-        <p className="text-gray-400">Update your artist information</p>
+        {editingArtistId && <p className="text-sm text-gray-400">Editing artist id: {editingArtistId}</p>}
+        <p className="text-gray-400">Update the artist's details.</p>
       </div>
 
       {error && (
@@ -169,122 +338,49 @@ export const EditArtist = () => {
 
       {success && (
         <div className="mb-4 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-100">
-          ✓ Artist updated successfully! Redirecting...
+          Artist updated successfully! Redirecting...
         </div>
       )}
 
-      <div className="max-w-2xl bg-gray-900/50 p-8 rounded-lg space-y-6">
-        {/* Artist Name */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Artist Name</label>
-          <input
-            type="text"
-            value={artistName}
-            onChange={(e) => setValue("artistName", e.target.value)}
-            placeholder="Enter artist name"
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple focus:ring-1 focus:ring-purple"
+      <EventFormContext.Provider value={eventFormContextValue}>
+        <div className="mb-6 rounded-lg border border-purple-500/30 bg-purple/30 p-6 backdrop-blur-sm">
+          <ArtistForm
+            artistName={artistName}
+            artistDescription={artistDescription}
+            artistWebsiteUrl={artistWebsiteUrl}
+            artistGenres={artistGenres}
+            artistMusicUrls={artistMusicUrls}
+            artistMainImagePreviewUrl={artistMainImagePreviewUrl}
+            genres={["Jazz", "Rock", "Pop", "Hip Hop", "Electronic", "Classical"]}
+            artistNameError={!artistName.trim() ? "Artist name is required" : ""}
+            isSaving={isSaving}
+            saveLabel={editingArtistId ? "Update Artist" : "Save Artist"}
+            onArtistNameChange={(value) => {
+              setValue("artistName", value);
+              if (error) setError("");
+            }}
+            onArtistDescriptionChange={(value) => setValue("artistDescription", value)}
+            onArtistWebsiteUrlChange={(value) => setValue("artistWebsiteUrl", value)}
+            onArtistGenreToggle={handleToggleGenre}
+            onArtistMusicUrlChange={handleMusicUrlChange}
+            onAddArtistMusicUrl={handleAddMusicUrl}
+            onRemoveArtistMusicUrl={handleRemoveMusicUrl}
+            onArtistMainImageFileChange={handleArtistMainImageFileChange}
+            onCancel={() => {
+              setEditingArtistId(null);
+              setValue("artistName", "");
+              setValue("artistGenres", []);
+              setValue("artistDescription", "");
+              setValue("artistWebsiteUrl", "");
+              setValue("artistMusicUrls", [{ title: "", url: "" }]);
+              setArtistMainImagePreviewUrl(undefined);
+              setError("");
+              setSuccess(false);
+            }}
+            onSave={handleSave}
           />
         </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-          <textarea
-            value={artistDescription}
-            onChange={(e) => setValue("artistDescription", e.target.value)}
-            placeholder="Enter artist description"
-            rows={4}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple focus:ring-1 focus:ring-purple"
-          />
-        </div>
-
-        {/* Genres */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">Genres</label>
-          <div className="flex flex-wrap gap-2">
-            {GENRES.map((genre) => (
-              <button
-                key={genre}
-                onClick={() => handleToggleGenre(genre)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  artistGenres.includes(genre) ? "bg-purple text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                {genre}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Website URL */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Website URL</label>
-          <input
-            type="url"
-            value={artistWebsiteUrl}
-            onChange={(e) => setValue("artistWebsiteUrl", e.target.value)}
-            placeholder="https://example.com"
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple focus:ring-1 focus:ring-purple"
-          />
-        </div>
-
-        {/* Music URLs */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">Music URLs</label>
-          <div className="space-y-2">
-            {artistMusicUrls.map((url, index) => (
-              <div key={index} className="flex gap-2">
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => handleMusicUrlChange(index, e.target.value)}
-                  placeholder="https://youtube.com/..."
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-purple focus:ring-1 focus:ring-purple"
-                />
-                {artistMusicUrls.length > 1 && (
-                  <button
-                    onClick={() => handleRemoveMusicUrl(index)}
-                    className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-            <button
-              onClick={handleAddMusicUrl}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors text-sm"
-            >
-              + Add Music URL
-            </button>
-          </div>
-        </div>
-
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Artist Image</label>
-          <FileUploadField uploadType="artistImage" onFileChange={() => {}} />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3 pt-6">
-          <button
-            onClick={handleSaveArtist}
-            disabled={updateArtistMutation.isPending}
-            className="flex-1 bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Save className="w-5 h-5" />
-            {updateArtistMutation.isPending ? "Saving..." : "Save Changes"}
-          </button>
-
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors flex items-center gap-2"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+      </EventFormContext.Provider>
     </div>
   );
 };

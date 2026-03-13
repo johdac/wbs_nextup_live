@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
-import { CirclePlay, Link } from "lucide-react";
+import { Link } from "lucide-react";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
+import { GenresTag } from "../ui/GenresTag";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ export const ArtistDetailsEdit = () => {
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
         {/* error to be solved */}
-        {/* <EditBtn data={artist} path="managed-artists" /> */}
+        <EditBtn data={artist} path="managed-artists" />
         <DeleteBtn id={artist.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
         <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
       </div>
@@ -77,8 +78,12 @@ export const ArtistDetailsEdit = () => {
           <div className="">
             {/* image of the artist */}
             <img
-              src={artist.mainImageUrl}
+              src={artist.mainImageUrl ?? "/placeholder.jpeg"}
               alt={artist.name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/placeholder.jpeg";
+              }}
               className="rounded-lg w-full h-64 lg:h-full object-cover"
             />
           </div>
@@ -90,11 +95,7 @@ export const ArtistDetailsEdit = () => {
               </h1>
               <CirclePlayBtn />
             </div>
-            <div className="p-1">
-              <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
-                {artist.genres?.length ? artist.genres : "-"}
-              </span>
-            </div>
+            <GenresTag data={artist} />
             <div className="px-5 py-4 transition-all bg-gray-800/35">
               {/* description */}
               {artist.description ? (
@@ -104,7 +105,11 @@ export const ArtistDetailsEdit = () => {
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description) }}
                   />
                 </div>
-              ) : null}
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-lg font-light">to be update</p>
+                </div>
+              )}
             </div>
             <div className="">
               <a

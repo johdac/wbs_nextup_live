@@ -2,6 +2,7 @@ import { Play, MapPin, Heart, MicVocal, ListPlus } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
+import { GenresTag } from "../ui/GenresTag";
 import { usePlayer } from "../../features/player/PlayerContext";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 
@@ -104,29 +105,14 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
-          <Link to={`/venue/${event.location.id}`}>
+          <Link to={`/location/${event.location.id}`}>
             <span className="flex items-center hover:text-purple hover:scale-105">
               <MapPin className="mr-1 h-5 w-5 " />
               {event.location.city}
             </span>
           </Link>
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <div>
-            {event.genres?.length ? (
-              event.genres.map((g) => (
-                <span
-                  key={g}
-                  className="inline-flex w-fit rounded text-white px-2 py-0.5 bg-purple text-[10px] font-bold uppercase tracking-wider mr-1"
-                >
-                  {g}
-                </span>
-              ))
-            ) : (
-              <span>-</span>
-            )}
-          </div>
-        </div>
+        <GenresTag data={event} />
       </div>
 
       {/* ACTION BUTTONS */}

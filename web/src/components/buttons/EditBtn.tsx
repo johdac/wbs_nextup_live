@@ -1,13 +1,16 @@
 import { Pencil } from "lucide-react";
 import { useNavigate } from "react-router";
-import type { EventListItem } from "../../services/eventsApi";
 
-export const EditBtn = ({ data, path }: { data: EventListItem; path: string }) => {
+export const EditBtn = <T extends { id?: string; _id?: string }>({ data, path }: { data: T; path: string }) => {
   const navigate = useNavigate();
+  const id = data.id || data._id;
+
+  if (!id) return null;
+
   return (
     <button
       onClick={() =>
-        navigate(`/${path}/${data.id}/edit`, {
+        navigate(`/${path}/${id}/edit`, {
           state: { data },
         })
       }

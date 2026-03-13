@@ -48,12 +48,11 @@ export const ManagedEvents = () => {
           <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
             {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
             {!isLoading && eventsList.length > 0
-              ? eventsList.map((event: EventListItem, index: number) => {
+              ? eventsList.map((event: EventListItem) => {
                   return (
                     <EventPreviewCard
                       key={event.id}
                       event={event}
-                      index={index}
                       handleDelete={handleDelete}
                       showModal={showModal}
                       setItemToDelete={setItemToDelete}

@@ -16,12 +16,19 @@ export const ArtistPreviewCard = ({
   onEdit,
 }: ArtistPreviewCardProps) => {
   return (
-    <div className="flex justify-between items-center rounded-lg border border-purple-500/30 bg-black/20 p-4">
+    <div className="managed-card">
       <div className="flex items-center gap-4">
         <div className="w-full h-20 sm:w-30 sm:h-30 shrink-0 overflow-hidden rounded-md">
           <img
             src={mainImageUrl || "/placeholder.jpeg"}
             alt={name}
+            onError={(e) => {
+              const current = e.currentTarget;
+              if (!current.src.endsWith("placeholder.jpeg")) {
+                current.onerror = null;
+                current.src = "/placeholder.jpeg";
+              }
+            }}
             className="h-full w-full rounded-lg object-cover border border-purple-500/30"
           />
         </div>
