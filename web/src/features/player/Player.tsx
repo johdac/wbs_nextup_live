@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePlayer } from "../../features/player/PlayerContext";
 import { format } from "date-fns";
 import { Link } from "react-router";
+import Marquee from "react-fast-marquee";
 
 export const Player = () => {
   // We manage the player state in context and get it here
@@ -127,9 +128,9 @@ export const Player = () => {
     <div className="w-full fixed bottom-0 z-990">
       <div className="w-full container flex justify-end">
         {playlist.length > 0 && (
-          <div className="bg-gradient-to-r from-pink to-yellow  rounded-t-2xl px-4 w-3xl py-2 flex">
+          <div className="bg-gradient-to-r from-pink to-yellow h-20 rounded-t-2xl px-4 w-3xl flex">
             {/* Controls */}
-            <div className="flex items-center justify-center gap-2 mr-5">
+            <div className="flex items-center justify-center gap-1 mr-5 py-2">
               <button
                 // onClick={goPrev}
                 disabled={!canGoPrev}
@@ -159,12 +160,12 @@ export const Player = () => {
             </div>
 
             {/* iFrame */}
-            {currentSong && (
-              <div className="w-3xs overflow-hidden mr-6 ">
+            <div className="w-3xs overflow-hidden ">
+              {currentSong && (
                 <iframe
                   ref={iframeRef}
                   src={currentSong.song.embedUrl}
-                  className="w-3xs aspect-video absolute bottom-4 rounded-lg "
+                  className="w-3xs aspect-video absolute bottom-2 rounded-lg "
                   style={{
                     boxShadow: "rgb(255 191 81 / 20%) 0px 0px 20px 5px",
                   }}
@@ -172,31 +173,50 @@ export const Player = () => {
                   allow="autoplay; encrypted-media"
                   allowFullScreen
                 />
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Song Info */}
-            <div className="">
-              <p className=" text-xs mt-1">
+            <div className="w-44  py-1.5">
+              <p className="pl-3 text-xs mt-1">
                 Now Playing {currentIndex + 1} / {playlist.length}
               </p>
-              <div className="text-md font-bold mb-0.5">
-                {currentSong?.song.artist.name} – {currentSong?.song.title}
-              </div>
-              <div className="text-sm mb-2.5 ">
+              {currentSong && (
+                <div className="text-md font-bold mb-0.5 ">
+                  <div className="relative">
+                    <div className="marqueeGradient"></div>
+                    <Marquee speed={20} delay={5} className="pl-3">
+                      <span className="mr-20">
+                        {currentSong?.song.artist.name} –{" "}
+                        {currentSong?.song.title}
+                      </span>
+                    </Marquee>
+                  </div>
+                </div>
+              )}
+              <div className="text-sm mb-0.25 ">
                 {currentSong?.event && (
                   <>
                     <Link to={`/event/${currentSong.event.id}`}>
                       <div className="flex">
-                        <Chip
-                          className={"mr-1"}
-                          string={format(
-                            new Date(currentSong.event.start),
-                            "dd MMM",
-                          )}
-                        />
-                        {currentSong.event.location.city},{" "}
-                        {currentSong.event.location.name}
+                        <div>
+                          <Chip
+                            className={"ml-3 whitespace-nowrap"}
+                            string={format(
+                              new Date(currentSong.event.start),
+                              "dd MMM",
+                            )}
+                          />
+                        </div>
+                        <div className="relative w-27">
+                          <div className="marqueeGradient"></div>
+                          <Marquee speed={20} delay={5} className="pl-2">
+                            <span className="mr-20">
+                              {currentSong.event.location.city},{" "}
+                              {currentSong.event.location.name}
+                            </span>
+                          </Marquee>
+                        </div>
                       </div>
                     </Link>
                   </>
