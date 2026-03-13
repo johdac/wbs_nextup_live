@@ -1,9 +1,9 @@
 import { Pencil } from "lucide-react";
 import { useNavigate } from "react-router";
 
-export const EditBtn = <T extends { id?: string }>({ data, path }: { data: T; path: string }) => {
+export const EditBtn = <T extends { id?: string; _id?: string }>({ data, path }: { data: T; path: string }) => {
   const navigate = useNavigate();
-  const id = data.id;
+  const id = data.id || data._id;
 
   if (!id) return null;
 

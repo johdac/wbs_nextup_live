@@ -71,7 +71,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
-          <Link to={`/venue/${event.location.id}`}>
+          <Link to={`/location/${event.location.id}`}>
             <span className="flex items-center hover:text-purple hover:scale-105">
               <MapPin className="mr-1 h-5 w-5 " />
               {event.location.city}

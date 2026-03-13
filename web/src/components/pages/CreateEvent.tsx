@@ -1050,7 +1050,6 @@ export const CreateEvent = () => {
         )}
 
         <form
-          className=""
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmit();

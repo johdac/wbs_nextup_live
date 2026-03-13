@@ -78,7 +78,7 @@ export const ArtistDetailsEdit = () => {
           <div className="">
             {/* image of the artist */}
             <img
-              src={artist.mainImageUrl}
+              src={artist.mainImageUrl ?? "/placeholder.jpeg"}
               alt={artist.name}
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -105,7 +105,11 @@ export const ArtistDetailsEdit = () => {
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description) }}
                   />
                 </div>
-              ) : null}
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-lg font-light">to be update</p>
+                </div>
+              )}
             </div>
             <div className="">
               <a

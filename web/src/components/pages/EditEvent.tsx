@@ -1,26 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation, Link } from "react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useBeforeUnload, useBlocker, useNavigate, useParams } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle, Trash2, ArrowLeft } from "lucide-react";
-import { eventsService, type EventListItem } from "../../services/eventsApi";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
-import { DateTimeRangePicker } from "../ui/date-time-picker";
 import { LocationLayout } from "../layout/LocationLayout";
 import { ArtistLayout } from "../layout/ArtistLayout";
 import { EventFormContext } from "../../context/EventFormContext";
 import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
 import L from "leaflet";
-import { FileUploadField } from "../ui/FileUpload";
+import { uploadFile } from "../../services/uploadApi";
+import { EventInfoForm } from "../events/EventInfoForm";
 
 export const EditEvent = () => {
-  const location = useLocation();
-  const event = location.state?.event as EventListItem | undefined;
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { setValue, watch, getValues } = useForm<EventFormValues>({
+
+  const { setValue, watch, getValues, reset } = useForm<EventFormValues>({
     defaultValues: {
       title: "",
       description: "",
@@ -45,7 +45,11 @@ export const EditEvent = () => {
     },
   });
 
-  // Form state
+  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(null);
+  const [isSavingArtist, setIsSavingArtist] = useState(false);
+  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(null);
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<string | undefined>(undefined);
+
   const title = watch("title");
   const description = watch("description");
   const startDateValue = watch("startDate");
@@ -72,7 +76,6 @@ export const EditEvent = () => {
   } | null>(null);
   const artistPreviewObjectUrlRef = useRef<string | null>(null);
 
-  // Location form state
   const isCreatingNewLocation = watch("isCreatingNewLocation");
   const locationName = watch("locationName");
   const locationAddress = watch("locationAddress");
@@ -83,7 +86,6 @@ export const EditEvent = () => {
   const locationLng = watch("locationLng");
   const [isGeocodingLocation, setIsGeocodingLocation] = useState(false);
 
-  // Search state
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<LocationSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -92,14 +94,12 @@ export const EditEvent = () => {
   const searchAbortRef = useRef<AbortController | null>(null);
   const searchDebounceRef = useRef<number | null>(null);
 
-  // Artist form state
   const isCreatingNewArtist = watch("isCreatingNewArtist");
   const artistName = watch("artistName");
   const artistGenres = watch("artistGenres");
   const artistDescription = watch("artistDescription");
   const artistWebsiteUrl = watch("artistWebsiteUrl");
   const artistMusicUrls = watch("artistMusicUrls");
-  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     return () => {
@@ -110,7 +110,6 @@ export const EditEvent = () => {
     };
   }, []);
 
-  // Fetch artists and locations
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
     queryKey: ["artists"],
     queryFn: () => artistsService.getArtists(),
@@ -121,14 +120,64 @@ export const EditEvent = () => {
     queryFn: () => locationsService.getLocations(),
   });
 
-  // Create location mutation
+  const { data: eventFromServer, error: eventError } = useQuery({
+    queryKey: ["event", id],
+    queryFn: async () => {
+      if (!id) {
+        throw new Error("Missing event id");
+      }
+
+      return await eventsService.getEventById(id);
+    },
+    enabled: Boolean(id),
+  });
+
+  useEffect(() => {
+    if (!eventFromServer) return;
+
+    // Populate form with fetched event
+    reset({
+      title: eventFromServer.title ?? "",
+      description: eventFromServer.description ?? "",
+      startDate: eventFromServer.startDate ?? dayjs().toISOString(),
+      endDate: eventFromServer.endDate ?? dayjs().add(2, "hour").toISOString(),
+      selectedLocationId: eventFromServer.location?.id ?? "",
+      selectedArtistIds: eventFromServer.artists?.map((artist) => artist.id || artist._id || "").filter(Boolean) ?? [],
+      isCreatingNewLocation: false,
+      locationName: eventFromServer.location?.name ?? "",
+      locationAddress: eventFromServer.location?.address ?? "",
+      locationCity: eventFromServer.location?.city ?? "",
+      locationZip: eventFromServer.location?.zip ?? "",
+      locationCountry: eventFromServer.location?.country ?? "",
+      locationLat: eventFromServer.location?.geo?.coordinates?.[1]?.toString() ?? "",
+      locationLng: eventFromServer.location?.geo?.coordinates?.[0]?.toString() ?? "",
+      isCreatingNewArtist: false,
+      artistName: "",
+      artistGenres: [],
+      artistDescription: "",
+      artistWebsiteUrl: "",
+      artistMusicUrls: [{ title: "", url: "" }],
+    });
+  }, [eventFromServer, reset]);
+
+  useEffect(() => {
+    if (eventError) {
+      setError("Failed to load event");
+    }
+  }, [eventError]);
+
+  useEffect(() => {
+    if (eventError) {
+      setError("Failed to load event");
+    }
+  }, [eventError]);
+
   const createLocationMutation = useMutation({
     mutationFn: locationsService.createLocation,
     onSuccess: (newLocation) => {
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       setValue("selectedLocationId", newLocation.id || newLocation._id || "");
       setValue("isCreatingNewLocation", false);
-      // Clear location form
       setValue("locationName", "");
       setValue("locationAddress", "");
       setValue("locationCity", "");
@@ -146,7 +195,6 @@ export const EditEvent = () => {
     },
   });
 
-  // Create artist mutation
   const createArtistMutation = useMutation({
     mutationFn: artistsService.createArtist,
     onSuccess: (newArtist) => {
@@ -180,13 +228,16 @@ export const EditEvent = () => {
           url: resource.url,
         })),
       });
-      // Clear artist form
       setValue("artistName", "");
       setValue("artistGenres", []);
       setValue("artistDescription", "");
       setValue("artistWebsiteUrl", "");
       setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImageFile(null);
+      if (artistMainImagePreviewUrl) {
+        URL.revokeObjectURL(artistMainImagePreviewUrl);
+      }
+      setArtistMainImagePreviewUrl(undefined);
     },
     onError: (err: Error | unknown) => {
       const error = err as {
@@ -197,7 +248,6 @@ export const EditEvent = () => {
     },
   });
 
-  // Update event mutation
   const updateEventMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: any }) => eventsService.updateEvent(id, payload),
     onSuccess: () => {
@@ -216,20 +266,16 @@ export const EditEvent = () => {
     },
   });
 
-  // Get selected location for map preview
   const selectedLocation = locations.find((loc) => (loc.id || loc._id) === selectedLocationId);
 
-  // Reverse geocode coordinates to get address
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     const { lat, lng } = e.latlng;
     setValue("locationLat", lat.toString());
     setValue("locationLng", lng.toString());
-    console.log("✓ Coordinates from map click:", { lat, lng });
     setError("");
     setIsGeocodingLocation(true);
 
     try {
-      // Reverse geocode to get address
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
         headers: {
           "User-Agent": "NextUpLive Event Creation",
@@ -240,14 +286,12 @@ export const EditEvent = () => {
         const data = await response.json();
         const addressData = data.address || {};
 
-        // Auto-fill address fields from reverse geocoding
         setValue("locationName", data.name || "");
         setValue("locationAddress", data.name || addressData.road || "");
         setValue("locationCity", addressData.city || addressData.town || "");
         setValue("locationZip", addressData.postcode || "");
         setValue("locationCountry", addressData.country || "");
 
-        // Auto-compute forward geocoding in background
         if ((data.name || addressData.road) && (addressData.city || addressData.town)) {
           setTimeout(() => {
             autoComputeCoordinatesSilent(
@@ -268,7 +312,6 @@ export const EditEvent = () => {
     }
   };
 
-  // Auto-compute coordinates silently (after reverse geocoding)
   const autoComputeCoordinatesSilent = async (
     address: string,
     city: string,
@@ -298,7 +341,6 @@ export const EditEvent = () => {
           const forwardLat = parseFloat(data[0].lat);
           const forwardLng = parseFloat(data[0].lon);
 
-          // Only update if close to clicked location (within ~1 degree)
           const distance = Math.abs(forwardLat - clickLat) + Math.abs(forwardLng - clickLng);
           if (distance < 1) {
             setValue("locationLat", forwardLat.toString());
@@ -311,10 +353,9 @@ export const EditEvent = () => {
     }
   };
 
-  // Auto-compute coordinates from address if not already set
   const autoComputeCoordinates = async (): Promise<boolean> => {
     if (locationLat && locationLng) {
-      return true; // Already have coordinates
+      return true;
     }
 
     const addressParts = [locationAddress, locationCity, locationZip, locationCountry].filter(Boolean);
@@ -356,20 +397,17 @@ export const EditEvent = () => {
     }
   };
 
-  // Auto-compute coordinates silently (after reverse geocoding)
   const handleAddressFieldChange = (
     field: "locationAddress" | "locationCity" | "locationZip" | "locationCountry",
     value: string,
   ) => {
     setValue(field, value);
-    // Clear coordinates if they were previously computed
     if (locationLat && locationLng) {
       setValue("locationLat", "");
       setValue("locationLng", "");
     }
   };
 
-  // Handle location selection - auto-fill form fields
   const handleLocationSelect = (locationId: string) => {
     setValue("selectedLocationId", locationId);
     const location = locations.find((loc) => (loc.id || loc._id) === locationId);
@@ -381,15 +419,48 @@ export const EditEvent = () => {
       setValue("locationCountry", location.country || "");
       setValue("locationLat", location.geo.coordinates[1].toString());
       setValue("locationLng", location.geo.coordinates[0].toString());
-      console.log("✓ Coordinates from existing location:", {
-        lat: location.geo.coordinates[1],
-        lng: location.geo.coordinates[0],
-        name: location.name,
-      });
     }
   };
 
-  // Search for locations using free Nominatim (OpenStreetMap)
+  const handleCreateLocation = async () => {
+    setError("");
+
+    if (!locationName.trim()) {
+      setError("Location name is required");
+      return;
+    }
+
+    const coordsSuccess = await autoComputeCoordinates();
+    if (!coordsSuccess) {
+      return;
+    }
+
+    const lat = parseFloat(locationLat);
+    const lng = parseFloat(locationLng);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      setError("Invalid coordinates");
+      return;
+    }
+
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      setError("Invalid coordinates");
+      return;
+    }
+
+    createLocationMutation.mutate({
+      name: locationName,
+      address: locationAddress,
+      city: locationCity,
+      zip: locationZip,
+      country: locationCountry,
+      geo: {
+        type: "Point",
+        coordinates: [lng, lat],
+      },
+    });
+  };
+
   const handleLocationSearch = (query: string) => {
     setSearchInput(query);
 
@@ -520,7 +591,6 @@ export const EditEvent = () => {
     }, 450);
   };
 
-  // Select a search result and auto-fill form
   const handleSelectSearchResult = (result: LocationSearchResult) => {
     setValue("locationName", result.name);
     setValue("locationAddress", result.address || "");
@@ -529,85 +599,112 @@ export const EditEvent = () => {
     setValue("locationCountry", result.country || "");
     setValue("locationLat", result.lat.toString());
     setValue("locationLng", result.lng.toString());
-    console.log("✓ Coordinates from search result:", {
-      lat: result.lat,
-      lng: result.lng,
-      name: result.name,
-    });
     setSearchInput(result.displayName);
     setShowSearchResults(false);
   };
 
+  const hasUnsavedChanges = useMemo(() => {
+    const hasEventChanges = title.trim().length > 0 || description.trim().length > 0 || !!eventMainImageFile;
+
+    const hasLocationChanges =
+      isCreatingNewLocation ||
+      selectedLocationId.length > 0 ||
+      locationName.trim().length > 0 ||
+      locationAddress.trim().length > 0 ||
+      locationCity.trim().length > 0 ||
+      locationZip.trim().length > 0 ||
+      locationCountry.trim().length > 0 ||
+      locationLat.trim().length > 0 ||
+      locationLng.trim().length > 0;
+
+    const hasArtistChanges =
+      isCreatingNewArtist ||
+      selectedArtistIds.length > 0 ||
+      artistName.trim().length > 0 ||
+      artistDescription.trim().length > 0 ||
+      artistWebsiteUrl.trim().length > 0 ||
+      artistGenres.length > 0 ||
+      artistMusicUrls.some((item) => item.url.trim().length > 0 || item.title.trim().length > 0) ||
+      !!artistMainImageFile ||
+      !!artistMainImagePreviewUrl;
+
+    return hasEventChanges || hasLocationChanges || hasArtistChanges;
+  }, [
+    title,
+    description,
+    eventMainImageFile,
+    isCreatingNewLocation,
+    selectedLocationId,
+    locationName,
+    locationAddress,
+    locationCity,
+    locationZip,
+    locationCountry,
+    locationLat,
+    locationLng,
+    isCreatingNewArtist,
+    selectedArtistIds,
+    artistName,
+    artistDescription,
+    artistWebsiteUrl,
+    artistGenres,
+    artistMusicUrls,
+  ]);
+
+  const shouldWarnOnLeave = hasUnsavedChanges && !success && !isSavingArtist;
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => shouldWarnOnLeave && currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useBeforeUnload(
+    (event) => {
+      if (!shouldWarnOnLeave) return;
+      event.preventDefault();
+      event.returnValue = "";
+    },
+    { capture: true },
+  );
+
   useEffect(() => {
-    if (!event) return;
+    if (blocker.state !== "blocked") return;
 
-    setValue("title", event.title ?? "");
-    setValue("description", event.description ?? "");
-    setValue("startDate", event.startDate ?? dayjs().toISOString());
-    setValue("endDate", event.endDate ?? dayjs().add(2, "hour").toISOString());
-    setValue("selectedLocationId", event.location?.id ?? "");
-    setValue("selectedArtistIds", event.artists?.map((artist) => artist.id || artist._id || "").filter(Boolean) ?? []);
-  }, [event, setValue]);
+    const confirmLeave = window.confirm("You have unsaved changes. Are you sure you want to leave this page?");
 
-  // Handle creating new location with auto-computed coordinates
-  const handleCreateLocation = async () => {
-    setError("");
-
-    // Validate location fields
-    if (!locationName.trim()) {
-      setError("Location name is required");
+    if (confirmLeave) {
+      blocker.proceed();
       return;
     }
 
-    // Auto-compute coordinates if not already set
-    const coordsSuccess = await autoComputeCoordinates();
-    if (!coordsSuccess) {
-      return;
-    }
+    blocker.reset();
+  }, [blocker]);
 
-    const lat = parseFloat(locationLat);
-    const lng = parseFloat(locationLng);
-
-    if (isNaN(lat) || isNaN(lng)) {
-      setError("Invalid coordinates");
-      return;
-    }
-
-    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      setError("Invalid coordinates");
-      return;
-    }
-
-    createLocationMutation.mutate({
-      name: locationName,
-      address: locationAddress,
-      city: locationCity,
-      zip: locationZip,
-      country: locationCountry,
-      geo: {
-        type: "Point",
-        coordinates: [lng, lat],
-      },
-    });
-  };
-
-  // Handle artist selection toggle
   const handleArtistSelect = (artistId: string) => {
     const prev = getValues("selectedArtistIds");
     setValue("selectedArtistIds", prev.includes(artistId) ? prev.filter((id) => id !== artistId) : [...prev, artistId]);
   };
 
-  // Handle artist genre toggle
   const handleArtistGenreToggle = (genre: string) => {
     const prev = getValues("artistGenres");
     setValue("artistGenres", prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]);
   };
 
-  // Handle creating new artist
-  const handleCreateArtist = () => {
+  const handleArtistMainImageFileChange = (file: File | null) => {
+    setArtistMainImageFile(file);
+
+    if (artistMainImagePreviewUrl) {
+      URL.revokeObjectURL(artistMainImagePreviewUrl);
+      setArtistMainImagePreviewUrl(undefined);
+    }
+
+    if (file) {
+      setArtistMainImagePreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleCreateArtist = async () => {
     setError("");
 
-    // Validate artist fields
     if (!artistName.trim()) {
       setError("Artist name is required");
       return;
@@ -618,20 +715,60 @@ export const EditEvent = () => {
       return;
     }
 
-    createArtistMutation.mutate({
-      name: artistName,
-      genres: artistGenres,
+    const validMusicResources = artistMusicUrls
+      .map((item) => ({
+        title: item.title.trim(),
+        url: item.url.trim(),
+      }))
+      .filter((item) => item.url.length > 0);
+
+    const invalidYoutubeResource = validMusicResources.find((item) => {
+      const normalized = item.url.toLowerCase();
+      return !(normalized.includes("youtube.com") || normalized.includes("youtu.be"));
     });
+
+    if (invalidYoutubeResource) {
+      setError("Music Url must be a valid YouTube link");
+      return;
+    }
+
+    setIsSavingArtist(true);
+
+    try {
+      let artistMainImageKey: string | undefined;
+      if (artistMainImageFile) {
+        artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+      }
+
+      const payload = {
+        name: artistName,
+        genres: artistGenres,
+        description: artistDescription?.trim() || undefined,
+        websiteUrl: artistWebsiteUrl?.trim() || undefined,
+        mainImageKey: artistMainImageKey,
+        musicResources:
+          validMusicResources.length > 0
+            ? validMusicResources.map((item) => ({
+                url: item.url,
+                title: item.title || "YouTube",
+              }))
+            : undefined,
+      };
+
+      await createArtistMutation.mutateAsync(payload);
+    } finally {
+      setIsSavingArtist(false);
+    }
   };
 
-  // Handle form submission
   const handleSubmit = () => {
     setError("");
 
-    if (!event?.id) {
+    if (!id) {
       setError("Missing event id");
       return;
     }
+
     if (!title.trim()) {
       setError("Event title is required");
       return;
@@ -662,7 +799,7 @@ export const EditEvent = () => {
     }
 
     updateEventMutation.mutate({
-      id: event.id,
+      id,
       payload: {
         title,
         description,
@@ -673,12 +810,7 @@ export const EditEvent = () => {
       },
     });
   };
-  const handleDelete = async () => {
-    if (!event || !event.id) return;
 
-    await eventsService.deleteEvent(event.id);
-    navigate("/managed-events");
-  };
   const eventFormContextValue = {
     isCreatingNewLocation,
     selectedLocationId,
@@ -760,9 +892,11 @@ export const EditEvent = () => {
       const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
       setValue("artistMusicUrls", next.length > 0 ? next : [{ title: "", url: "" }]);
     },
-    onArtistMainImageFileChange: setArtistMainImageFile,
+    onArtistMainImageFileChange: handleArtistMainImageFileChange,
     showSavedArtistPreview,
+    savedArtistPreviewId,
     savedArtistPreview,
+    onCreateArtist: handleCreateArtist,
     onEditSavedArtist: () => {
       if (savedArtistPreview) {
         setValue("artistName", savedArtistPreview.name || "");
@@ -788,8 +922,6 @@ export const EditEvent = () => {
       setShowSavedArtistPreview(false);
       setArtistMainImageFile(null);
     },
-    onCreateArtist: handleCreateArtist,
-    savedArtistPreviewId,
     onLoadArtistForEdit: (_artistId: string) => {
       // For event editing, we don't support editing existing artists
       // This is mainly for create event flow
@@ -799,6 +931,7 @@ export const EditEvent = () => {
       // This is mainly for create event flow
     },
   };
+
   return (
     <div className="container z-20 min-h-screen py-8">
       <div className="text-white">
@@ -843,84 +976,17 @@ export const EditEvent = () => {
                 <ArtistLayout />
               </EventFormContext.Provider>
             </div>
-            <div
-              className={`bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6 transition-all duration-300 ${
-                isDateRangePickerOpen ? "pb-120" : ""
-              }`}
-            >
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                <CalendarIcon className="h-6 w-6" />
-                Event Information
-              </h2>
-
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Event Title *</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setValue("title", e.target.value)}
-                  placeholder="e.g., Summer Music Festival 2026"
-                  className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                  required
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setValue("description", e.target.value)}
-                  placeholder="Describe your event..."
-                  rows={4}
-                  className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition resize-none"
-                />
-              </div>
-
-              {/* Date Range Picker */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Event Start & End *</label>
-                <DateTimeRangePicker
-                  startValue={startDate ? startDate.toDate() : null}
-                  endValue={endDate ? endDate.toDate() : null}
-                  onOpenChange={setIsDateRangePickerOpen}
-                  onChange={(nextStart, nextEnd) => {
-                    setValue("startDate", nextStart ? dayjs(nextStart).toISOString() : "");
-                    setValue("endDate", nextEnd ? dayjs(nextEnd).toISOString() : "");
-                  }}
-                />
-              </div>
-
-              {/* Image Upload for Event */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Image Upload</label>
-                <FileUploadField uploadType="artistImage" onFileChange={() => {}} />
-              </div>
-
-              {/* Save Button */}
-              <div className="flex flex-row gap-2">
-                <button
-                  type="submit"
-                  disabled={updateEventMutation.isPending}
-                  className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Save className="h-5 w-5" />
-                  {updateEventMutation.isPending ? "Saving Event..." : "Update Event"}
-                </button>
-                {selectedLocationId && (
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    className="inline-flex cursor-pointer items-center justify-center px-3 py-2 rounded-lg bg-purple-600 border border-purple-500/50 text-white hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                    aria-label="Delete selected location"
-                    title="Delete selected location"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
-                )}
-              </div>
-            </div>
+            <EventInfoForm
+              title={title}
+              description={description}
+              startDate={startDate}
+              endDate={endDate}
+              isDateRangePickerOpen={isDateRangePickerOpen}
+              setValue={setValue}
+              setIsDateRangePickerOpen={setIsDateRangePickerOpen}
+              setEventMainImageFile={setEventMainImageFile}
+              EventMutation={updateEventMutation}
+            />
           </div>
         </form>
       </div>

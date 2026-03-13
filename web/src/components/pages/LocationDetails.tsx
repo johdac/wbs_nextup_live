@@ -4,7 +4,7 @@ import { locationsService, type Location } from "../../services/locationsApi";
 import { Link } from "lucide-react";
 import { EventByLocation } from "../location/EventsByLocation";
 
-export const VenueDetails = () => {
+export const LocationDetails = () => {
   const { id } = useParams<{ id: string }>();
 
   const [location, setLocation] = useState<Location | null>(null);

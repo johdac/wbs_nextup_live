@@ -14,9 +14,8 @@ export const Hero = () => {
               </span>
             </h1>
             <p className="text-gray-400 max-w-full sm:max-w-md text-lg leading-relaxed">
-              NextUp Live turns upcoming shows into playlists you can actually
-              listen to. Discover bands, venues, and nights out that match your
-              taste — before you buy tickets.
+              NextUp Live turns upcoming shows into playlists you can actually listen to. Discover bands, venues, and
+              nights out that match your taste — before you buy tickets.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -30,11 +29,7 @@ export const Hero = () => {
           </div>
 
           <div className="flex justify-center lg:justify-end">
-            <img
-              src="hero.webp"
-              alt="Live music illustration"
-              className="w-full max-w-md lg:max-w-full"
-            />
+            <img src="hero.webp" alt="Live music illustration" className="w-full max-w-md lg:max-w-full" />
           </div>
         </div>
       </div>

@@ -136,7 +136,7 @@ export const EventDetails = () => {
                 <MapPinHouse className="mr-1 h-5 w-5" />
                 <div className="text-lg">LOCATION</div>
               </div>
-              <Link to={`/venue/${event.location.id}`}>
+              <Link to={`/location/${event.location.id}`}>
                 <div className="hover:text-purple cursor-pointer">{event.location.name}</div>
               </Link>
               <div>{event.location.address}</div>
