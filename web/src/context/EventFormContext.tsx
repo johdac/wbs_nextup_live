@@ -120,6 +120,7 @@ export interface EventFormContextValue {
   savedArtistPreview: SavedArtistPreview | null;
   onEditSavedArtist: () => void;
   onLoadArtistForEdit: (artistId: string) => void;
+  onCancelArtistEdit: () => void;
   onCreateArtist: () => void | Promise<void>;
 }
 

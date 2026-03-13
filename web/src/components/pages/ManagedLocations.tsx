@@ -5,10 +5,7 @@ import L from "leaflet";
 import { useAuth } from "../../context/AuthContext";
 import { LocationSelectDropdown } from "../location/LocationSelectDropdown";
 import { LocationFormFields } from "../location/LocationFormFields";
-import {
-  locationsService,
-  type UpdateLocationInput,
-} from "../../services/locationsApi";
+import { locationsService, type UpdateLocationInput } from "../../services/locationsApi";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_CENTER: L.LatLngTuple = [52.52, 13.405];
@@ -39,13 +36,8 @@ export const ManagedLocations = () => {
   });
 
   const updateLocationMutation = useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdateLocationInput;
-    }) => locationsService.updateLocation(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateLocationInput }) =>
+      locationsService.updateLocation(id, payload),
     onSuccess: () => {
       setSuccess("Location updated successfully.");
       setError("");
@@ -59,11 +51,7 @@ export const ManagedLocations = () => {
         message?: string;
       };
       setSuccess("");
-      setError(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update location.",
-      );
+      setError(error?.response?.data?.message || error?.message || "Failed to update location.");
     },
   });
 
@@ -90,11 +78,7 @@ export const ManagedLocations = () => {
         message?: string;
       };
       setSuccess("");
-      setError(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete location.",
-      );
+      setError(error?.response?.data?.message || error?.message || "Failed to delete location.");
     },
   });
 
@@ -114,8 +98,7 @@ export const ManagedLocations = () => {
       );
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
       }).addTo(mapRef.current);
 
@@ -138,9 +121,7 @@ export const ManagedLocations = () => {
             const data = await response.json();
             const addressData = data.address || {};
             setAddress(data.name || addressData.road || "");
-            setCity(
-              addressData.city || addressData.town || addressData.village || "",
-            );
+            setCity(addressData.city || addressData.town || addressData.village || "");
             setZip(addressData.postcode || "");
             setCountry(addressData.country || "");
           }
@@ -157,9 +138,7 @@ export const ManagedLocations = () => {
     if (hasCoords) {
       mapRef.current.setView([parsedLat, parsedLng], 13);
       if (!markerRef.current) {
-        markerRef.current = L.marker([parsedLat, parsedLng]).addTo(
-          mapRef.current,
-        );
+        markerRef.current = L.marker([parsedLat, parsedLng]).addTo(mapRef.current);
       } else {
         markerRef.current.setLatLng([parsedLat, parsedLng]);
       }
@@ -235,9 +214,7 @@ export const ManagedLocations = () => {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this location?",
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this location?");
     if (!confirmed) {
       return;
     }
@@ -251,22 +228,14 @@ export const ManagedLocations = () => {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">
-            Managed Locations
-          </h1>
+          <h1 className="text-4xl font-black text-white mb-2">Managed Locations</h1>
           <p className="text-gray-400">Select and edit your saved locations</p>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400">{error}</div>}
 
         {success && (
-          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
-            {success}
-          </div>
+          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">{success}</div>
         )}
 
         <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
@@ -295,9 +264,7 @@ export const ManagedLocations = () => {
               onChange={(locationId) => {
                 setSelectedLocationId(locationId);
 
-                const selectedLocation = locations.find(
-                  (location) => (location.id || location._id) === locationId,
-                );
+                const selectedLocation = locations.find((location) => (location.id || location._id) === locationId);
 
                 if (!selectedLocation) {
                   return;

@@ -163,9 +163,15 @@ export const eventGetOne: RequestHandler = async (req, res) => {
       cause: { status: 404 },
     });
 
+  const artistsWithUrls = event.artistsIds?.map((artist: any) => ({
+    ...artist,
+    mainImageUrl: getPublicFileUrl(artist.mainImageKey),
+  }));
+
   res.json({
     ...event,
     mainImageUrl: getPublicFileUrl(event.mainImageKey),
+    artistsIds: artistsWithUrls,
   });
 };
 

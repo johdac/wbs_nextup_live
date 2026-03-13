@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle } from "lucide-react";
+import { CalendarIcon, Save, AlertCircle, Trash2, ArrowLeft } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -13,6 +13,7 @@ import { ArtistLayout } from "../layout/ArtistLayout";
 import { EventFormContext } from "../../context/EventFormContext";
 import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
 import L from "leaflet";
+import { FileUploadField } from "../ui/FileUpload";
 
 export const EditEvent = () => {
   const location = useLocation();
@@ -38,6 +39,9 @@ export const EditEvent = () => {
       isCreatingNewArtist: false,
       artistName: "",
       artistGenres: [],
+      artistDescription: "",
+      artistWebsiteUrl: "",
+      artistMusicUrls: [""],
     },
   });
 
@@ -52,6 +56,17 @@ export const EditEvent = () => {
   const [success, setSuccess] = useState(false);
   const startDate = startDateValue ? dayjs(startDateValue) : null;
   const endDate = endDateValue ? dayjs(endDateValue) : null;
+  const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
+  const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(null);
+  const [savedArtistPreview, setSavedArtistPreview] = useState<{
+    name: string;
+    mainImageUrl?: string;
+    description?: string;
+    websiteUrl?: string;
+    genres: string[];
+    youtubeUrls: string[];
+  } | null>(null);
+  const artistPreviewObjectUrlRef = useRef<string | null>(null);
 
   // Location form state
   const isCreatingNewLocation = watch("isCreatingNewLocation");
@@ -77,6 +92,19 @@ export const EditEvent = () => {
   const isCreatingNewArtist = watch("isCreatingNewArtist");
   const artistName = watch("artistName");
   const artistGenres = watch("artistGenres");
+  const artistDescription = watch("artistDescription");
+  const artistWebsiteUrl = watch("artistWebsiteUrl");
+  const artistMusicUrls = watch("artistMusicUrls");
+  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (artistPreviewObjectUrlRef.current) {
+        URL.revokeObjectURL(artistPreviewObjectUrlRef.current);
+        artistPreviewObjectUrlRef.current = null;
+      }
+    };
+  }, []);
 
   // Fetch artists and locations
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
@@ -118,14 +146,39 @@ export const EditEvent = () => {
   const createArtistMutation = useMutation({
     mutationFn: artistsService.createArtist,
     onSuccess: (newArtist) => {
+      if (artistPreviewObjectUrlRef.current) {
+        URL.revokeObjectURL(artistPreviewObjectUrlRef.current);
+        artistPreviewObjectUrlRef.current = null;
+      }
+
+      const fallbackLocalImageUrl = artistMainImageFile ? URL.createObjectURL(artistMainImageFile) : undefined;
+
+      if (fallbackLocalImageUrl) {
+        artistPreviewObjectUrlRef.current = fallbackLocalImageUrl;
+      }
+
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       const newArtistId = newArtist.id || newArtist._id || "";
       const prev = getValues("selectedArtistIds");
       setValue("selectedArtistIds", [...prev, newArtistId]);
       setValue("isCreatingNewArtist", false);
+      setLastCreatedArtistId(newArtistId);
+      setShowSavedArtistPreview(true);
+      setSavedArtistPreview({
+        name: newArtist.name,
+        mainImageUrl: newArtist.mainImageUrl || newArtist.imageUrls?.[0] || fallbackLocalImageUrl,
+        description: newArtist.description,
+        websiteUrl: newArtist.websiteUrl,
+        genres: newArtist.genres || [],
+        youtubeUrls: (newArtist.musicResources || []).map((resource) => resource.url),
+      });
       // Clear artist form
       setValue("artistName", "");
       setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [""]);
+      setArtistMainImageFile(null);
     },
     onError: (err: Error | unknown) => {
       const error = err as {
@@ -180,6 +233,7 @@ export const EditEvent = () => {
         const addressData = data.address || {};
 
         // Auto-fill address fields from reverse geocoding
+        setValue("locationName", data.name || "");
         setValue("locationAddress", data.name || addressData.road || "");
         setValue("locationCity", addressData.city || addressData.town || "");
         setValue("locationZip", addressData.postcode || "");
@@ -611,7 +665,12 @@ export const EditEvent = () => {
       },
     });
   };
+  const handleDelete = async () => {
+    if (!event || !event.id) return;
 
+    await eventsService.deleteEvent(event.id);
+    navigate("/managed-events");
+  };
   const eventFormContextValue = {
     isCreatingNewLocation,
     selectedLocationId,
@@ -642,7 +701,9 @@ export const EditEvent = () => {
       setValue("locationLat", "");
       setValue("locationLng", "");
     },
-    onToggleSelectExistingLocation: () => setValue("isCreatingNewLocation", false),
+    onToggleSelectExistingLocation: () => {
+      setValue("isCreatingNewLocation", false);
+    },
     onLocationSelect: handleLocationSelect,
     onLocationNameChange: (value: string) => setValue("locationName", value),
     onLocationAddressChange: (value: string) => handleAddressFieldChange("locationAddress", value),
@@ -657,6 +718,9 @@ export const EditEvent = () => {
     selectedArtistIds,
     artistName,
     artistGenres,
+    artistDescription,
+    artistWebsiteUrl,
+    artistMusicUrls,
     artistsLoading,
     createArtistMutationIsPending: createArtistMutation.isPending,
     artists,
@@ -664,17 +728,57 @@ export const EditEvent = () => {
       setValue("isCreatingNewArtist", true);
       setValue("artistName", "");
       setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [""]);
+      setArtistMainImageFile(null);
     },
     onToggleSelectExistingArtist: () => setValue("isCreatingNewArtist", false),
     onArtistSelect: handleArtistSelect,
     onArtistNameChange: (value: string) => setValue("artistName", value),
     onArtistGenreToggle: handleArtistGenreToggle,
+    onArtistDescriptionChange: (value: string) => setValue("artistDescription", value),
+    onArtistWebsiteUrlChange: (value: string) => setValue("artistWebsiteUrl", value),
+    onArtistMusicUrlChange: (index: number, value: string) => {
+      const next = [...getValues("artistMusicUrls")];
+      next[index] = value;
+      setValue("artistMusicUrls", next);
+    },
+    onAddArtistMusicUrl: () => setValue("artistMusicUrls", [...getValues("artistMusicUrls"), ""]),
+    onRemoveArtistMusicUrl: (index: number) => {
+      const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
+      setValue("artistMusicUrls", next.length > 0 ? next : [""]);
+    },
+    onArtistMainImageFileChange: setArtistMainImageFile,
+    showSavedArtistPreview,
+    savedArtistPreview,
+    onEditSavedArtist: () => {
+      if (savedArtistPreview) {
+        setValue("artistName", savedArtistPreview.name || "");
+        setValue("artistDescription", savedArtistPreview.description || "");
+        setValue("artistWebsiteUrl", savedArtistPreview.websiteUrl || "");
+        setValue("artistGenres", savedArtistPreview.genres || []);
+        setValue("artistMusicUrls", savedArtistPreview.youtubeUrls?.length > 0 ? savedArtistPreview.youtubeUrls : [""]);
+      }
+
+      if (lastCreatedArtistId) {
+        const next = getValues("selectedArtistIds").filter((id) => String(id) !== String(lastCreatedArtistId));
+        setValue("selectedArtistIds", next);
+      }
+
+      setShowSavedArtistPreview(false);
+      setArtistMainImageFile(null);
+    },
     onCreateArtist: handleCreateArtist,
   };
-
   return (
-    <div className="relative z-20 min-h-screen py-8">
-      <div className="container mx-auto px-4">
+    <div className="container z-20 min-h-screen py-8">
+      <div className="text-white">
+        <Link to="/managed-events">
+          <ArrowLeft></ArrowLeft>
+        </Link>
+      </div>
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-black text-white mb-2">Managed Events</h1>
@@ -697,14 +801,20 @@ export const EditEvent = () => {
         )}
 
         <form
+          className="max-w-4xl mx-auto"
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmit();
           }}
         >
           {/* Main Grid Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* LEFT BOX - Event Info */}
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-6">
+              <EventFormContext.Provider value={eventFormContextValue}>
+                <LocationLayout />
+                <ArtistLayout />
+              </EventFormContext.Provider>
+            </div>
             <div
               className={`bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6 transition-all duration-300 ${
                 isDateRangePickerOpen ? "pb-120" : ""
@@ -754,35 +864,34 @@ export const EditEvent = () => {
                 />
               </div>
 
+              {/* Image Upload for Event */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Image Upload</label>
+                <FileUploadField uploadType="artistImage" onFileChange={() => {}} />
+              </div>
+
               {/* Save Button */}
-              <div className="flex gap-3">
+              <div className="flex flex-row gap-2">
                 <button
                   type="submit"
                   disabled={updateEventMutation.isPending}
                   className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="h-5 w-5" />
-                  {updateEventMutation.isPending ? "Saving Changes..." : "Update Event"}
+                  {updateEventMutation.isPending ? "Saving Event..." : "Update Event"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => navigate(-1)}
-                  className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancel
-                </button>
+                {selectedLocationId && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="inline-flex cursor-pointer items-center justify-center px-3 py-2 rounded-lg bg-purple-600 border border-purple-500/50 text-white hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    aria-label="Delete selected location"
+                    title="Delete selected location"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                )}
               </div>
-            </div>
-
-            {/* RIGHT SIDE - Location and Artists */}
-            <div className="space-y-6">
-              <EventFormContext.Provider value={eventFormContextValue}>
-                {/* TOP RIGHT BOX - Location */}
-                <LocationLayout />
-
-                {/* BOTTOM RIGHT BOX - Artists */}
-                <ArtistLayout />
-              </EventFormContext.Provider>
             </div>
           </div>
         </form>

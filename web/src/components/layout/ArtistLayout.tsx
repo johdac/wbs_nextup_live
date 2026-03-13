@@ -3,7 +3,8 @@ import { Music } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEventFormContext } from "../../context/EventFormContext";
 import { useAuth } from "../../context/AuthContext";
-import { FileUploadField } from "../ui/FileUpload";
+import { ArtistPreviewCard } from "../artists/ArtistPreviewCard";
+import { ArtistForm } from "../artists/ArtistForm";
 
 const GENRES = [
   "classical",
@@ -45,6 +46,7 @@ export const ArtistLayout = () => {
     savedArtistPreview,
     onEditSavedArtist,
     onLoadArtistForEdit,
+    onCancelArtistEdit,
     onCreateArtist,
   } = useEventFormContext();
 
@@ -101,66 +103,6 @@ export const ArtistLayout = () => {
         String(artist.id || artist._id || "") !== String(savedArtistPreviewId),
     );
   }, [selectedArtists, showSavedArtistPreview, savedArtistPreviewId]);
-
-  const renderArtistPreviewCard = ({
-    artistId,
-    name,
-    mainImageUrl,
-    genres,
-    canEdit,
-    onEdit,
-  }: {
-    artistId: string;
-    name: string;
-    mainImageUrl?: string;
-    genres: string[];
-    canEdit: boolean;
-    onEdit?: () => void;
-  }) => {
-    return (
-      <div
-        key={`selected-${artistId}`}
-        className="flex justify-between items-center rounded-lg border border-purple-500/30 bg-black/20 p-4"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-full h-20 sm:w-30 sm:h-30 shrink-0 overflow-hidden rounded-md">
-            <img
-              src={mainImageUrl || "/placeholder.jpeg"}
-              alt={name}
-              className="h-full w-full rounded-lg object-cover border border-purple-500/30"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="text-white font-semibold">{name}</p>
-            {genres.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {genres.map((genre) => (
-                  <span
-                    key={`${artistId}-${genre}`}
-                    className="inline-flex items-center rounded-full bg-purple-500/25 border border-purple-400/40 px-3 py-1 text-xs text-white"
-                  >
-                    {genre}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div>
-          {canEdit && onEdit && (
-            <button
-              type="button"
-              onClick={onEdit}
-              className="px-3 py-2 cursor-pointer rounded-lg bg-black/40 text-gray-200 hover:bg-black/60 border border-purple-500/30"
-            >
-              Edit
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
@@ -253,17 +195,20 @@ export const ArtistLayout = () => {
                   const canEdit =
                     !!currentUserId &&
                     String(artist.createdById?._id || "") === currentUserId;
-                  return renderArtistPreviewCard({
-                    artistId,
-                    name: artist.name,
-                    mainImageUrl: artist.mainImageUrl,
-                    genres: artist.genres,
-                    canEdit,
-                    onEdit: () => {
-                      onLoadArtistForEdit(artistId);
-                      setIsCreatingArtist(true);
-                    },
-                  });
+                  return (
+                    <ArtistPreviewCard
+                      key={`selected-${artistId}`}
+                      artistId={artistId}
+                      name={artist.name}
+                      mainImageUrl={artist.mainImageUrl}
+                      genres={artist.genres}
+                      canEdit={canEdit}
+                      onEdit={() => {
+                        onLoadArtistForEdit(artistId);
+                        setIsCreatingArtist(true);
+                      }}
+                    />
+                  );
                 })}
               </div>
             )}
@@ -272,14 +217,17 @@ export const ArtistLayout = () => {
 
       {showSavedArtistPreview && savedArtistPreview ? (
         <div className="mb-4">
-          {renderArtistPreviewCard({
-            artistId: savedArtistPreview.name,
-            name: savedArtistPreview.name,
-            mainImageUrl: savedArtistPreview.mainImageUrl,
-            genres: savedArtistPreview.genres,
-            canEdit: true,
-            onEdit: onEditSavedArtist,
-          })}
+          <ArtistPreviewCard
+            artistId={savedArtistPreview.name}
+            name={savedArtistPreview.name}
+            mainImageUrl={savedArtistPreview.mainImageUrl}
+            genres={savedArtistPreview.genres}
+            canEdit
+            onEdit={() => {
+              onEditSavedArtist();
+              setIsCreatingArtist(true);
+            }}
+          />
         </div>
       ) : (
         <AnimatePresence initial={false}>
@@ -292,163 +240,39 @@ export const ArtistLayout = () => {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              {/* Create New Artist Form */}
-              <div className="space-y-5 mb-4">
-                {/* Artist Name */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Artist Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={artistName}
-                    onChange={(e) => {
-                      onArtistNameChange(e.target.value);
-                      if (artistNameError) {
-                        setArtistNameError("");
-                      }
-                    }}
-                    placeholder="e.g., The Rolling Stones"
-                    className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                  />
-                  {/* Create Artist Button */}
-                  {artistNameError && (
-                    <p className="text-sm text-red-400 mt-1 mb-2 ml-2">
-                      {artistNameError}
-                    </p>
-                  )}
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    value={artistDescription}
-                    onChange={(e) => onArtistDescriptionChange(e.target.value)}
-                    placeholder="Artist description"
-                    rows={3}
-                    className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition resize-none"
-                  />
-                </div>
-
-                {/* Music URLs */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Music Resources
-                  </label>
-                  <div className="space-y-2">
-                    {artistMusicUrls.map((musicItem, index) => (
-                      <div key={`music-url-${index}`} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={musicItem.title}
-                          onChange={(e) =>
-                            onArtistMusicUrlChange(index, "title", e.target.value)
-                          }
-                          placeholder="Title (e.g. Live at Wembley)"
-                          className="w-1/3 px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                        />
-                        <input
-                          type="url"
-                          value={musicItem.url}
-                          onChange={(e) =>
-                            onArtistMusicUrlChange(index, "url", e.target.value)
-                          }
-                          placeholder="https://youtube.com/... or https://youtu.be/..."
-                          className="w-2/3 px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                        />
-                        {artistMusicUrls.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => onRemoveArtistMusicUrl(index)}
-                            className="px-3 py-2 rounded-lg bg-black/40 text-gray-300 hover:bg-black/60"
-                          >
-                            -
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={onAddArtistMusicUrl}
-                      className="px-3 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600"
-                    >
-                      + Add more
-                    </button>
-                  </div>
-                </div>
-
-                {/* Website URL */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Website Url
-                  </label>
-                  <input
-                    type="url"
-                    value={artistWebsiteUrl}
-                    onChange={(e) => onArtistWebsiteUrlChange(e.target.value)}
-                    placeholder="https://artist-website.com"
-                    className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                  />
-                </div>
-
-                {/* Artist image upload */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Artist Image Upload
-                  </label>
-                  <FileUploadField
-                    uploadType="artistImage"
-                    onFileChange={onArtistMainImageFileChange}
-                    previewUrl={artistMainImagePreviewUrl}
-                  />
-                </div>
-
-                {/* Genre Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Genres * (select at least one)
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {GENRES.map((genre) => (
-                      <button
-                        key={genre}
-                        type="button"
-                        onClick={() => onArtistGenreToggle(genre)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                          artistGenres.includes(genre)
-                            ? "bg-purple-500 text-white"
-                            : "bg-black/40 text-gray-400 hover:bg-black/60 border border-purple-500/30"
-                        }`}
-                      >
-                        {genre}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex h-11 gap-2 mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsCreatingArtist(false)}
-                    className="flex-1 cursor-pointer  bg-black/40 text-gray-300 font-medium  rounded-lg hover:bg-black/60 border border-purple-500/30 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSaveArtistClick}
-                    disabled={createArtistMutationIsPending}
-                    className="flex-1 cursor-pointer bg-purple-600 text-white font-medium  rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {createArtistMutationIsPending
-                      ? "Creating..."
-                      : "Save Artist"}
-                  </button>
-                </div>
-              </div>
+              <ArtistForm
+                artistName={artistName}
+                artistDescription={artistDescription}
+                artistWebsiteUrl={artistWebsiteUrl}
+                artistGenres={artistGenres}
+                artistMusicUrls={artistMusicUrls}
+                artistMainImagePreviewUrl={artistMainImagePreviewUrl}
+                genres={GENRES}
+                artistNameError={artistNameError}
+                isSaving={createArtistMutationIsPending}
+                saveLabel={
+                  createArtistMutationIsPending ? "Saving..." : "Save Artist"
+                }
+                onArtistNameChange={(value) => {
+                  onArtistNameChange(value);
+                  if (artistNameError) {
+                    setArtistNameError("");
+                  }
+                }}
+                onArtistDescriptionChange={onArtistDescriptionChange}
+                onArtistWebsiteUrlChange={onArtistWebsiteUrlChange}
+                onArtistGenreToggle={onArtistGenreToggle}
+                onArtistMusicUrlChange={onArtistMusicUrlChange}
+                onAddArtistMusicUrl={onAddArtistMusicUrl}
+                onRemoveArtistMusicUrl={onRemoveArtistMusicUrl}
+                onArtistMainImageFileChange={onArtistMainImageFileChange}
+                onCancel={() => {
+                  onCancelArtistEdit();
+                  setArtistNameError("");
+                  setIsCreatingArtist(false);
+                }}
+                onSave={handleSaveArtistClick}
+              />
             </motion.div>
           ) : null}
         </AnimatePresence>

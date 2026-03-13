@@ -27,16 +27,12 @@
 }
 
 /* Hover */
-.mui-white-outline
-  .MuiPickersOutlinedInput-root:hover
-  .MuiPickersOutlinedInput-notchedOutline {
+.mui-white-outline .MuiPickersOutlinedInput-root:hover .MuiPickersOutlinedInput-notchedOutline {
   border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Focus */
-.mui-white-outline
-  .MuiPickersOutlinedInput-root.Mui-focused
-  .MuiPickersOutlinedInput-notchedOutline {
+.mui-white-outline .MuiPickersOutlinedInput-root.Mui-focused .MuiPickersOutlinedInput-notchedOutline {
   border-color: #ffffff !important;
 }
 
@@ -117,16 +113,12 @@
 }
 
 /* 2. The Border (Hover state) */
-.mui-white-outline
-  .MuiOutlinedInput-root:hover
-  .MuiOutlinedInput-notchedOutline {
+.mui-white-outline .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
   border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* 3. The Border (Focused/Active state) */
-.mui-white-outline
-  .MuiOutlinedInput-root.Mui-focused
-  .MuiOutlinedInput-notchedOutline {
+.mui-white-outline .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
   border-color: #ffffff !important; /* Bright white when clicking */
 }
 
@@ -145,9 +137,7 @@
   color: rgb(158, 153, 153) !important;
 }
 
-.MuiFormControl-root
-  .MuiPickersTextField-root
-  .css-eqc3kq-MuiFormControl-root-MuiPickersTextField-root {
+.MuiFormControl-root .MuiPickersTextField-root .css-eqc3kq-MuiFormControl-root-MuiPickersTextField-root {
   border: 1px solid gray;
 }
 
@@ -253,8 +243,30 @@
   .btn-default {
     @apply bg-purple text-white font-medium hover:bg-purple/80 transition cursor-pointer px-4 py-2 rounded-lg;
   }
+  .btn-secondary {
+    @apply cursor-pointer bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-tertiary {
+    @apply bg-purple-500 text-white;
+  }
+  .btn-cancel {
+    @apply cursor-pointer bg-black/40 text-gray-300 font-medium rounded-lg hover:bg-black/60 border border-purple-500/30 transition;
+  }
+
   .input-default {
     @apply flex h-12 w-full rounded-md border border-input  px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
+  }
+
+  .input-event-form {
+    @apply px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition;
+  }
+
+  .label-event-form {
+    @apply block text-sm font-medium text-gray-300;
+  }
+
+  .managed-card {
+    @apply flex justify-between items-center rounded-lg border border-purple-500/30 bg-black/20 p-4 gap-4;
   }
 }
 
