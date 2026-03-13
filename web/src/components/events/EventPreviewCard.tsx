@@ -6,7 +6,7 @@ import { DeleteBtn } from "../buttons/DeleteBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 
-const EventCardManaged = ({
+const EventPreviewCard = ({
   event,
   index,
   handleDelete,
@@ -27,16 +27,7 @@ const EventCardManaged = ({
   const yearStr = format(new Date(event.startDate), "yyyy");
 
   return (
-    <div
-      style={{
-        position: "sticky",
-        top: "100px",
-        zIndex: index,
-        backgroundImage: 'url("/bg.jpg")',
-      }}
-      className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
-      // className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 rounded-lg sm:border sm:border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
-    >
+    <div className="card-pre">
       {/* DATE STICKER ON DESKTOP ONLY */}
       <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
@@ -124,4 +115,4 @@ const EventCardManaged = ({
   );
 };
 
-export default EventCardManaged;
+export default EventPreviewCard;

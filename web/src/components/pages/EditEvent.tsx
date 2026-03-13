@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Save, AlertCircle, Trash2 } from "lucide-react";
+import { CalendarIcon, Save, AlertCircle, Trash2, ArrowLeft } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -772,8 +772,13 @@ export const EditEvent = () => {
     onCreateArtist: handleCreateArtist,
   };
   return (
-    <div className="relative z-20 min-h-screen py-8">
-      <div className="container mx-auto px-4">
+    <div className="container z-20 min-h-screen py-8">
+      <div className="text-white">
+        <Link to="/managed-events">
+          <ArrowLeft></ArrowLeft>
+        </Link>
+      </div>
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-black text-white mb-2">Managed Events</h1>

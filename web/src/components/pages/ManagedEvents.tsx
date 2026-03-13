@@ -1,4 +1,4 @@
-import EventCardManaged from "../events/EventCardManaged";
+import EventPreviewCard from "../events/EventPreviewCard";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { useAuth } from "../../context/AuthContext";
@@ -50,7 +50,7 @@ export const ManagedEvents = () => {
             {!isLoading && eventsList.length > 0
               ? eventsList.map((event: EventListItem, index: number) => {
                   return (
-                    <EventCardManaged
+                    <EventPreviewCard
                       key={event.id}
                       event={event}
                       index={index}

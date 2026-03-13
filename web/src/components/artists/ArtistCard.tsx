@@ -4,7 +4,6 @@ import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 import type { Artist } from "../../services/artistsApi";
 
 export const ArtistCard = ({ artist }: { artist: Artist }) => {
-  console.log(artist);
   return (
     <>
       <div key={artist.id} className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5">

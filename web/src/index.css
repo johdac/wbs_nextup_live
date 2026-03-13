@@ -27,16 +27,12 @@
 }
 
 /* Hover */
-.mui-white-outline
-  .MuiPickersOutlinedInput-root:hover
-  .MuiPickersOutlinedInput-notchedOutline {
+.mui-white-outline .MuiPickersOutlinedInput-root:hover .MuiPickersOutlinedInput-notchedOutline {
   border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Focus */
-.mui-white-outline
-  .MuiPickersOutlinedInput-root.Mui-focused
-  .MuiPickersOutlinedInput-notchedOutline {
+.mui-white-outline .MuiPickersOutlinedInput-root.Mui-focused .MuiPickersOutlinedInput-notchedOutline {
   border-color: #ffffff !important;
 }
 
@@ -117,16 +113,12 @@
 }
 
 /* 2. The Border (Hover state) */
-.mui-white-outline
-  .MuiOutlinedInput-root:hover
-  .MuiOutlinedInput-notchedOutline {
+.mui-white-outline .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
   border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* 3. The Border (Focused/Active state) */
-.mui-white-outline
-  .MuiOutlinedInput-root.Mui-focused
-  .MuiOutlinedInput-notchedOutline {
+.mui-white-outline .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
   border-color: #ffffff !important; /* Bright white when clicking */
 }
 
@@ -145,9 +137,7 @@
   color: rgb(158, 153, 153) !important;
 }
 
-.MuiFormControl-root
-  .MuiPickersTextField-root
-  .css-eqc3kq-MuiFormControl-root-MuiPickersTextField-root {
+.MuiFormControl-root .MuiPickersTextField-root .css-eqc3kq-MuiFormControl-root-MuiPickersTextField-root {
   border: 1px solid gray;
 }
 
@@ -255,6 +245,9 @@
   }
   .input-default {
     @apply flex h-12 w-full rounded-md border border-input  px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
+  }
+  .card-pre {
+    @apply flex justify-between items-center rounded-lg border border-purple-500/30 bg-black/20 p-4;
   }
 }
 
