@@ -8,7 +8,15 @@ export const ArtistCard = ({ artist }: { artist: Artist }) => {
     <>
       <div key={artist.id} className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5">
         <div>
-          <img src={artist.mainImageUrl} alt={artist.name} className="rounded-lg max-w-md md:max-w-full" />
+          <img
+            src={artist.mainImageUrl}
+            alt={artist.name}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/placeholder.jpeg";
+            }}
+            className="w-full rounded-lg max-w-md md:max-w-full"
+          />
         </div>
         <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
           <div className="col-span-3 flex flex-col gap-1">
