@@ -13,6 +13,15 @@ export const clearAuthSession = () => {
   localStorage.removeItem("role");
 };
 
+export const isRefreshTokenInvalidError = (error: unknown): boolean => {
+  if (!axios.isAxiosError(error)) {
+    return false;
+  }
+
+  const status = error.response?.status;
+  return status === 400 || status === 401 || status === 403;
+};
+
 export const refreshAccessToken = async (): Promise<RefreshResponse> => {
   if (refreshRequestPromise) {
     return refreshRequestPromise;

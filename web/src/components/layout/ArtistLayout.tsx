@@ -124,7 +124,7 @@ export const ArtistLayout = () => {
               <button
                 type="button"
                 onClick={() => setIsCreatingArtist(!isCreatingArtist)}
-                className="px-3 py-2 cursor-pointer rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700 transition"
+                className="px-3 py-2 cursor-pointer rounded-lg bg-primary text-white text-sm hover:bg-primary/25 transition"
               >
                 + Create New Artist
               </button>

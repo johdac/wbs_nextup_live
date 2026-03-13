@@ -2,6 +2,8 @@ import { CalendarIcon, Save } from "lucide-react";
 import dayjs from "dayjs";
 import { DateTimeRangePicker } from "../ui/date-time-picker";
 import { FileUploadField } from "../ui/FileUpload";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
 import type { EventFormValues } from "../../types/event";
 
 interface EventInfoFormProps {
@@ -42,21 +44,28 @@ export const EventInfoForm = ({
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Event Title *</label>
-        <input
+        <Label htmlFor="event-title" className="block text-sm font-medium text-gray-300 mb-2">
+          Event Title *
+        </Label>
+        <Input
+          id="event-title"
           type="text"
           value={title}
           onChange={(e) => setValue("title", e.target.value)}
           placeholder="e.g., Summer Music Festival 2026"
-          className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
+          variant="event"
+          className="px-4 py-3"
           required
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+        <Label htmlFor="event-description" className="block text-sm font-medium text-gray-300 mb-2">
+          Description
+        </Label>
         <textarea
+          id="event-description"
           value={description}
           onChange={(e) => setValue("description", e.target.value)}
           placeholder="Describe your event..."
@@ -67,7 +76,9 @@ export const EventInfoForm = ({
 
       {/* Date Range Picker */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Event Start & End *</label>
+        <Label className="block text-sm font-medium text-gray-300 mb-2">
+          Event Start & End *
+        </Label>
         <DateTimeRangePicker
           startValue={startDate ? startDate.toDate() : null}
           endValue={endDate ? endDate.toDate() : null}
@@ -81,7 +92,9 @@ export const EventInfoForm = ({
 
       {/* Image Upload for Event */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Image Upload</label>
+        <Label className="block text-sm font-medium text-gray-300 mb-2">
+          Image Upload
+        </Label>
         <FileUploadField uploadType="artistImage" onFileChange={setEventMainImageFile} />
       </div>
 

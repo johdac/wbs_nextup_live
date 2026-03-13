@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
 
 type LocationFormFieldsProps = {
   name: string;
@@ -43,58 +45,73 @@ export const LocationFormFields = ({
     <div className="space-y-3 mb-4">
       {topSlot}
       <div>
-        <label className="label-event-form mb-1">Name *</label>
-        <input
+        <Label htmlFor="location-name" className="label-event-form mb-1">
+          Name *
+        </Label>
+        <Input
+          id="location-name"
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="e.g., Central Arena"
-          className="w-full input-event-form"
+          variant="event"
         />
       </div>
 
       <div>
-        <label className="label-event-form mb-1">Address</label>
-        <input
+        <Label htmlFor="location-address" className="label-event-form mb-1">
+          Address
+        </Label>
+        <Input
+          id="location-address"
           type="text"
           value={address}
           onChange={(e) => onAddressChange(e.target.value)}
           placeholder="e.g., 123 Main St"
-          className="w-full input-event-form"
+          variant="event"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="label-event-form mb-1">City</label>
-          <input
+          <Label htmlFor="location-city" className="label-event-form mb-1">
+            City
+          </Label>
+          <Input
+            id="location-city"
             type="text"
             value={city}
             onChange={(e) => onCityChange(e.target.value)}
             placeholder="e.g., Berlin"
-            className="w-full input-event-form"
+            variant="event"
           />
         </div>
         <div>
-          <label className="label-event-form mb-1">Zip</label>
-          <input
+          <Label htmlFor="location-zip" className="label-event-form mb-1">
+            Zip
+          </Label>
+          <Input
+            id="location-zip"
             type="text"
             value={zip}
             onChange={(e) => onZipChange(e.target.value)}
             placeholder="e.g., 10115"
-            className="w-full input-event-form"
+            variant="event"
           />
         </div>
       </div>
 
       <div>
-        <label className="label-event-form mb-1">Country</label>
-        <input
+        <Label htmlFor="location-country" className="label-event-form mb-1">
+          Country
+        </Label>
+        <Input
+          id="location-country"
           type="text"
           value={country}
           onChange={(e) => onCountryChange(e.target.value)}
           placeholder="e.g., Germany"
-          className="w-full input-event-form"
+          variant="event"
         />
       </div>
 

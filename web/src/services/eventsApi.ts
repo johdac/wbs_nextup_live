@@ -2,6 +2,29 @@ import type { Artist } from "./artistsApi";
 import type { Location } from "./locationsApi";
 import { eventsApi } from "./events.services";
 
+interface MusicResource {
+  url: string;
+  title: string;
+  id: string;
+}
+
+export interface EventCardArtist {
+  id: string;
+  name: string;
+  genre: string;
+  description: string;
+  imageUrl: string;
+  websiteUrl: string;
+  musicResources?: MusicResource[];
+}
+
+export interface EventCardLocation {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+}
+
 export interface EventListItem {
   id: string;
   title: string;
@@ -52,6 +75,25 @@ interface ApiUserSummary {
   username: string;
 }
 
+interface ApiLocation {
+  _id?: string;
+  id?: string;
+  name: string;
+  city?: string;
+  address?: string;
+}
+
+interface ApiArtist {
+  _id?: string;
+  id?: string;
+  name: string;
+  genres: string[];
+  description?: string;
+  imageUrl: string;
+  websiteUrl: string;
+  musicResources?: MusicResource[];
+}
+
 export interface ApiEvent {
   _id?: string;
   id?: string;
@@ -83,8 +125,10 @@ export interface ApiEvent {
 
 // Transform API response to MusicEvent format for display
 const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
-  const organizer = typeof event.createdById === "object" ? event.createdById : undefined;
-  const location = typeof event.locationId === "object" ? event.locationId : undefined;
+  const organizer =
+    typeof event.createdById === "object" ? event.createdById : undefined;
+  const location =
+    typeof event.locationId === "object" ? event.locationId : undefined;
 
   return {
     id: event.id || (event._id as string),
@@ -109,6 +153,7 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
           mainImageUrl: artist.mainImageUrl || "/placeholder.svg",
           imageUrl: "/placeholder.svg",
           websiteUrl: artist.websiteUrl || "",
+          musicResources: artist.musicResources,
         };
       }) || [],
     genres: event.genres || "Unknown",
@@ -123,7 +168,10 @@ export const eventsService = {
     const { data } = await eventsApi.get<ApiEvent>(`/events/${id}`);
     return transformEventToMusicEvent(data);
   },
-  fetchEventsList: async (page: number = 1, filters?: Omit<EventSearchParams, "page">): Promise<EventListItem[]> => {
+  fetchEventsList: async (
+    page: number = 1,
+    filters?: Omit<EventSearchParams, "page">,
+  ): Promise<EventListItem[]> => {
     const params: Record<string, string> = {
       page: page.toString(),
       limit: (filters?.limit ?? 20).toString(),
@@ -136,7 +184,8 @@ export const eventsService = {
     if (filters?.genres?.length) params.genres = filters.genres.join(",");
     if (filters?.lat !== undefined) params.lat = filters.lat.toString();
     if (filters?.lng !== undefined) params.lng = filters.lng.toString();
-    if (filters?.radius !== undefined) params.radius = filters.radius.toString();
+    if (filters?.radius !== undefined)
+      params.radius = filters.radius.toString();
     if (filters?.startAfter) params.startAfter = filters.startAfter;
     if (filters?.startUntil) params.startUntil = filters.startUntil;
 
@@ -160,7 +209,10 @@ export const eventsService = {
       endDate: string;
     },
   ) => {
-    const { data } = await eventsApi.put<CreateEventInput>(`/events/${id}`, payload);
+    const { data } = await eventsApi.put<CreateEventInput>(
+      `/events/${id}`,
+      payload,
+    );
     return data;
   },
 

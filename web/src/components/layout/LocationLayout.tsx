@@ -222,7 +222,7 @@ export const LocationLayout = () => {
           onClick={onToggleSelectExistingLocation}
           className={`flex-1 cursor-pointer px-4 py-2 rounded-lg font-medium transition ${
             !isCreatingNewLocation
-              ? "bg-purple-500 text-white"
+              ? "bg-primary text-white"
               : "bg-black/40 text-gray-400 hover:bg-black/60"
           }`}
         >
@@ -233,7 +233,7 @@ export const LocationLayout = () => {
           onClick={onToggleCreateNewLocation}
           className={`flex-1 cursor-pointer px-4 py-2 rounded-lg font-medium transition ${
             isCreatingNewLocation
-              ? "bg-purple-500 text-white"
+              ? "bg-primary text-white"
               : "bg-black/40 text-gray-400 hover:bg-black/60"
           }`}
         >
