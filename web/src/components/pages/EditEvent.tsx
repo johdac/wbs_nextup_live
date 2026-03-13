@@ -41,7 +41,7 @@ export const EditEvent = () => {
       artistGenres: [],
       artistDescription: "",
       artistWebsiteUrl: "",
-      artistMusicUrls: [""],
+      artistMusicUrls: [{ title: "", url: "" }],
     },
   });
 
@@ -58,13 +58,17 @@ export const EditEvent = () => {
   const endDate = endDateValue ? dayjs(endDateValue) : null;
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
   const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(null);
+  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<string | null>(null);
   const [savedArtistPreview, setSavedArtistPreview] = useState<{
     name: string;
     mainImageUrl?: string;
     description?: string;
     websiteUrl?: string;
     genres: string[];
-    youtubeUrls: string[];
+    musicResources: {
+      title: string;
+      url: string;
+    }[];
   } | null>(null);
   const artistPreviewObjectUrlRef = useRef<string | null>(null);
 
@@ -109,7 +113,7 @@ export const EditEvent = () => {
   // Fetch artists and locations
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
     queryKey: ["artists"],
-    queryFn: artistsService.getArtists,
+    queryFn: () => artistsService.getArtists(),
   });
 
   const { data: locations = [], isLoading: locationsLoading } = useQuery({
@@ -163,6 +167,7 @@ export const EditEvent = () => {
       setValue("selectedArtistIds", [...prev, newArtistId]);
       setValue("isCreatingNewArtist", false);
       setLastCreatedArtistId(newArtistId);
+      setSavedArtistPreviewId(newArtistId);
       setShowSavedArtistPreview(true);
       setSavedArtistPreview({
         name: newArtist.name,
@@ -170,14 +175,17 @@ export const EditEvent = () => {
         description: newArtist.description,
         websiteUrl: newArtist.websiteUrl,
         genres: newArtist.genres || [],
-        youtubeUrls: (newArtist.musicResources || []).map((resource) => resource.url),
+        musicResources: (newArtist.musicResources || []).map((resource) => ({
+          title: resource.title || "",
+          url: resource.url,
+        })),
       });
       // Clear artist form
       setValue("artistName", "");
       setValue("artistGenres", []);
       setValue("artistDescription", "");
       setValue("artistWebsiteUrl", "");
-      setValue("artistMusicUrls", [""]);
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImageFile(null);
     },
     onError: (err: Error | unknown) => {
@@ -538,7 +546,7 @@ export const EditEvent = () => {
     setValue("startDate", event.startDate ?? dayjs().toISOString());
     setValue("endDate", event.endDate ?? dayjs().add(2, "hour").toISOString());
     setValue("selectedLocationId", event.location?.id ?? "");
-    setValue("selectedArtistIds", event.artists?.map((artist) => artist.id) ?? []);
+    setValue("selectedArtistIds", event.artists?.map((artist) => artist.id || artist._id || "").filter(Boolean) ?? []);
   }, [event, setValue]);
 
   // Handle creating new location with auto-computed coordinates
@@ -730,7 +738,7 @@ export const EditEvent = () => {
       setValue("artistGenres", []);
       setValue("artistDescription", "");
       setValue("artistWebsiteUrl", "");
-      setValue("artistMusicUrls", [""]);
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImageFile(null);
     },
     onToggleSelectExistingArtist: () => setValue("isCreatingNewArtist", false),
@@ -739,15 +747,18 @@ export const EditEvent = () => {
     onArtistGenreToggle: handleArtistGenreToggle,
     onArtistDescriptionChange: (value: string) => setValue("artistDescription", value),
     onArtistWebsiteUrlChange: (value: string) => setValue("artistWebsiteUrl", value),
-    onArtistMusicUrlChange: (index: number, value: string) => {
+    onArtistMusicUrlChange: (index: number, field: "title" | "url", value: string) => {
       const next = [...getValues("artistMusicUrls")];
-      next[index] = value;
+      next[index] = {
+        ...next[index],
+        [field]: value,
+      };
       setValue("artistMusicUrls", next);
     },
-    onAddArtistMusicUrl: () => setValue("artistMusicUrls", [...getValues("artistMusicUrls"), ""]),
+    onAddArtistMusicUrl: () => setValue("artistMusicUrls", [...getValues("artistMusicUrls"), { title: "", url: "" }]),
     onRemoveArtistMusicUrl: (index: number) => {
       const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
-      setValue("artistMusicUrls", next.length > 0 ? next : [""]);
+      setValue("artistMusicUrls", next.length > 0 ? next : [{ title: "", url: "" }]);
     },
     onArtistMainImageFileChange: setArtistMainImageFile,
     showSavedArtistPreview,
@@ -758,7 +769,15 @@ export const EditEvent = () => {
         setValue("artistDescription", savedArtistPreview.description || "");
         setValue("artistWebsiteUrl", savedArtistPreview.websiteUrl || "");
         setValue("artistGenres", savedArtistPreview.genres || []);
-        setValue("artistMusicUrls", savedArtistPreview.youtubeUrls?.length > 0 ? savedArtistPreview.youtubeUrls : [""]);
+        setValue(
+          "artistMusicUrls",
+          savedArtistPreview.musicResources?.length
+            ? savedArtistPreview.musicResources.map((resource) => ({
+                title: resource.title || "",
+                url: resource.url,
+              }))
+            : [{ title: "", url: "" }],
+        );
       }
 
       if (lastCreatedArtistId) {
@@ -770,6 +789,15 @@ export const EditEvent = () => {
       setArtistMainImageFile(null);
     },
     onCreateArtist: handleCreateArtist,
+    savedArtistPreviewId,
+    onLoadArtistForEdit: (_artistId: string) => {
+      // For event editing, we don't support editing existing artists
+      // This is mainly for create event flow
+    },
+    onCancelArtistEdit: () => {
+      // For event editing, we don't support editing existing artists
+      // This is mainly for create event flow
+    },
   };
   return (
     <div className="container z-20 min-h-screen py-8">
