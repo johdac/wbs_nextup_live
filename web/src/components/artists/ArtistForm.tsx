@@ -1,4 +1,6 @@
 import { FileUploadField } from "../ui/FileUpload";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
 
 type ArtistMusicItem = {
   title: string;
@@ -57,13 +59,16 @@ export const ArtistForm = ({
   return (
     <div className="space-y-5 mb-4">
       <div className="mb-4">
-        <label className="label-event-form mb-1">Artist Name *</label>
-        <input
+        <Label htmlFor="artist-name" className="label-event-form mb-1">
+          Artist Name *
+        </Label>
+        <Input
+          id="artist-name"
           type="text"
           value={artistName}
           onChange={(e) => onArtistNameChange(e.target.value)}
           placeholder="e.g., The Rolling Stones"
-          className="w-full  input-event-form"
+          variant="event"
         />
         {artistNameError && (
           <p className="text-sm text-red-400 mt-1 mb-2 ml-2">
@@ -73,8 +78,11 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="label-event-form mb-1">Description</label>
+        <Label htmlFor="artist-description" className="label-event-form mb-1">
+          Description
+        </Label>
         <textarea
+          id="artist-description"
           value={artistDescription}
           onChange={(e) => onArtistDescriptionChange(e.target.value)}
           placeholder="Artist description"
@@ -84,27 +92,31 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="label-event-form mb-2">Music Resources</label>
+        <Label className="label-event-form mb-2">Music Resources</Label>
         <div className="space-y-2">
           {artistMusicUrls.map((musicItem, index) => (
             <div key={`music-url-${index}`} className="flex gap-2">
-              <input
+              <Input
+                id={`artist-music-title-${index}`}
                 type="text"
                 value={musicItem.title}
                 onChange={(e) =>
                   onArtistMusicUrlChange(index, "title", e.target.value)
                 }
                 placeholder="Title (e.g. Live at Wembley)"
-                className="w-1/3 input-event-form"
+                variant="event"
+                className="w-1/3"
               />
-              <input
+              <Input
+                id={`artist-music-url-${index}`}
                 type="url"
                 value={musicItem.url}
                 onChange={(e) =>
                   onArtistMusicUrlChange(index, "url", e.target.value)
                 }
                 placeholder="https://youtube.com/... or https://youtu.be/..."
-                className="w-2/3 input-event-form"
+                variant="event"
+                className="w-2/3"
               />
               {artistMusicUrls.length > 1 && (
                 <button
@@ -120,7 +132,7 @@ export const ArtistForm = ({
           <button
             type="button"
             onClick={onAddArtistMusicUrl}
-            className="px-3 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600"
+            className="px-3 py-2 rounded-lg bg-primary text-white hover:bg-purple-900"
           >
             + Add more
           </button>
@@ -128,18 +140,21 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="label-event-form mb-1">Website Url</label>
-        <input
+        <Label htmlFor="artist-website-url" className="label-event-form mb-1">
+          Website Url
+        </Label>
+        <Input
+          id="artist-website-url"
           type="url"
           value={artistWebsiteUrl}
           onChange={(e) => onArtistWebsiteUrlChange(e.target.value)}
           placeholder="https://artist-website.com"
-          className="w-full input-event-form"
+          variant="event"
         />
       </div>
 
       <div>
-        <label className="label-event-form mb-2">Artist Image Upload</label>
+        <Label className="label-event-form mb-2">Artist Image Upload</Label>
         <FileUploadField
           uploadType="artistImage"
           onFileChange={onArtistMainImageFileChange}
@@ -148,9 +163,9 @@ export const ArtistForm = ({
       </div>
 
       <div>
-        <label className="label-event-form mb-2">
+        <Label className="label-event-form mb-2">
           Genres * (select at least one)
-        </label>
+        </Label>
         <div className="flex flex-wrap gap-2">
           {genres.map((genre) => (
             <button
@@ -158,7 +173,9 @@ export const ArtistForm = ({
               type="button"
               onClick={() => onArtistGenreToggle(genre)}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                artistGenres.includes(genre) ? "btn-tertiary" : "btn-cancel"
+                artistGenres.includes(genre)
+                  ? "bg-primary text-white"
+                  : "btn-cancel"
               }`}
             >
               {genre}
