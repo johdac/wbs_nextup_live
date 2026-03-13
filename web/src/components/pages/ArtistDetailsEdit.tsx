@@ -6,6 +6,7 @@ import { CirclePlay, Link } from "lucide-react";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
+import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();
@@ -71,9 +72,9 @@ export const ArtistDetailsEdit = () => {
       </div>
 
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* left */}
-          <div className="grid grid-cols-1">
+          <div className="">
             {/* image of the artist */}
             <img
               src={artist.mainImageUrl}
@@ -83,11 +84,11 @@ export const ArtistDetailsEdit = () => {
           </div>
           {/* right */}
           <div className="md:col-span-2 flex flex-col items-start gap-3">
-            <div className="grid grid-cols-2 md:grid-cols-3">
-              <h1 className="md:col-span-2 flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
+            <div className="flex flex-row gap-5 justify-between items-center">
+              <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
                 {artist.name}
               </h1>
-              <CirclePlay />
+              <CirclePlayBtn />
             </div>
             <div className="p-1">
               <span className="rounded text-white px-2 py-1 bg-purple text-[12px] font-bold uppercase tracking-wider">
