@@ -246,6 +246,10 @@
   );
   --color-background: #0a0a0a;
   --color-foreground: #ffffff;
+
+  --un-box-padding-x: 30px;
+  --un-box-padding-y: 30px;
+  --un-color-border-dotted: hsl(246deg 44% 22%);
 }
 
 @layer components {
@@ -294,6 +298,51 @@
       #ffab65 100%
     );
     z-index: 3;
+  }
+
+  .un-border-default {
+    @apply border-4 border-dotted;
+    border-color: var(--un-color-border-dotted);
+  }
+
+  .un-border-t-default {
+    @apply border-t-4 border-dotted;
+    border-color: var(--un-color-border-dotted);
+  }
+
+  .un-border-r-default {
+    @apply border-r-4 border-dotted;
+    border-color: var(--un-color-border-dotted);
+  }
+
+  .un-border-b-default {
+    @apply border-b-4 border-dotted;
+    border-color: var(--un-color-border-dotted);
+  }
+
+  .un-border-l-default {
+    @apply border-l-4 border-dotted;
+    border-color: var(--un-color-border-dotted);
+  }
+
+  .un-box-padding {
+    padding: var(--un-box-padding-y) var(--un-box-padding-x);
+  }
+
+  .un-box-t-padding {
+    padding-top: var(--un-box-padding-y);
+  }
+
+  .un-box-r-padding {
+    padding-right: var(--un-box-padding-x);
+  }
+
+  .un-box-b-padding {
+    padding-bottom: var(--un-box-padding-y);
+  }
+
+  .un-box-l-padding {
+    padding-left: var(--un-box-padding-x);
   }
 }
 
