@@ -16,6 +16,8 @@ export const Player = () => {
     soundcloudRef,
     togglePlayPause,
     playNext,
+    playPrev,
+    playTracks,
   } = usePlayer();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -132,7 +134,7 @@ export const Player = () => {
             {/* Controls */}
             <div className="flex items-center justify-center gap-1 mr-5 py-2">
               <button
-                // onClick={goPrev}
+                onClick={playPrev}
                 disabled={!canGoPrev}
                 className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
               >

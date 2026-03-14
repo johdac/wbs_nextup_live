@@ -5,7 +5,6 @@ import {
   type PlaylistItem,
 } from "./playerTypes";
 import { parseSong } from "./utils/parseSong";
-import { pl } from "date-fns/locale";
 
 const PlayerContext = createContext<Player | null>(null);
 
@@ -55,11 +54,16 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  /* This replaces the playlist with a single track */
-  const playTrack = (item: PlaylistItem) => {
+  /* This replaces the playlist with a list of track */
+  const playTracks = (items: PlaylistItem[]) => {
     // Enrich the song data with embedable autoplay url and vendor data
-    item.song = parseSong(item.song);
+    const parsedItems = items.map((item) => {
+      item.song = parseSong(item.song);
+      return item;
+    });
     pauseCurrentBeforeSwitch();
+    emptyOutPlaylist();
+    setPlaylist(parsedItems);
     setCurrentIndex(0);
     setPlayerState("playing");
   };
@@ -76,14 +80,10 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     else setCurrentIndex((prev) => prev + 1);
   };
 
-  const playPrev = () => {};
-
-  // const goPrev = () => {
-  //     if (playlist.length === 0 || currentIndex <= 0) return;
-  //     const newIndex = currentIndex - 1;
-  //     setCurrentIndex(newIndex);
-  //     showTrack(playlist[newIndex], true);
-  //   };
+  const playPrev = () => {
+    if (playlist.length === 0 || currentIndex <= 0) return;
+    setCurrentIndex((prev) => prev - 1);
+  };
 
   const togglePlayPause = (): void => {
     if (currentIndex < 0) setCurrentIndex(0);
@@ -92,32 +92,6 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const favoriteEvent = (eventId: string) => {};
-
-  // const togglePlayPause = () => {
-  //   if (currentVendor === "youtube" && ytPlayer) {
-  //     if (isPlaying) {
-  //       ytPlayer.pauseVideo?.();
-  //     } else {
-  //       ytPlayer.playVideo?.();
-  //     }
-  //     setIsPlaying(!isPlaying);
-  //   } else if (currentVendor === "soundcloud" && scPlayer) {
-  //     if (isPlaying) {
-  //       scPlayer.pause?.();
-  //     } else {
-  //       scPlayer.play?.();
-  //     }
-  //     setIsPlaying(!isPlaying);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const items = parseInput(defaultUrls.join("\n"));
-  //   setPlaylist(items);
-  //   if (items.length > 0) {
-  //     showTrack(items[0], false);
-  //   }
-  // }, []);
 
   const player: Player = {
     playlist,
@@ -132,7 +106,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     playNext,
     playPrev,
     togglePlayPause,
-    playTrack,
+    playTracks,
     pauseCurrentBeforeSwitch,
     favoriteEvent,
   };

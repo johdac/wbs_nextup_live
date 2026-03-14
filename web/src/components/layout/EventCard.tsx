@@ -22,7 +22,6 @@ const EventCard = ({
   const { addManyToPlaylist } = usePlayer();
 
   const mergedMusicResources: PlaylistItem[] = [];
-  console.log(event);
   event.artists.forEach((artist) => {
     artist.musicResources?.forEach((resource) => {
       const obj = {

@@ -51,7 +51,7 @@ export type Player = {
   emptyOutPlaylist: () => void;
   replacePlaylist: (items: PlaylistItem[]) => void;
 
-  playTrack: (item: PlaylistItem) => void;
+  playTracks: (items: PlaylistItem[]) => void;
   playNext: () => void;
   playPrev: () => void;
   togglePlayPause: () => void;
