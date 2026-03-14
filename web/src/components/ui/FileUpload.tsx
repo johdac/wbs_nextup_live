@@ -6,7 +6,11 @@ type Props = {
   previewUrl?: string;
 };
 
-export function FileUploadField({ uploadType, onFileChange, previewUrl }: Props) {
+export function FileUploadField({
+  uploadType,
+  onFileChange,
+  previewUrl,
+}: Props) {
   const { file, preview, getRootProps, getInputProps, isDragActive } =
     useFileUpload(uploadType, previewUrl);
 
@@ -18,7 +22,7 @@ export function FileUploadField({ uploadType, onFileChange, previewUrl }: Props)
     <div>
       <div
         {...getRootProps()}
-        className="border py-4 text-center cursor-pointer text-white rounded-lg"
+        className="border border-gray-400 py-3 text-center cursor-pointer text-white rounded-lg"
       >
         <input {...getInputProps()} />
 

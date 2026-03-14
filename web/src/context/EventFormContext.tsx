@@ -74,6 +74,7 @@ export interface EventFormContextValue {
   isSearching: boolean;
   showSearchResults: boolean;
   onToggleCreateNewLocation: () => void;
+  onStartEditLocation: () => void;
   onToggleSelectExistingLocation: () => void;
   onLocationSelect: (locationId: string) => void;
   onLocationNameChange: (value: string) => void;
