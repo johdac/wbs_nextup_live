@@ -10,10 +10,15 @@ import { locationsService } from "../../services/locationsApi";
 import { LocationLayout } from "../layout/LocationLayout";
 import { ArtistLayout } from "../layout/ArtistLayout";
 import { EventFormContext } from "../../context/EventFormContext";
-import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
+import type {
+  LocationSearchResult,
+  NominatimSearchItem,
+  EventFormValues,
+} from "../../types/event";
 import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
+import { Heading } from "../ui/Heading";
 
 export const CreateEvent = () => {
   const navigate = useNavigate();
@@ -54,9 +59,13 @@ export const CreateEvent = () => {
   const [success, setSuccess] = useState(false);
   const startDate = startDateValue ? dayjs(startDateValue) : null;
   const endDate = endDateValue ? dayjs(endDateValue) : null;
-  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(null);
+  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(
+    null,
+  );
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
-  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<string | null>(null);
+  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<
+    string | null
+  >(null);
   const [editingArtistId, setEditingArtistId] = useState<string | null>(null);
   const [isSavingArtist, setIsSavingArtist] = useState(false);
   const [savedArtistPreview, setSavedArtistPreview] = useState<{
@@ -85,7 +94,9 @@ export const CreateEvent = () => {
 
   // Search state
   const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState<LocationSearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<LocationSearchResult[]>(
+    [],
+  );
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isDateRangePickerOpen, setIsDateRangePickerOpen] = useState(false);
@@ -108,11 +119,18 @@ export const CreateEvent = () => {
   const artistDescription = watch("artistDescription");
   const artistWebsiteUrl = watch("artistWebsiteUrl");
   const artistMusicUrls = watch("artistMusicUrls");
-  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(null);
-  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<string | undefined>(undefined);
+  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(
+    null,
+  );
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<
+    string | undefined
+  >(undefined);
 
   const hasUnsavedChanges = useMemo(() => {
-    const hasEventChanges = title.trim().length > 0 || description.trim().length > 0 || !!eventMainImageFile;
+    const hasEventChanges =
+      title.trim().length > 0 ||
+      description.trim().length > 0 ||
+      !!eventMainImageFile;
 
     const hasLocationChanges =
       isCreatingNewLocation ||
@@ -132,7 +150,9 @@ export const CreateEvent = () => {
       artistGenres.length > 0 ||
       artistDescription.trim().length > 0 ||
       artistWebsiteUrl.trim().length > 0 ||
-      artistMusicUrls.some((item) => item.title.trim().length > 0 || item.url.trim().length > 0) ||
+      artistMusicUrls.some(
+        (item) => item.title.trim().length > 0 || item.url.trim().length > 0,
+      ) ||
       !!artistMainImageFile;
 
     return hasEventChanges || hasLocationChanges || hasArtistChanges;
@@ -162,7 +182,8 @@ export const CreateEvent = () => {
   const shouldWarnOnLeave = hasUnsavedChanges && !success && !isSavingArtist;
 
   const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => shouldWarnOnLeave && currentLocation.pathname !== nextLocation.pathname,
+    ({ currentLocation, nextLocation }) =>
+      shouldWarnOnLeave && currentLocation.pathname !== nextLocation.pathname,
   );
 
   useBeforeUnload(
@@ -177,7 +198,9 @@ export const CreateEvent = () => {
   useEffect(() => {
     if (blocker.state !== "blocked") return;
 
-    const confirmLeave = window.confirm("You have unsaved changes. Are you sure you want to leave this page?");
+    const confirmLeave = window.confirm(
+      "You have unsaved changes. Are you sure you want to leave this page?",
+    );
 
     if (confirmLeave) {
       blocker.proceed();
@@ -219,7 +242,40 @@ export const CreateEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to create location");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to create location",
+      );
+    },
+  });
+
+  const updateLocationMutation = useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Parameters<typeof locationsService.updateLocation>[1];
+    }) => locationsService.updateLocation(id, payload),
+    onSuccess: (updatedLocation) => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      setValue(
+        "selectedLocationId",
+        updatedLocation.id || updatedLocation._id || "",
+      );
+      setValue("isCreatingNewLocation", false);
+    },
+    onError: (err: Error | unknown) => {
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update location",
+      );
     },
   });
 
@@ -232,7 +288,9 @@ export const CreateEvent = () => {
         artistPreviewObjectUrlRef.current = null;
       }
 
-      const fallbackLocalImageUrl = artistMainImageFile ? URL.createObjectURL(artistMainImageFile) : undefined;
+      const fallbackLocalImageUrl = artistMainImageFile
+        ? URL.createObjectURL(artistMainImageFile)
+        : undefined;
 
       if (fallbackLocalImageUrl) {
         artistPreviewObjectUrlRef.current = fallbackLocalImageUrl;
@@ -241,14 +299,20 @@ export const CreateEvent = () => {
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       const newArtistId = newArtist.id || newArtist._id || "";
       const prev = getValues("selectedArtistIds").map((id) => String(id));
-      setValue("selectedArtistIds", prev.includes(newArtistId) ? prev : [...prev, newArtistId]);
+      setValue(
+        "selectedArtistIds",
+        prev.includes(newArtistId) ? prev : [...prev, newArtistId],
+      );
       setValue("isCreatingNewArtist", false);
       setSavedArtistPreviewId(newArtistId);
       setEditingArtistId(null);
       setShowSavedArtistPreview(true);
       setSavedArtistPreview({
         name: newArtist.name,
-        mainImageUrl: newArtist.mainImageUrl || newArtist.imageUrls?.[0] || fallbackLocalImageUrl,
+        mainImageUrl:
+          newArtist.mainImageUrl ||
+          newArtist.imageUrls?.[0] ||
+          fallbackLocalImageUrl,
         description: newArtist.description,
         websiteUrl: newArtist.websiteUrl,
         genres: newArtist.genres || [],
@@ -271,29 +335,44 @@ export const CreateEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to create artist");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to create artist",
+      );
     },
   });
 
   const updateArtistMutation = useMutation({
-    mutationFn: ({ id, artistData }: { id: string; artistData: Parameters<typeof artistsService.updateArtist>[1] }) =>
-      artistsService.updateArtist(id, artistData),
+    mutationFn: ({
+      id,
+      artistData,
+    }: {
+      id: string;
+      artistData: Parameters<typeof artistsService.updateArtist>[1];
+    }) => artistsService.updateArtist(id, artistData),
     onSuccess: (updatedArtist, variables) => {
       if (artistPreviewObjectUrlRef.current) {
         URL.revokeObjectURL(artistPreviewObjectUrlRef.current);
         artistPreviewObjectUrlRef.current = null;
       }
 
-      const fallbackLocalImageUrl = artistMainImageFile ? URL.createObjectURL(artistMainImageFile) : undefined;
+      const fallbackLocalImageUrl = artistMainImageFile
+        ? URL.createObjectURL(artistMainImageFile)
+        : undefined;
 
       if (fallbackLocalImageUrl) {
         artistPreviewObjectUrlRef.current = fallbackLocalImageUrl;
       }
 
       queryClient.invalidateQueries({ queryKey: ["artists"] });
-      const updatedArtistId = updatedArtist.id || updatedArtist._id || variables.id;
+      const updatedArtistId =
+        updatedArtist.id || updatedArtist._id || variables.id;
       const prev = getValues("selectedArtistIds").map((id) => String(id));
-      setValue("selectedArtistIds", prev.includes(updatedArtistId) ? prev : [...prev, updatedArtistId]);
+      setValue(
+        "selectedArtistIds",
+        prev.includes(updatedArtistId) ? prev : [...prev, updatedArtistId],
+      );
       setValue("isCreatingNewArtist", false);
       setSavedArtistPreviewId(null);
       setEditingArtistId(null);
@@ -312,7 +391,11 @@ export const CreateEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to update artist");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update artist",
+      );
     },
   });
 
@@ -331,12 +414,18 @@ export const CreateEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to create event");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to create event",
+      );
     },
   });
 
   // Get selected location for map preview
-  const selectedLocation = locations.find((loc) => (loc.id || loc._id) === selectedLocationId);
+  const selectedLocation = locations.find(
+    (loc) => (loc.id || loc._id) === selectedLocationId,
+  );
 
   // Reverse geocode coordinates to get address
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
@@ -349,11 +438,14 @@ export const CreateEvent = () => {
 
     try {
       // Reverse geocode to get address
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
-        headers: {
-          "User-Agent": "NextUpLive Event Creation",
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+        {
+          headers: {
+            "User-Agent": "NextUpLive Event Creation",
+          },
         },
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -366,7 +458,10 @@ export const CreateEvent = () => {
         setValue("locationCountry", addressData.country || "");
 
         // Auto-compute forward geocoding in background
-        if ((data.name || addressData.road) && (addressData.city || addressData.town)) {
+        if (
+          (data.name || addressData.road) &&
+          (addressData.city || addressData.town)
+        ) {
           setTimeout(() => {
             autoComputeCoordinatesSilent(
               data.name || addressData.road || "",
@@ -417,7 +512,8 @@ export const CreateEvent = () => {
           const forwardLng = parseFloat(data[0].lon);
 
           // Only update if close to clicked location (within ~1 degree)
-          const distance = Math.abs(forwardLat - clickLat) + Math.abs(forwardLng - clickLng);
+          const distance =
+            Math.abs(forwardLat - clickLat) + Math.abs(forwardLng - clickLng);
           if (distance < 1) {
             setValue("locationLat", forwardLat.toString());
             setValue("locationLng", forwardLng.toString());
@@ -435,7 +531,12 @@ export const CreateEvent = () => {
       return true; // Already have coordinates
     }
 
-    const addressParts = [locationAddress, locationCity, locationZip, locationCountry].filter(Boolean);
+    const addressParts = [
+      locationAddress,
+      locationCity,
+      locationZip,
+      locationCountry,
+    ].filter(Boolean);
 
     if (addressParts.length === 0) {
       setError("Please select a location on the map or enter address details");
@@ -476,7 +577,11 @@ export const CreateEvent = () => {
 
   // Auto-compute coordinates silently (after reverse geocoding)
   const handleAddressFieldChange = (
-    field: "locationAddress" | "locationCity" | "locationZip" | "locationCountry",
+    field:
+      | "locationAddress"
+      | "locationCity"
+      | "locationZip"
+      | "locationCountry",
     value: string,
   ) => {
     setValue(field, value);
@@ -490,7 +595,9 @@ export const CreateEvent = () => {
   // Handle location selection - auto-fill form fields
   const handleLocationSelect = (locationId: string) => {
     setValue("selectedLocationId", locationId);
-    const location = locations.find((loc) => (loc.id || loc._id) === locationId);
+    const location = locations.find(
+      (loc) => (loc.id || loc._id) === locationId,
+    );
     if (location) {
       setValue("locationName", location.name);
       setValue("locationAddress", location.address || "");
@@ -523,7 +630,9 @@ export const CreateEvent = () => {
     }
 
     const normalizedQuery = query.trim().toLowerCase();
-    const germanQuery = /\b(germany|deutschland|de)\b/i.test(query.trim()) ? query.trim() : `${query.trim()}, Germany`;
+    const germanQuery = /\b(germany|deutschland|de)\b/i.test(query.trim())
+      ? query.trim()
+      : `${query.trim()}, Germany`;
     const localMatches: LocationSearchResult[] = locations
       .filter((location) => {
         const haystack = [
@@ -541,7 +650,14 @@ export const CreateEvent = () => {
       .slice(0, 5)
       .map((location) => ({
         name: location.name,
-        displayName: [location.name, location.address, location.city, location.country].filter(Boolean).join(", "),
+        displayName: [
+          location.name,
+          location.address,
+          location.city,
+          location.country,
+        ]
+          .filter(Boolean)
+          .join(", "),
         lat: location.geo.coordinates[1],
         lng: location.geo.coordinates[0],
         address: location.address || "",
@@ -603,7 +719,12 @@ export const CreateEvent = () => {
             lat: Number(item.lat),
             lng: Number(item.lon),
             address: street || "",
-            city: address.city || address.town || address.village || address.county || "",
+            city:
+              address.city ||
+              address.town ||
+              address.village ||
+              address.county ||
+              "",
             country: address.country || "",
             zip: address.postcode || "",
           };
@@ -694,17 +815,24 @@ export const CreateEvent = () => {
       return;
     }
 
-    createLocationMutation.mutate({
+    const payload = {
       name: locationName,
       address: locationAddress,
       city: locationCity,
       zip: locationZip,
       country: locationCountry,
       geo: {
-        type: "Point",
-        coordinates: [lng, lat],
+        type: "Point" as const,
+        coordinates: [lng, lat] as [number, number],
       },
-    });
+    };
+
+    if (isCreatingNewLocation && selectedLocationId) {
+      updateLocationMutation.mutate({ id: selectedLocationId, payload });
+      return;
+    }
+
+    createLocationMutation.mutate(payload);
   };
 
   // Handle artist selection toggle
@@ -722,12 +850,17 @@ export const CreateEvent = () => {
   // Handle artist genre toggle
   const handleArtistGenreToggle = (genre: string) => {
     const prev = getValues("artistGenres");
-    setValue("artistGenres", prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]);
+    setValue(
+      "artistGenres",
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre],
+    );
   };
 
   const handleLoadArtistForEdit = (artistId: string) => {
     const normalizedArtistId = String(artistId);
-    const targetArtist = artists.find((artist) => String(artist.id || artist._id || "") === normalizedArtistId);
+    const targetArtist = artists.find(
+      (artist) => String(artist.id || artist._id || "") === normalizedArtistId,
+    );
 
     if (!targetArtist) {
       return;
@@ -746,7 +879,9 @@ export const CreateEvent = () => {
           }))
         : [{ title: "", url: "" }],
     );
-    setArtistMainImagePreviewUrl(targetArtist.mainImageUrl || targetArtist.imageUrls?.[0] || undefined);
+    setArtistMainImagePreviewUrl(
+      targetArtist.mainImageUrl || targetArtist.imageUrls?.[0] || undefined,
+    );
     setEditingArtistId(normalizedArtistId);
 
     const next = getValues("selectedArtistIds")
@@ -787,7 +922,9 @@ export const CreateEvent = () => {
 
     const invalidYoutubeResource = validMusicResources.find((item) => {
       const normalized = item.url.toLowerCase();
-      return !(normalized.includes("youtube.com") || normalized.includes("youtu.be"));
+      return !(
+        normalized.includes("youtube.com") || normalized.includes("youtu.be")
+      );
     });
 
     if (invalidYoutubeResource) {
@@ -800,7 +937,10 @@ export const CreateEvent = () => {
     try {
       let artistMainImageKey = undefined;
       if (artistMainImageFile) {
-        artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+        artistMainImageKey = await uploadFile(
+          artistMainImageFile,
+          "artistImage",
+        );
       }
 
       const artistPayload = {
@@ -871,7 +1011,8 @@ export const CreateEvent = () => {
     }
 
     let eventMainImageKey = undefined;
-    if (eventMainImageFile) eventMainImageKey = await uploadFile(eventMainImageFile, "eventImage");
+    if (eventMainImageFile)
+      eventMainImageKey = await uploadFile(eventMainImageFile, "eventImage");
 
     createEventMutation.mutate({
       title,
@@ -896,7 +1037,8 @@ export const CreateEvent = () => {
     locationLng,
     isGeocodingLocation,
     locationsLoading,
-    createLocationMutationIsPending: createLocationMutation.isPending,
+    createLocationMutationIsPending:
+      createLocationMutation.isPending || updateLocationMutation.isPending,
     locations,
     selectedLocation,
     searchInput,
@@ -914,15 +1056,22 @@ export const CreateEvent = () => {
       setValue("locationLat", "");
       setValue("locationLng", "");
     },
+    onStartEditLocation: () => {
+      setValue("isCreatingNewLocation", true);
+    },
     onToggleSelectExistingLocation: () => {
       setValue("isCreatingNewLocation", false);
     },
     onLocationSelect: handleLocationSelect,
     onLocationNameChange: (value: string) => setValue("locationName", value),
-    onLocationAddressChange: (value: string) => handleAddressFieldChange("locationAddress", value),
-    onLocationCityChange: (value: string) => handleAddressFieldChange("locationCity", value),
-    onLocationZipChange: (value: string) => handleAddressFieldChange("locationZip", value),
-    onLocationCountryChange: (value: string) => handleAddressFieldChange("locationCountry", value),
+    onLocationAddressChange: (value: string) =>
+      handleAddressFieldChange("locationAddress", value),
+    onLocationCityChange: (value: string) =>
+      handleAddressFieldChange("locationCity", value),
+    onLocationZipChange: (value: string) =>
+      handleAddressFieldChange("locationZip", value),
+    onLocationCountryChange: (value: string) =>
+      handleAddressFieldChange("locationCountry", value),
     onCreateLocation: handleCreateLocation,
     onMapClick: handleMapClick,
     onLocationSearch: handleLocationSearch,
@@ -936,7 +1085,8 @@ export const CreateEvent = () => {
     artistMusicUrls,
     artistMainImagePreviewUrl,
     artistsLoading,
-    createArtistMutationIsPending: createArtistMutation.isPending || updateArtistMutation.isPending,
+    createArtistMutationIsPending:
+      createArtistMutation.isPending || updateArtistMutation.isPending,
     artists,
     onToggleCreateNewArtist: () => {
       setValue("isCreatingNewArtist", true);
@@ -953,9 +1103,15 @@ export const CreateEvent = () => {
     onArtistSelect: handleArtistSelect,
     onArtistNameChange: (value: string) => setValue("artistName", value),
     onArtistGenreToggle: handleArtistGenreToggle,
-    onArtistDescriptionChange: (value: string) => setValue("artistDescription", value),
-    onArtistWebsiteUrlChange: (value: string) => setValue("artistWebsiteUrl", value),
-    onArtistMusicUrlChange: (index: number, field: "title" | "url", value: string) => {
+    onArtistDescriptionChange: (value: string) =>
+      setValue("artistDescription", value),
+    onArtistWebsiteUrlChange: (value: string) =>
+      setValue("artistWebsiteUrl", value),
+    onArtistMusicUrlChange: (
+      index: number,
+      field: "title" | "url",
+      value: string,
+    ) => {
       const next = [...getValues("artistMusicUrls")];
       next[index] = {
         ...next[index],
@@ -963,10 +1119,17 @@ export const CreateEvent = () => {
       };
       setValue("artistMusicUrls", next);
     },
-    onAddArtistMusicUrl: () => setValue("artistMusicUrls", [...getValues("artistMusicUrls"), { title: "", url: "" }]),
+    onAddArtistMusicUrl: () =>
+      setValue("artistMusicUrls", [
+        ...getValues("artistMusicUrls"),
+        { title: "", url: "" },
+      ]),
     onRemoveArtistMusicUrl: (index: number) => {
       const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
-      setValue("artistMusicUrls", next.length > 0 ? next : [{ title: "", url: "" }]);
+      setValue(
+        "artistMusicUrls",
+        next.length > 0 ? next : [{ title: "", url: "" }],
+      );
     },
     onArtistMainImageFileChange: (file: File | null) => {
       setArtistMainImageFile(file);
@@ -985,12 +1148,16 @@ export const CreateEvent = () => {
         setValue("artistGenres", savedArtistPreview.genres || []);
         setValue(
           "artistMusicUrls",
-          savedArtistPreview.musicResources?.length > 0 ? savedArtistPreview.musicResources : [{ title: "", url: "" }],
+          savedArtistPreview.musicResources?.length > 0
+            ? savedArtistPreview.musicResources
+            : [{ title: "", url: "" }],
         );
       }
 
       if (savedArtistPreviewId) {
-        const next = getValues("selectedArtistIds").filter((id) => String(id) !== String(savedArtistPreviewId));
+        const next = getValues("selectedArtistIds").filter(
+          (id) => String(id) !== String(savedArtistPreviewId),
+        );
         setValue("selectedArtistIds", next);
       }
 
@@ -1003,13 +1170,22 @@ export const CreateEvent = () => {
     onCancelArtistEdit: () => {
       if (editingArtistId) {
         const normalizedEditingArtistId = String(editingArtistId);
-        const currentSelectedArtistIds = getValues("selectedArtistIds").map((id) => String(id));
+        const currentSelectedArtistIds = getValues("selectedArtistIds").map(
+          (id) => String(id),
+        );
 
         if (!currentSelectedArtistIds.includes(normalizedEditingArtistId)) {
-          setValue("selectedArtistIds", [...currentSelectedArtistIds, normalizedEditingArtistId]);
+          setValue("selectedArtistIds", [
+            ...currentSelectedArtistIds,
+            normalizedEditingArtistId,
+          ]);
         }
 
-        if (savedArtistPreviewId && normalizedEditingArtistId === String(savedArtistPreviewId) && savedArtistPreview) {
+        if (
+          savedArtistPreviewId &&
+          normalizedEditingArtistId === String(savedArtistPreviewId) &&
+          savedArtistPreview
+        ) {
           setShowSavedArtistPreview(true);
         }
       }
@@ -1028,11 +1204,10 @@ export const CreateEvent = () => {
         </Link>
       </div>
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">Create New Event</h1>
-          <p className="text-gray-400">Fill in the details to create a new event</p>
-        </div>
+        <Heading
+          title="Create New Event"
+          subtitle="Fill in the details to create a new event"
+        />
 
         {/* Success Message */}
         {success && (
@@ -1072,6 +1247,7 @@ export const CreateEvent = () => {
               setValue={setValue}
               setIsDateRangePickerOpen={setIsDateRangePickerOpen}
               setEventMainImageFile={setEventMainImageFile}
+              onCancel={() => navigate("/events")}
               EventMutation={createEventMutation}
             />
           </div>

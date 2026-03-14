@@ -257,16 +257,13 @@
     @apply mx-auto px-4;
   }
   .btn-default {
-    @apply bg-purple text-white font-medium hover:bg-purple/80 transition cursor-pointer px-4 py-2 rounded-lg;
+    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary transition;
   }
   .btn-secondary {
-    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-  .btn-tertiary {
-    @apply bg-purple-500 text-white;
+    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-cancel {
-    @apply cursor-pointer bg-black/40 text-gray-300 font-medium rounded-lg hover:bg-black/60 border border-purple-500/30 transition;
+    @apply cursor-pointer bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-black/60 border border-purple-500/30 transition;
   }
 
   .input-default {

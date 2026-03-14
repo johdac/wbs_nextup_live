@@ -1,7 +1,9 @@
 import { CalendarIcon, Save } from "lucide-react";
 import dayjs from "dayjs";
+import type { UseFormSetValue } from "react-hook-form";
 import { DateTimeRangePicker } from "../ui/date-time-picker";
 import { FileUploadField } from "../ui/FileUpload";
+import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import type { EventFormValues } from "../../types/event";
@@ -12,9 +14,10 @@ interface EventInfoFormProps {
   startDate: dayjs.Dayjs | null;
   endDate: dayjs.Dayjs | null;
   isDateRangePickerOpen: boolean;
-  setValue: (field: keyof EventFormValues, value: any) => void;
+  setValue: UseFormSetValue<EventFormValues>;
   setIsDateRangePickerOpen: (open: boolean) => void;
   setEventMainImageFile: (file: File | null) => void;
+  onCancel: () => void;
   EventMutation: {
     isPending: boolean;
   };
@@ -29,6 +32,7 @@ export const EventInfoForm = ({
   setValue,
   setIsDateRangePickerOpen,
   setEventMainImageFile,
+  onCancel,
   EventMutation,
 }: EventInfoFormProps) => {
   return (
@@ -44,7 +48,10 @@ export const EventInfoForm = ({
 
       {/* Title */}
       <div>
-        <Label htmlFor="event-title" className="block text-sm font-medium text-gray-300 mb-2">
+        <Label
+          htmlFor="event-title"
+          className="block text-sm font-medium text-gray-300 mb-2"
+        >
           Event Title *
         </Label>
         <Input
@@ -61,7 +68,10 @@ export const EventInfoForm = ({
 
       {/* Description */}
       <div>
-        <Label htmlFor="event-description" className="block text-sm font-medium text-gray-300 mb-2">
+        <Label
+          htmlFor="event-description"
+          className="block text-sm font-medium text-gray-300 mb-2"
+        >
           Description
         </Label>
         <textarea
@@ -84,7 +94,10 @@ export const EventInfoForm = ({
           endValue={endDate ? endDate.toDate() : null}
           onOpenChange={setIsDateRangePickerOpen}
           onChange={(nextStart: Date | null, nextEnd: Date | null) => {
-            setValue("startDate", nextStart ? dayjs(nextStart).toISOString() : "");
+            setValue(
+              "startDate",
+              nextStart ? dayjs(nextStart).toISOString() : "",
+            );
             setValue("endDate", nextEnd ? dayjs(nextEnd).toISOString() : "");
           }}
         />
@@ -95,18 +108,35 @@ export const EventInfoForm = ({
         <Label className="block text-sm font-medium text-gray-300 mb-2">
           Image Upload
         </Label>
-        <FileUploadField uploadType="artistImage" onFileChange={setEventMainImageFile} />
+        <FileUploadField
+          uploadType="artistImage"
+          onFileChange={setEventMainImageFile}
+        />
       </div>
 
-      {/* Save Button */}
-      <button
-        type="submit"
-        disabled={EventMutation.isPending}
-        className="w-full bg-linear-to-r from-pink-500 to-purple-600 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <Save className="h-5 w-5" />
-        {EventMutation.isPending ? "Creating Event..." : "Save Event"}
-      </button>
+      <div className="flex items-center gap-3">
+        <Button
+          type="button"
+          onClick={onCancel}
+          disabled={EventMutation.isPending}
+          variant="cancel"
+          size="lg"
+          className="flex-1"
+        >
+          Cancel
+        </Button>
+
+        <Button
+          type="submit"
+          disabled={EventMutation.isPending}
+          variant="gradient"
+          size="lg"
+          className="flex-1"
+          leftIcon={<Save className="h-5 w-5" />}
+        >
+          {EventMutation.isPending ? "Creating Event..." : "Save Event"}
+        </Button>
+      </div>
     </div>
   );
 };
