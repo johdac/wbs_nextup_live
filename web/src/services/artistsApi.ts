@@ -7,6 +7,7 @@ export interface Artist {
   genres: string[];
   description?: string;
   musicResources?: {
+    _id: string;
     url: string;
     title: string;
   }[];
@@ -67,7 +68,10 @@ export const artistsService = {
     const { data } = await eventsApi.post<Artist>("/artists", artistData);
     return data;
   },
-  updateArtist: async (id: string, artistData: Partial<UpdateArtistInput>): Promise<Artist> => {
+  updateArtist: async (
+    id: string,
+    artistData: Partial<UpdateArtistInput>,
+  ): Promise<Artist> => {
     const { data } = await eventsApi.put<Artist>(`/artists/${id}`, artistData);
     return data;
   },

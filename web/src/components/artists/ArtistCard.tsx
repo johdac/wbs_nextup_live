@@ -3,11 +3,16 @@ import DOMPurify from "dompurify";
 import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 import type { Artist } from "../../services/artistsApi";
 import { GenresTag } from "../ui/GenresTag";
+import { PlayBtn } from "../buttons/PlayBtn";
+import { AddToListBtn } from "../buttons/AddToListBtn";
 
 export const ArtistCard = ({ artist }: { artist: Artist }) => {
   return (
     <>
-      <div key={artist.id} className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5">
+      <div
+        key={artist.id}
+        className="grid md:grid-cols-3 items-center justify-center py-3 rounded-lg mb-2 gap-5"
+      >
         <div>
           <img
             src={artist.mainImageUrl}
@@ -16,7 +21,7 @@ export const ArtistCard = ({ artist }: { artist: Artist }) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = "/placeholder.jpeg";
             }}
-            className="w-full rounded-lg max-w-md md:max-w-full"
+            className="w-full rounded-lg max-w-md md:max-w-full aspect-3/2 object-cover"
           />
         </div>
         <div className="grid grid-cols-4 gap-2 md:col-span-2 ">
@@ -27,12 +32,13 @@ export const ArtistCard = ({ artist }: { artist: Artist }) => {
               </div>
               <div
                 className="text-base text-gray line-clamp-2"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description || "") }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(artist.description || ""),
+                }}
               />
             </Link>
             <GenresTag data={artist} />
           </div>
-          <CirclePlayBtn />
         </div>
       </div>
     </>

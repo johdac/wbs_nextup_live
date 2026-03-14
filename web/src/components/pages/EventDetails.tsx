@@ -20,6 +20,8 @@ import { Kicker } from "../ui/Kicker";
 import { EventMetaItem } from "../ui/EventMetaItem";
 import { format } from "date-fns";
 import { EventDate } from "../ui/EventDate";
+import { PlayBtn } from "../buttons/PlayBtn";
+import { AddToListBtn } from "../buttons/AddToListBtn";
 
 export const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -101,13 +103,19 @@ export const EventDetails = () => {
             />
           </div>
         </div>
-        <div className="mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3">
+        <div className="lg:mt-25 mt-10 grid grid-cols-1 md:grid-cols-3">
           {/* LEFT SIDE */}
-          <div className="md:col-span-2 grid grid-cols-1 gap-10 un-box-t-padding un-box-r-padding">
+          <div className="md:col-span-2 gap-10 un-box-t-padding un-box-r-padding">
             {/* artists */}
             {event.artists?.length && (
-              <div className="space-y-3">
-                <div className="text-3xl font-bold">ARTISTS</div>
+              <div className="space-y-3 un-box-b-padding">
+                <div className="flex justify-between">
+                  <div className="text-3xl font-bold">ARTISTS</div>
+                  <div className="flex gap-4">
+                    <PlayBtn />
+                    <AddToListBtn />
+                  </div>
+                </div>
                 <div>
                   {event.artists.map((a) => (
                     <ArtistCard key={a.id} artist={a} />
@@ -134,7 +142,9 @@ export const EventDetails = () => {
               <button>
                 <CalendarHeart className="w-8 h-8 transition-colors duration-100 hover:text-red-500 hover:scale-115 cursor-pointer" />
               </button>
-              <div>Add Event to Favorites</div>
+              <div className="btn-default px-4 py-2">
+                Add Event to Favorites
+              </div>
               {/* <button>
                 <Heart className="w-8 h-8 transition-colors duration-100 hover:text-red-500 hover:scale-115 cursor-pointer" />
               </button>

@@ -6,7 +6,13 @@ import { GenresTag } from "../ui/GenresTag";
 import { usePlayer } from "../../features/player/PlayerContext";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 
-const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
+const EventCard = ({
+  event,
+  index,
+}: {
+  event: EventListItem;
+  index: number;
+}) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -16,12 +22,13 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
   const { addManyToPlaylist } = usePlayer();
 
   const mergedMusicResources: PlaylistItem[] = [];
+  console.log(event);
   event.artists.forEach((artist) => {
     artist.musicResources?.forEach((resource) => {
       const obj = {
         played: false,
         song: {
-          id: resource.id,
+          id: resource._id,
           artist: {
             id: artist.id,
             name: artist.name,
@@ -57,7 +64,9 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
       <div className="sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
+        <span className="text-md font-bold uppercase tracking-wider">
+          {monthStr}
+        </span>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -77,7 +86,9 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
         {/* DATE STICKER ON MOBILE ONLY */}
         <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider">{monthStr}</span>
+          <span className="text-xs font-bold uppercase tracking-wider">
+            {monthStr}
+          </span>
           <span className="text-xl font-black leading-none">{dayStr}</span>
           <span className="text-xs font-bold">{yearStr}</span>
         </div>
@@ -93,7 +104,10 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
           <div className="text-white flex items-center">
             {event.artists.map((artist) => {
               return (
-                <div key={artist.id} className="flex flex-row px-1 hover:text-purple hover:scale-105">
+                <div
+                  key={artist.id}
+                  className="flex flex-row px-1 hover:text-purple hover:scale-105"
+                >
                   <MicVocal className="mr-1" />
                   <Link to={`/artist/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
