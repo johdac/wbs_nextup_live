@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 
@@ -121,14 +122,15 @@ export const LocationFormFields = ({
         </div>
       )}
 
-      <button
+      <Button
         type="button"
         onClick={onSubmit}
         disabled={isSubmitting}
-        className="w-full px-3 py-2 btn-secondary"
+        variant="secondary"
+        fullWidth
       >
         {isSubmitting ? pendingLabel : submitLabel}
-      </button>
+      </Button>
 
       {actionSlot}
     </div>

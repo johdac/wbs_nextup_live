@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { locationsService, type Location } from "../../services/locationsApi";
 import { Link } from "lucide-react";
-import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 
@@ -65,8 +64,17 @@ export const LocationDetailsEdit = () => {
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
         {/* error to be solved */}
         {/* <EditBtn data={location} path="managed-locations" /> */}
-        <DeleteBtn id={location.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
-        <ConfirmModal name="location" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
+        <DeleteBtn
+          id={location.id || ""}
+          setItemToDelete={setItemToDelete}
+          setShowModal={setShowModal}
+        />
+        <ConfirmModal
+          name="location"
+          handleDelete={handleDelete}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
       </div>
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="w-full max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">

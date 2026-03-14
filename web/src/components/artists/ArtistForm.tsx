@@ -1,4 +1,5 @@
 import { FileUploadField } from "../ui/FileUpload";
+import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 
@@ -119,23 +120,25 @@ export const ArtistForm = ({
                 className="w-2/3"
               />
               {artistMusicUrls.length > 1 && (
-                <button
+                <Button
                   type="button"
                   onClick={() => onRemoveArtistMusicUrl(index)}
-                  className="px-3 py-2 rounded-lg bg-black/40 text-gray-300 hover:bg-black/60"
+                  variant="cancel"
+                  size="md"
                 >
                   -
-                </button>
+                </Button>
               )}
             </div>
           ))}
-          <button
+          <Button
             type="button"
             onClick={onAddArtistMusicUrl}
-            className="px-3 py-2 rounded-lg bg-primary text-white hover:bg-purple-900"
+            variant="secondary"
+            size="md"
           >
             + Add more
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -168,34 +171,38 @@ export const ArtistForm = ({
         </Label>
         <div className="flex flex-wrap gap-2">
           {genres.map((genre) => (
-            <button
+            <Button
               key={genre}
               type="button"
               onClick={() => onArtistGenreToggle(genre)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                artistGenres.includes(genre)
-                  ? "bg-primary text-white"
-                  : "btn-cancel"
-              }`}
+              variant={artistGenres.includes(genre) ? "secondary" : "cancel"}
+              size="sm"
+              className="text-sm"
             >
               {genre}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       <div className="flex h-11 gap-2 mt-4">
-        <button type="button" onClick={onCancel} className="flex-1 btn-cancel">
+        <Button
+          type="button"
+          onClick={onCancel}
+          variant="cancel"
+          className="flex-1"
+        >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onSave}
           disabled={isSaving}
-          className="flex-1 btn-secondary"
+          variant="secondary"
+          className="flex-1"
         >
           {isSaving ? "Saving..." : saveLabel}
-        </button>
+        </Button>
       </div>
     </div>
   );
