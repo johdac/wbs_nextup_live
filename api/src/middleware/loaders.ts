@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { Location, Event, Artist } from "#models";
+import { Location, Event, Artist, User } from "#models";
 
 /**
  * These run in the routes after authentication but before authorization to attach
@@ -30,5 +30,13 @@ export const loadArtist: RequestHandler = async (req, _res, next) => {
   if (!artist) throw new Error("Artist not found", { cause: { status: 404 } });
   req.createdById = artist.createdById;
   req.artist = artist;
+  next();
+};
+
+export const loadUser: RequestHandler = async (req, _res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) throw new Error("User not found", { cause: { status: 404 } });
+  req.createdById = user._id; // Users create themselves
+  req.requestedUser = user;
   next();
 };

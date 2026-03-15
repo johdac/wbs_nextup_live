@@ -6,6 +6,7 @@ import {
   eventRoutes,
   locationRoutes,
   uploadRoutes,
+  userRoutes,
 } from "#routes";
 import cors from "cors";
 
@@ -28,6 +29,7 @@ app.use("/events", eventRoutes);
 app.use("/artists", artistRoutes);
 app.use("/locations", locationRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/users", userRoutes);
 app.use("*splat", (req, res) => {
   throw new Error("Not found", { cause: { status: 404 } });
 });
