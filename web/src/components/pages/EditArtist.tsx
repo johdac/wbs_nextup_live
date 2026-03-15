@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { AlertCircle } from "lucide-react";
@@ -7,6 +7,7 @@ import { artistsService, type CreateArtistInput, type UpdateArtistInput } from "
 import { useAuth } from "../../context/AuthContext";
 import { ArtistForm } from "../artists/ArtistForm";
 import { EventFormContext } from "../../context/EventFormContext";
+import { GoBackBtn } from "../buttons/GoBackBtn";
 
 type ArtistMusicUrl = { title: string; url: string };
 
@@ -20,6 +21,7 @@ type ArtistFormValues = {
 
 export const EditArtist = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -177,6 +179,27 @@ export const EditArtist = () => {
     setArtistMainImagePreviewUrl(target.mainImageUrl || undefined);
   };
 
+  useEffect(() => {
+    if (!id || artistsLoading) {
+      return;
+    }
+
+    const matchedArtist = artists.find((artist) => String(artist.id || artist._id || "") === String(id));
+
+    if (!matchedArtist) {
+      setError("Artist not found");
+      return;
+    }
+
+    const matchedArtistId = String(matchedArtist.id || matchedArtist._id || id);
+    if (editingArtistId === matchedArtistId) {
+      return;
+    }
+
+    setError("");
+    handleLoadArtistForEdit(matchedArtistId);
+  }, [id, artistsLoading, artists, editingArtistId]);
+
   const handleToggleGenre = (genre: string) => {
     const prev = getValues("artistGenres");
     setValue("artistGenres", prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]);
@@ -240,6 +263,7 @@ export const EditArtist = () => {
     isSearching: false,
     showSearchResults: false,
     onToggleCreateNewLocation: () => {},
+    onStartEditLocation: () => {},
     onToggleSelectExistingLocation: () => {},
     onLocationSelect: () => {},
     onLocationNameChange: () => {},
@@ -323,9 +347,9 @@ export const EditArtist = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <GoBackBtn path="/managed-events" />
       <div className="mb-8">
         <h1 className="text-4xl font-black text-white mb-2">Edit Artist</h1>
-        {editingArtistId && <p className="text-sm text-gray-400">Editing artist id: {editingArtistId}</p>}
         <p className="text-gray-400">Update the artist's details.</p>
       </div>
 
