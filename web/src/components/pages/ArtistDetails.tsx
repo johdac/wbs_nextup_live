@@ -6,6 +6,7 @@ import { Link } from "lucide-react";
 import { EventByArtist } from "../artists/EventsByArtist";
 import { GenresTag } from "../ui/GenresTag";
 import { PlayBtn } from "../buttons/PlayBtn";
+import { Kicker } from "../ui/Kicker";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,44 +47,43 @@ export const ArtistDetails = () => {
   return (
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
-          <div className="">
-            {/* image of the artist */}
-            <img
-              src={artist.mainImageUrl}
-              alt={artist.name}
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "/placeholder.jpeg";
-              }}
-              className="rounded-lg w-full h-64 lg:h-full object-cover"
-            />
-          </div>
-          {/* right */}
-          <div className="md:col-span-2 flex flex-col items-start gap-3">
-            <div className="flex flex-row gap-5 justify-between items-center">
-              <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
-                {artist.name}
-              </h1>
-              <PlayBtn />
-            </div>
-            <GenresTag data={artist} />
 
-            <div className="px-5 py-4 transition-all bg-gray-800/35">
-              {/* description */}
-              {artist.description ? (
-                <div className="space-y-3">
-                  <p
-                    className="text-lg font-light"
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(artist.description),
-                    }}
-                  />
-                </div>
-              ) : null}
+          {/* image of the artist */}
+          <img
+            src={artist.mainImageUrl ?? "/placeholder.jpeg"}
+            alt={artist.name}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/placeholder.jpeg";
+            }}
+            className="w-full aspect-3/2 rounded-xl object-cover"
+          />
+          {/* right */}
+          <div className="flex flex-col items-start">
+            <div className="pb-6">
+              <Kicker text="Artist" />
+              <div className="flex flex-row gap-10 items-center pb-2">
+                <h1>{artist.name}</h1>
+                <PlayBtn />
+              </div>
+              <GenresTag data={artist} />
             </div>
-            <div className="">
+
+            {/* description */}
+            {artist.description && (
+              <div className="py-6 w-full un-border-b un-border-t">
+                <p
+                  className="text-lg font-light"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(artist.description),
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="py-5">
               <a
                 href={artist.websiteUrl}
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"

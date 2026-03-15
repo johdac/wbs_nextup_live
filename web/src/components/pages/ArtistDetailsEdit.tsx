@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
-import { Link } from "lucide-react";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
-import { GenresTag } from "../ui/GenresTag";
-import { PlayBtn } from "../buttons/PlayBtn";
+import { GoBackBtn } from "../buttons/GoBackBtn";
+import { ArtistDetails } from "./ArtistDetails";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();
@@ -64,75 +62,17 @@ export const ArtistDetailsEdit = () => {
 
   return (
     <div className="container mx-auto pb-10">
-      {/* ACTION BUTTONS */}
-      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
-        {/* error to be solved */}
-        <EditBtn data={artist} path="managed-artists" />
-        <DeleteBtn
-          id={artist.id || ""}
-          setItemToDelete={setItemToDelete}
-          setShowModal={setShowModal}
-        />
-        <ConfirmModal
-          name="artist"
-          handleDelete={handleDelete}
-          showModal={showModal}
-          setShowModal={setShowModal}
-        />
-      </div>
-
-      <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* left */}
-          <div className="">
-            {/* image of the artist */}
-            <img
-              src={artist.mainImageUrl ?? "/placeholder.jpeg"}
-              alt={artist.name}
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "/placeholder.jpeg";
-              }}
-              className="rounded-lg w-full h-64 lg:h-full object-cover"
-            />
-          </div>
-          {/* right */}
-          <div className="md:col-span-2 flex flex-col items-start gap-3">
-            <div className="flex flex-row gap-5 justify-between items-center">
-              <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
-                {artist.name}
-              </h1>
-              <PlayBtn />
-            </div>
-            <GenresTag data={artist} />
-            <div className="px-5 py-4 transition-all bg-gray-800/35">
-              {/* description */}
-              {artist.description ? (
-                <div className="space-y-3">
-                  <p
-                    className="text-lg font-light"
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(artist.description),
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <p className="text-lg font-light">to be update</p>
-                </div>
-              )}
-            </div>
-            <div className="">
-              <a
-                href={artist.websiteUrl}
-                className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
-              >
-                <Link /> <div>Website</div>
-              </a>
-            </div>
-          </div>
+      <div className="flex justify-between pb-5">
+        <GoBackBtn path="/managed-events" />
+        {/* ACTION BUTTONS */}
+        <div className="flex mt-2 sm:mt-0 gap-3 justify-end">
+          {/* error to be solved */}
+          <EditBtn data={artist} path="managed-artists" />
+          <DeleteBtn id={artist.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
+          <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
         </div>
       </div>
+      <ArtistDetails />
     </div>
   );
 };
