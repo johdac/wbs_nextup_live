@@ -28,7 +28,7 @@ const EventPreviewCard = ({
   return (
     <div className="managed-card">
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white  shadow-xs">
+      <div className="hidden w-1/10 sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white shadow-xs">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
         <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
