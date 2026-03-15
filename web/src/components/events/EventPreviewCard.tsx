@@ -89,7 +89,7 @@ const EventPreviewCard = ({
       </div>
 
       {/* ACTION BUTTONS */}
-      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
+      <div className="flex items-center justify-between mt-2 sm:mt-0 sm:ml-auto gap-4">
         <EditBtn data={event} path="managed-events" />
         <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
         <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
