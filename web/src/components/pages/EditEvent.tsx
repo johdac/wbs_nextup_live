@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useBeforeUnload, useBlocker, useNavigate, useParams } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Alert, Snackbar } from "@mui/material";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { AlertCircle } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -20,6 +20,7 @@ export const EditEvent = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const successMessage = "Event updated successfully! Redirecting...";
 
   const handleGoBack = () => {
     if (window.history.length > 1) {
@@ -68,6 +69,15 @@ export const EditEvent = () => {
   const selectedArtistIds = watch("selectedArtistIds");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [toast, setToast] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const startDate = startDateValue ? dayjs(startDateValue) : null;
   const endDate = endDateValue ? dayjs(endDateValue) : null;
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
@@ -175,6 +185,30 @@ export const EditEvent = () => {
       setError("Failed to load event");
     }
   }, [eventError]);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    setToast({
+      open: true,
+      message: error,
+      severity: "error",
+    });
+  }, [error]);
+
+  useEffect(() => {
+    if (!success) {
+      return;
+    }
+
+    setToast({
+      open: true,
+      message: successMessage,
+      severity: "success",
+    });
+  }, [success, successMessage]);
 
   useEffect(() => {
     if (eventError) {
@@ -689,6 +723,21 @@ export const EditEvent = () => {
     blocker.reset();
   }, [blocker]);
 
+  const handleToastClose = (_event?: unknown, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    if (toast.severity === "error") {
+      setError("");
+    }
+
+    setToast((current) => ({
+      ...current,
+      open: false,
+    }));
+  };
+
   const handleArtistSelect = (artistId: string) => {
     const prev = getValues("selectedArtistIds");
     setValue("selectedArtistIds", prev.includes(artistId) ? prev.filter((id) => id !== artistId) : [...prev, artistId]);
@@ -948,6 +997,17 @@ export const EditEvent = () => {
 
   return (
     <div className="container z-20 min-h-screen py-8">
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={3000}
+        onClose={handleToastClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert onClose={handleToastClose} severity={toast.severity} variant="filled" sx={{ width: "100%" }}>
+          {toast.message}
+        </Alert>
+      </Snackbar>
+
       <GoBackBtn path="/managed-events" />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
@@ -955,21 +1015,6 @@ export const EditEvent = () => {
           <h1 className="text-4xl font-black text-white mb-2">Managed Events</h1>
           <p className="text-gray-400">Edit your saved events</p>
         </div>
-
-        {/* Success Message */}
-        {success && (
-          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
-            Event updated successfully! Redirecting...
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400 flex items-center gap-2">
-            <AlertCircle className="h-5 w-5" />
-            {error}
-          </div>
-        )}
 
         <form
           className="max-w-4xl mx-auto"
