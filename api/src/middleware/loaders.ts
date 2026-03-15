@@ -1,5 +1,6 @@
 import type { RequestHandler } from "express";
 import { Location, Event, Artist, User } from "#models";
+import { assertExists } from "#utils";
 
 /**
  * These run in the routes after authentication but before authorization to attach

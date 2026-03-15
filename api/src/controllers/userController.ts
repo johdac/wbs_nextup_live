@@ -1,5 +1,37 @@
+import { User } from "#models";
 import { assertExists } from "#utils";
 import type { RequestHandler } from "express";
+
+export const userGetMe: RequestHandler = async (req, res) => {
+  assertExists(req.user);
+  const me = await User.findById(req.user.id)
+    .select("username favoritedEventsIds")
+    .lean();
+  if (!me)
+    throw new Error(`User with id of ${req.user.id} doesn't exist`, {
+      cause: { status: 404 },
+    });
+  res.json(me);
+};
+
+export const userUpdateMe: RequestHandler = async (req, res) => {
+  const {
+    body: { favoritedEventsIds },
+  } = req;
+  assertExists(req.user);
+
+  // Need to get the current clean again
+  const me = await User.findById(req.user.id);
+  if (!me)
+    throw new Error(`User with id of ${req.user.id} doesn't exist`, {
+      cause: { status: 404 },
+    });
+
+  if (favoritedEventsIds) me.favoritedEventsIds = favoritedEventsIds;
+  await me.save();
+
+  res.json(me);
+};
 
 export const userUpdate: RequestHandler = async (req, res) => {
   /**

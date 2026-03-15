@@ -1,0 +1,21 @@
+info:
+  name: updateUserOliver
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: "{{api}}/users/69aea83729ccb2ea0d5b0a12"
+  body:
+    type: json
+    data: |-
+      {
+        "favoritedEventsIds": ["69a9a93a9b9722a31a200260"]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

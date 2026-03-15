@@ -3,3 +3,4 @@ export * from "./artistController.ts";
 export * from "./locationController.ts";
 export * from "./uploadController.ts";
 export * from "./userController.ts";
+export * from "./eventRelationsController.ts";

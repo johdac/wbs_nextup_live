@@ -1,0 +1,21 @@
+info:
+  name: updateUserMe
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{api}}/users/me"
+  body:
+    type: json
+    data: |-
+      {
+        "favoritedEventsIds": ["69a9a93a9b9722a31a200260"]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

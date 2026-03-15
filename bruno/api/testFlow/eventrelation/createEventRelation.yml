@@ -1,0 +1,21 @@
+info:
+  name: createEventRelation
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{api}}/eventrelations/69a9a93a9b9722a31a200260"
+  body:
+    type: json
+    data: |-
+      {
+        "interactionType": "favorite"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -19,6 +19,7 @@ import { LocationDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
+import { FavoritesPage } from "./components/pages/FavoritesPage";
 
 export const router = createBrowserRouter([
   {
@@ -117,6 +118,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <UserSetting></UserSetting>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/favorites",
+        element: (
+          <ProtectedRoute>
+            <FavoritesPage></FavoritesPage>
           </ProtectedRoute>
         ),
       },
