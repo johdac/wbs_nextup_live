@@ -6,15 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ArtistPreviewCard } from "../artists/ArtistPreviewCard";
 import { ArtistForm } from "../artists/ArtistForm";
 
-const GENRES = [
-  "classical",
-  "electronic",
-  "hiphop",
-  "jazz",
-  "pop",
-  "rock",
-  "world",
-] as const;
+const GENRES = ["classical", "electronic", "hiphop", "jazz", "pop", "rock", "world"] as const;
 
 export const ArtistLayout = () => {
   const { user } = useAuth();
@@ -50,10 +42,7 @@ export const ArtistLayout = () => {
     onCreateArtist,
   } = useEventFormContext();
 
-  const selectedIdsSet = useMemo(
-    () => new Set(selectedArtistIds.map((id) => String(id))),
-    [selectedArtistIds],
-  );
+  const selectedIdsSet = useMemo(() => new Set(selectedArtistIds.map((id) => String(id))), [selectedArtistIds]);
 
   const selectedArtists = useMemo(
     () =>
@@ -98,10 +87,7 @@ export const ArtistLayout = () => {
       return selectedArtists;
     }
 
-    return selectedArtists.filter(
-      (artist) =>
-        String(artist.id || artist._id || "") !== String(savedArtistPreviewId),
-    );
+    return selectedArtists.filter((artist) => String(artist.id || artist._id || "") !== String(savedArtistPreviewId));
   }, [selectedArtists, showSavedArtistPreview, savedArtistPreviewId]);
 
   return (
@@ -118,9 +104,7 @@ export const ArtistLayout = () => {
         ) : (
           <div className="space-y-2 mb-6">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-300">
-                Select Artists
-              </label>
+              <label className="block text-sm font-medium text-gray-300">Select Artists</label>
               <button
                 type="button"
                 onClick={() => setIsCreatingArtist(!isCreatingArtist)}
@@ -164,27 +148,19 @@ export const ArtistLayout = () => {
                         className="mt-1 h-4 w-4 rounded border-purple-500 text-purple-500 focus:ring-purple-500"
                       />
                       <div className="flex-1">
-                        <p className="text-white text-sm font-medium">
-                          {artist.name}
-                        </p>
+                        <p className="text-white text-sm font-medium">{artist.name}</p>
                       </div>
                     </label>
                   );
                 })}
 
                 {artists.length === 0 && (
-                  <p className="text-gray-400 text-center py-8">
-                    No artists available. Create artists first.
-                  </p>
+                  <p className="text-gray-400 text-center py-8">No artists available. Create artists first.</p>
                 )}
 
-                {!showCreateArtistForm &&
-                  artists.length > 0 &&
-                  filteredArtists.length === 0 && (
-                    <p className="text-gray-400 text-center py-8">
-                      No artists found for this search.
-                    </p>
-                  )}
+                {!showCreateArtistForm && artists.length > 0 && filteredArtists.length === 0 && (
+                  <p className="text-gray-400 text-center py-8">No artists found for this search.</p>
+                )}
               </div>
             </div>
 
@@ -192,9 +168,7 @@ export const ArtistLayout = () => {
               <div className="mt-3 space-y-3">
                 {selectedArtistsForPreview.map((artist) => {
                   const artistId = String(artist.id || artist._id || "");
-                  const canEdit =
-                    !!currentUserId &&
-                    String(artist.createdById?._id || "") === currentUserId;
+                  const canEdit = !!currentUserId && String(artist.createdById?._id || "") === currentUserId;
                   return (
                     <ArtistPreviewCard
                       key={`selected-${artistId}`}
@@ -250,9 +224,7 @@ export const ArtistLayout = () => {
                 genres={GENRES}
                 artistNameError={artistNameError}
                 isSaving={createArtistMutationIsPending}
-                saveLabel={
-                  createArtistMutationIsPending ? "Saving..." : "Save Artist"
-                }
+                saveLabel={createArtistMutationIsPending ? "Saving..." : "Save Artist"}
                 onArtistNameChange={(value) => {
                   onArtistNameChange(value);
                   if (artistNameError) {

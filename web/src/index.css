@@ -276,7 +276,7 @@
   }
 
   .managed-card {
-    @apply flex justify-between items-center rounded-lg border border-purple/60 bg-black/20 p-4 gap-5;
+    @apply flex flex-col sm:flex-row justify-between items-center rounded-lg border border-purple/60 bg-black/15 p-4 gap-5 sm:h-40;
   }
 
   .marqueeGradient {

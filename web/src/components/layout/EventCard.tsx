@@ -51,9 +51,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
         <Link to={`/event/${event.id}`}>
-          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple hover:scale-105">
-            {event.title}
-          </h3>
+          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple">{event.title}</h3>
         </Link>
         <div className="my-1.5 flex flex-wrap items-center gap-2">
           <div className="text-white flex items-center">
