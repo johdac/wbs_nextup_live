@@ -921,6 +921,7 @@ export const CreateEvent = () => {
       .filter((item) => item.url.length > 0);
 
     const invalidYoutubeResource = validMusicResources.find((item) => {
+      return false;
       const normalized = item.url.toLowerCase();
       return !(
         normalized.includes("youtube.com") || normalized.includes("youtu.be")

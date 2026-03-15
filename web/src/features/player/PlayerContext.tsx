@@ -9,6 +9,9 @@ import { parseSong } from "./utils/parseSong";
 const PlayerContext = createContext<Player | null>(null);
 
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
+  const [playerStateId, setPlayerStateId] = useState<string>(
+    crypto.randomUUID(),
+  );
   const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [playerState, setPlayerState] = useState<PlayerState>("paused");
@@ -22,10 +25,10 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addManyToPlaylist = (items: PlaylistItem[]) => {
-    const parsedItems = items.map((item) => {
-      item.song = parseSong(item.song);
-      return item;
-    });
+    const parsedItems = items.map((item) => ({
+      ...item,
+      song: parseSong(item.song),
+    }));
     setPlaylist((prev) => [...prev, ...parsedItems]);
   };
 
@@ -56,13 +59,15 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
   /* This replaces the playlist with a list of track */
   const playTracks = (items: PlaylistItem[]) => {
+    if (items.length === 0) return;
     // Enrich the song data with embedable autoplay url and vendor data
-    const parsedItems = items.map((item) => {
-      item.song = parseSong(item.song);
-      return item;
-    });
-    pauseCurrentBeforeSwitch();
+    const parsedItems = items.map((item) => ({
+      ...item,
+      song: parseSong(item.song),
+    }));
     emptyOutPlaylist();
+    setPlayerStateId(crypto.randomUUID()); // This removes old player instances
+    console.log("playerStateId", playerStateId);
     setPlaylist(parsedItems);
     setCurrentIndex(0);
     setPlayerState("playing");
@@ -94,6 +99,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   const favoriteEvent = (eventId: string) => {};
 
   const player: Player = {
+    playerStateId,
     playlist,
     currentIndex,
     playerState,

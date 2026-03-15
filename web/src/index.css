@@ -254,19 +254,23 @@
 
 @layer components {
   .container {
-    @apply mx-auto px-4;
+    @apply mx-auto px-4 md:px-5 lg:px-6;
   }
 
   .btn-default {
-    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary transition px-8 py-3;
+    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary group-hover:bg-secondary transition px-8 py-3;
   }
 
   .btn-secondary {
-    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3;
+    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary group-hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3;
   }
 
   .btn-cancel {
-    @apply cursor-pointer bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-black/60 border border-purple-500/30 transition px-8 py-3;
+    @apply cursor-pointer bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-black/60 group-hover:bg-black/60 border border-purple-500/30 transition px-8 py-3;
+  }
+
+  .btn-icon {
+    @apply w-8 h-8 transition-colors duration-100 hover:text-purple group-hover:text-purple cursor-pointer text-white;
   }
 
   .input-default {
@@ -299,56 +303,11 @@
     );
     z-index: 3;
   }
-
-  .un-border-default {
-    @apply border-4 border-dotted;
-    border-color: var(--un-color-border-dotted);
-  }
-
-  .un-border-t-default {
-    @apply border-t-4 border-dotted;
-    border-color: var(--un-color-border-dotted);
-  }
-
-  .un-border-r-default {
-    @apply border-r-4 border-dotted;
-    border-color: var(--un-color-border-dotted);
-  }
-
-  .un-border-b-default {
-    @apply border-b-4 border-dotted;
-    border-color: var(--un-color-border-dotted);
-  }
-
-  .un-border-l-default {
-    @apply border-l-4 border-dotted;
-    border-color: var(--un-color-border-dotted);
-  }
-
-  .un-box-padding {
-    padding: var(--un-box-padding-y) var(--un-box-padding-x);
-  }
-
-  .un-box-t-padding {
-    padding-top: var(--un-box-padding-y);
-  }
-
-  .un-box-r-padding {
-    padding-right: var(--un-box-padding-x);
-  }
-
-  .un-box-b-padding {
-    padding-bottom: var(--un-box-padding-y);
-  }
-
-  .un-box-l-padding {
-    padding-left: var(--un-box-padding-x);
-  }
 }
 
 @layer base {
   body {
-    background-color: var(--nxp-bg);
+    background-color: black;
     background-image: url("/bg.jpg");
     background-repeat: repeat;
     background-size: 600px;
@@ -361,12 +320,70 @@
       "Inter",
       sans-serif;
   }
+
+  h1 {
+    @apply text-5xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-none uppercase wrap-break-word;
+  }
+
+  h2 {
+    @apply text-3xl font-bold leading-none uppercase;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+}
+
+@utility un-border {
+  @apply border-4 border-dotted;
+  border-color: var(--un-color-border-dotted);
+}
+
+@utility un-border-t {
+  @apply border-t-4 border-dotted;
+  border-color: var(--un-color-border-dotted);
+}
+
+@utility un-border-r {
+  @apply border-r-4 border-dotted;
+  border-color: var(--un-color-border-dotted);
+}
+
+@utility un-border-b {
+  @apply border-b-4 border-dotted;
+  border-color: var(--un-color-border-dotted);
+}
+
+@utility un-border-l {
+  @apply border-l-4 border-dotted;
+  border-color: var(--un-color-border-dotted);
+}
+
+@utility un-box-padding {
+  padding: var(--un-box-padding-y) var(--un-box-padding-x);
+}
+
+@utility un-box-t-padding {
+  padding-top: var(--un-box-padding-y);
+}
+
+@utility un-box-r-padding {
+  padding-right: var(--un-box-padding-x);
+}
+
+@utility un-box-b-padding {
+  padding-bottom: var(--un-box-padding-y);
+}
+
+@utility un-box-l-padding {
+  padding-left: var(--un-box-padding-x);
 }
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;

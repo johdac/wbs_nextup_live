@@ -5,6 +5,9 @@ import type { EventListItem } from "../../services/eventsApi";
 import { GenresTag } from "../ui/GenresTag";
 import { usePlayer } from "../../features/player/PlayerContext";
 import type { PlaylistItem } from "../../features/player/playerTypes";
+import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
+import { PlayerTransports } from "../../features/player/PlayerTransports";
+import { FavoriteEventBtn } from "../buttons/FavoriteEventBtn";
 
 const EventCard = ({
   event,
@@ -19,48 +22,12 @@ const EventCard = ({
   const yearStr = format(new Date(event.startDate), "yyyy");
 
   // Player integration
-  const { addManyToPlaylist } = usePlayer();
-
-  const mergedMusicResources: PlaylistItem[] = [];
-  event.artists.forEach((artist) => {
-    artist.musicResources?.forEach((resource) => {
-      const obj = {
-        played: false,
-        song: {
-          id: resource._id,
-          artist: {
-            id: artist.id,
-            name: artist.name,
-          },
-          sourceUrl: resource.url,
-          title: resource.title,
-        },
-        event: {
-          id: event.id,
-          location: {
-            id: event.location.id,
-            name: event.location.name,
-            city: event.location.city,
-          },
-          start: event.startDate,
-          favoritedEvent: false,
-        },
-      };
-      mergedMusicResources.push(obj);
-    });
-  });
+  const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
 
   return (
-    <div
-      style={{
-        top: "100px",
-        zIndex: index,
-        backgroundImage: 'url("/bg.jpg")',
-      }}
-      className="group flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md p-3 sm:p-5 transition-all bg-dark"
-    >
+    <div className=" flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md py-3  sm:py-5 px-0 transition-all bg-dark">
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="sm:flex flex-col items-center justify-center rounded-lg gap-y-3 px-5 text-white shadow-xs">
+      <div className="sm:flex flex-col items-center justify-center rounded-lg gap-y-3 mr-5 text-white shadow-xs w-20">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
         <span className="text-md font-bold uppercase tracking-wider">
@@ -130,12 +97,8 @@ const EventCard = ({
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <Play className="h-6 w-6 text-white transition-colors duration-100 hover:text-purple" />
-        <Heart className="h-6 w-6 text-white hover:text-red-500" />
-        <ListPlus
-          className="h-6 w-6 text-white hover:text-red-500"
-          onClick={() => addManyToPlaylist(mergedMusicResources)}
-        />
+        <FavoriteEventBtn className="" />
+        <PlayerTransports resources={mergedMusicResources} />
       </div>
     </div>
   );

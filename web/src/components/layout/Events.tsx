@@ -7,6 +7,9 @@ import { useNavigate, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { Pagination } from "@mui/material";
+import type { PlaylistItem } from "../../features/player/playerTypes";
+import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
+import { PlayerTransports } from "../../features/player/PlayerTransports";
 
 const ROOT_ITEMS_PER_PAGE = 10;
 const EVENTS_ITEMS_PER_PAGE = 20;
@@ -87,6 +90,8 @@ const EventList = () => {
     params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
     setSearchParams(params);
   };
+
+  const mergedMusicResources: PlaylistItem[] = mergeMusicResources(eventsList);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -171,17 +176,24 @@ const EventList = () => {
               Loading events...
             </div>
           )}
-          {!isLoading && eventsList.length > 0
-            ? eventsList.map((event: EventListItem, index: number) => {
+          {!isLoading && eventsList.length > 0 ? (
+            <>
+              <div>
+                All songs <PlayerTransports resources={mergedMusicResources} />
+              </div>
+              {eventsList.map((event: EventListItem, index: number) => {
                 return <EventCard key={event.id} event={event} index={index} />;
-              })
-            : !isLoading && (
-                <p className="py-12 text-center font-display text-lg text-white">
-                  {error
-                    ? "Failed to load events from server"
-                    : "No events found"}
-                </p>
-              )}
+              })}
+            </>
+          ) : (
+            !isLoading && (
+              <p className="py-12 text-center font-display text-lg text-white">
+                {error
+                  ? "Failed to load events from server"
+                  : "No events found"}
+              </p>
+            )
+          )}
         </div>
 
         {/* Pagination or Load More Button */}

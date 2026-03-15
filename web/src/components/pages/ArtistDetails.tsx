@@ -4,8 +4,8 @@ import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
 import { Link } from "lucide-react";
 import { EventByArtist } from "../artists/EventsByArtist";
-import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 import { GenresTag } from "../ui/GenresTag";
+import { PlayBtn } from "../buttons/PlayBtn";
 
 export const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,7 +66,7 @@ export const ArtistDetails = () => {
               <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
                 {artist.name}
               </h1>
-              <CirclePlayBtn />
+              <PlayBtn />
             </div>
             <GenresTag data={artist} />
 
@@ -76,7 +76,9 @@ export const ArtistDetails = () => {
                 <div className="space-y-3">
                   <p
                     className="text-lg font-light"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description) }}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(artist.description),
+                    }}
                   />
                 </div>
               ) : null}

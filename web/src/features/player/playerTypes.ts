@@ -3,14 +3,14 @@ import type { RefObject } from "react";
 export type Vendors = "youtube" | "soundcloud";
 
 export type PlaylistArtist = {
-  id: string;
+  id: string | undefined;
   name: string;
 };
 
 export type PlaylistLocation = {
-  id: string;
+  id: string | undefined;
   name: string;
-  city: string;
+  city: string | undefined;
 };
 
 export type PlaylistEvent = {
@@ -40,6 +40,7 @@ export type Playlist = PlaylistItem[];
 export type PlayerState = "playing" | "paused";
 
 export type Player = {
+  playerStateId: string;
   playlist: Playlist;
   currentIndex: number;
   playerState: PlayerState;
