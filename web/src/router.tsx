@@ -19,6 +19,7 @@ import { LocationDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
+import { EditLocation } from "./components/pages/EditLocation";
 
 export const router = createBrowserRouter([
   {
@@ -57,6 +58,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ManagedLocations></ManagedLocations>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-locations/:id/edit",
+        element: (
+          <ProtectedRoute>
+            <EditLocation></EditLocation>
           </ProtectedRoute>
         ),
       },

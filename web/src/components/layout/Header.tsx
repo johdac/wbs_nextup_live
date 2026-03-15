@@ -1,16 +1,4 @@
-import {
-  Sparkles,
-  Heart,
-  Plus,
-  UserPlus,
-  Menu,
-  X,
-  LogOut,
-  User,
-  CalendarRange,
-  MapPin,
-  Mic2,
-} from "lucide-react";
+import { Sparkles, Heart, Plus, UserPlus, Menu, X, LogOut, User, CalendarRange, MapPin, Mic2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -32,16 +20,11 @@ export const Header = () => {
   const currentRole = user?.role ?? user?.roles?.[0] ?? roleFromStorage;
   const isOrganizer = currentRole === "organizer";
   const hideCreateNew = signedIn && currentRole === "user";
-  const navItems = hideCreateNew
-    ? baseNavItems
-    : [...baseNavItems, organizerNavItem];
+  const navItems = hideCreateNew ? baseNavItems : [...baseNavItems, organizerNavItem];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        userDropdownRef.current &&
-        !userDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
         setUserDropdownOpen(false);
       }
     };
@@ -158,21 +141,27 @@ export const Header = () => {
 
           {/* Mobile Burger Icon */}
           {!open && (
-            <button onClick={() => setOpen(true)} className="lg:hidden z-50">
+            <button onClick={() => setOpen(true)} className="lg:hidden relative z-130">
               <Menu size={28} />
             </button>
           )}
 
+          {/* Mobile Drawer Backdrop */}
+          {open && (
+            <div
+              className="fixed inset-0 z-120 bg-black/60 lg:hidden"
+              onClick={() => setOpen(false)}
+              aria-hidden="true"
+            />
+          )}
+
           {/* Mobile Drawer */}
           <div
-            className={`fixed top-0 right-0 h-full w-64 bg-purple rounded-l-xl shadow-lg flex flex-col overflow-hidden lg:hidden transform transition-transform duration-300 ease-in-out
+            className={`fixed top-0 right-0 z-130 h-full w-64 bg-purple rounded-l-xl shadow-lg flex flex-col overflow-hidden lg:hidden transform transition-transform duration-300 ease-in-out
         ${open ? "translate-x-0" : "translate-x-full"}`}
           >
             {/* X Button inside drawer */}
-            <button
-              onClick={() => setOpen(false)}
-              className="self-end m-4 p-2 rounded-full hover:bg-purple-dark"
-            >
+            <button onClick={() => setOpen(false)} className="self-end m-4 p-2 rounded-full hover:bg-purple-dark">
               <X size={24} />
             </button>
 
@@ -209,14 +198,7 @@ export const Header = () => {
                       <CalendarRange className="h-4 w-4" />
                       Managed Events
                     </Link>
-                    <Link
-                      to="/managed-locations"
-                      onClick={() => setOpen(false)}
-                      className="flex items-center px-8 py-4 hover:bg-hover-purple gap-2"
-                    >
-                      <MapPin className="h-4 w-4" />
-                      Managed Locations
-                    </Link>
+
                     <Link
                       to="/managed-artists"
                       onClick={() => setOpen(false)}
@@ -224,6 +206,14 @@ export const Header = () => {
                     >
                       <Mic2 className="h-4 w-4" />
                       Managed Artists
+                    </Link>
+                    <Link
+                      to="/managed-locations"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center px-8 py-4 hover:bg-hover-purple gap-2"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      Managed Locations
                     </Link>
                   </>
                 )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, MapPin, MapPinHouse, Share2, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Share2, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { ArtistCard } from "../artists/ArtistCard";
 import { GenresTag } from "../ui/GenresTag";
@@ -74,11 +74,7 @@ export const EventDetails = () => {
             </div>
           </div>
           {/* image of the band */}
-          <img
-            src={event.mainImageUrl}
-            alt={event.title}
-            className="w-full aspect-3/2 rounded-xl object-cover"
-          />
+          <img src={event.mainImageUrl} alt={event.title} className="w-full aspect-3/2 rounded-xl object-cover" />
         </div>
 
         {/* BOTTOM SECTION */}
@@ -118,10 +114,7 @@ export const EventDetails = () => {
           {/* RIGHT ASIDE */}
           <aside className="order-1 md:order-2 md:un-border-l basis-full md:basis-70 lg:basis-100 shrink-0">
             <div className="flex gap-4 items-center un-border-b un-box-t-padding md:un-box-l-padding un-box-b-padding w-full -mt-1">
-              <FavoriteEventBtn
-                className="mr-4"
-                buttonText="Add Event to Favorites"
-              />
+              <FavoriteEventBtn className="mr-4" buttonText="Add Event to Favorites" />
             </div>
             <div className="un-box-t-padding md:un-box-l-padding un-border-b md:border-none">
               <EventMetaItem heading="Date" Icon={Calendar}>
@@ -137,9 +130,7 @@ export const EventDetails = () => {
               </EventMetaItem>
               <EventMetaItem heading="Location" Icon={MapPin}>
                 <Link to={`/location/${event.location.id}`}>
-                  <div className="hover:text-purple cursor-pointer">
-                    {event.location.name}
-                  </div>
+                  <div className="hover:text-purple cursor-pointer">{event.location.name}</div>
                 </Link>
                 <div>{event.location.address}</div>
                 <div>{event.location.city}</div>
