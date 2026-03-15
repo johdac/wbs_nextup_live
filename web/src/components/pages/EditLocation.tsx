@@ -62,14 +62,6 @@ export const EditLocation = () => {
     <div className="container mx-auto pb-10">
       <div className="flex justify-between">
         <GoBackBtn path="/managed-events" />
-
-        {/* ACTION BUTTONS */}
-        <div className="flex mt-2 sm:mt-0 gap-3 justify-end">
-          {/* error to be solved */}
-          <EditBtn data={location} path="managed-locations" />
-          <DeleteBtn id={location.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
-          <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
-        </div>
       </div>
       <ManagedLocations preselectedLocationId={location.id || location._id || ""} />
     </div>
