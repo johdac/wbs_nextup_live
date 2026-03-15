@@ -1,10 +1,7 @@
 import { useParams } from "react-router";
 import { locationsService } from "../../services/locationsApi";
 import type { Location as AppLocation } from "../../services/locationsApi";
-import { DeleteBtn } from "../buttons/DeleteBtn";
-import { EditBtn } from "../buttons/EditBtn";
 import { GoBackBtn } from "../buttons/GoBackBtn";
-import { ConfirmModal } from "../layout/ConfirmModal";
 import { ManagedLocations } from "./ManagedLocations";
 import { useEffect, useState } from "react";
 
@@ -14,7 +11,6 @@ export const EditLocation = () => {
   const [location, setLocation] = useState<AppLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
@@ -44,20 +40,6 @@ export const EditLocation = () => {
   if (error) return <p>{error}</p>;
   if (!location) return <p>Location not found</p>;
 
-  const handleDelete = async () => {
-    if (!itemToDelete) return;
-
-    try {
-      await locationsService.deleteLocation(itemToDelete);
-      // @todo: navigate to managed-locations once routing is confirmed
-    } catch (err) {
-      setError("Failed to delete this location");
-      console.error(err);
-    } finally {
-      setShowModal(false);
-      setItemToDelete(null);
-    }
-  };
   return (
     <div className="container mx-auto pb-10">
       <div className="flex justify-between">
