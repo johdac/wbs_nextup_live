@@ -58,7 +58,7 @@ const EventPreviewCard = ({
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
         <Link to={`/managed-events/${event.id}`}>
-          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple hover:scale-105">
+          <h3 className="text-xl sm:text-2xl font-bold text-white transition-colors hover:text-purple hover:scale-105">
             {event.title}
           </h3>
         </Link>
@@ -76,7 +76,7 @@ const EventPreviewCard = ({
             })}
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
+        <div className="flex flex-row sm:items-center gap-2 sm:gap-4 text-sm sm:text-md text-gray-400">
           <span>{timeStr}</span>
           <Link to={`/managed-locations/${event.location.id}`}>
             <span className="flex items-center hover:text-purple hover:scale-105">
@@ -89,7 +89,7 @@ const EventPreviewCard = ({
       </div>
 
       {/* ACTION BUTTONS */}
-      <div className="flex items-center justify-between mt-2 sm:mt-0 sm:ml-auto gap-4">
+      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-2">
         <EditBtn data={event} path="managed-events" />
         <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
         <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />

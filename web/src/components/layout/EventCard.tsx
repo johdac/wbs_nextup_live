@@ -18,9 +18,9 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
 
   return (
-    <div className=" flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md py-3  sm:py-5 px-0 transition-all bg-dark">
+    <div className="flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md py-3  sm:py-5 px-0 transition-all bg-dark">
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="sm:flex flex-col items-center justify-center rounded-lg gap-y-3 mr-5 text-white shadow-xs w-20">
+      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 mr-5 text-white shadow-xs w-20">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
         <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>

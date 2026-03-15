@@ -5,6 +5,7 @@ import { DeleteBtn } from "../buttons/DeleteBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 import { EventDetails } from "./EventDetails";
+import { ArrowLeft } from "lucide-react";
 
 export const EventDetailsEdit = () => {
   const navigate = useNavigate();
@@ -59,13 +60,29 @@ export const EventDetailsEdit = () => {
     }
   };
 
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/managed-events");
+  };
+
   return (
     <div className="container mx-auto">
-      {/* ACTION BUTTONS */}
-      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
-        <EditBtn data={event} path="managed-events" />
-        <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
-        <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
+      <div className="flex justify-between">
+        <div className="text-white">
+          <button type="button" onClick={handleGoBack} aria-label="Go back" className="inline-flex cursor-pointer">
+            <ArrowLeft></ArrowLeft>
+          </button>
+        </div>
+        {/* ACTION BUTTONS */}
+        <div className="flex mt-2 sm:mt-0 gap-3 justify-end">
+          <EditBtn data={event} path="managed-events" />
+          <DeleteBtn id={event.id} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
+          <ConfirmModal name="event" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
+        </div>
       </div>
       <EventDetails />
     </div>
