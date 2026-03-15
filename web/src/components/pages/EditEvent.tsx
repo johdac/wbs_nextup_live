@@ -3,7 +3,7 @@ import { useBeforeUnload, useBlocker, useNavigate, useParams } from "react-route
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
