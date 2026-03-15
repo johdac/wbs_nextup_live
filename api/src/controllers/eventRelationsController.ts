@@ -18,7 +18,7 @@ export const eventRelationUpsert: RequestHandler = async (req, res) => {
       eventId: new Types.ObjectId(eventId),
     },
     { interactionType },
-    { new: true, upsert: true },
+    { returnDocument: "after", upsert: true },
   );
   res.json(relation);
 };
