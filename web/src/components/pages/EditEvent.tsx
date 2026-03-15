@@ -14,6 +14,7 @@ import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from 
 import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
+import { GoBackBtn } from "../buttons/GoBackBtn";
 
 export const EditEvent = () => {
   const { id } = useParams<{ id: string }>();
@@ -947,11 +948,7 @@ export const EditEvent = () => {
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      <div className="text-white">
-        <button type="button" onClick={handleGoBack} aria-label="Go back" className="inline-flex">
-          <ArrowLeft></ArrowLeft>
-        </button>
-      </div>
+      <GoBackBtn path="/managed-events" />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
