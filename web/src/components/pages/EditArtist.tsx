@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { AlertCircle } from "lucide-react";
-import { artistsService, type CreateArtistInput, type UpdateArtistInput } from "../../services/artistsApi";
+import { artistsService, type Artist, type CreateArtistInput, type UpdateArtistInput } from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
 import { ArtistForm } from "../artists/ArtistForm";
 import { EventFormContext } from "../../context/EventFormContext";
@@ -61,6 +61,40 @@ export const EditArtist = () => {
     queryKey: ["artists"],
     queryFn: () => artistsService.getArtists(),
   });
+
+  const { data: artistFromServer, error: artistByIdError } = useQuery({
+    queryKey: ["artist", id],
+    queryFn: async () => {
+      if (!id) {
+        throw new Error("Missing artist id");
+      }
+
+      return await artistsService.getArtistById(id);
+    },
+    enabled: Boolean(id),
+  });
+
+  const populateArtistForm = (target: Artist) => {
+    const targetArtistId = String(target.id || target._id || "");
+    if (targetArtistId) {
+      setEditingArtistId(targetArtistId);
+    }
+
+    setValue("artistName", target.name || "");
+    setValue("artistGenres", target.genres || []);
+    setValue("artistDescription", target.description || "");
+    setValue("artistWebsiteUrl", target.websiteUrl || "");
+    setValue(
+      "artistMusicUrls",
+      target.musicResources?.length
+        ? target.musicResources.map((item) => ({
+            title: item.title || "",
+            url: item.url || "",
+          }))
+        : [{ title: "", url: "" }],
+    );
+    setArtistMainImagePreviewUrl(target.mainImageUrl || undefined);
+  };
 
   const updateArtistMutation = useMutation({
     mutationFn: (data: UpdateArtistInput) =>
@@ -165,40 +199,23 @@ export const EditArtist = () => {
     const target = artists.find((a) => String(a.id || a._id || "") === String(artistId));
     if (!target) return;
 
-    setEditingArtistId(String(artistId));
-    setValue("artistName", target.name || "");
-    setValue("artistGenres", target.genres || []);
-    setValue("artistDescription", target.description || "");
-    setValue("artistWebsiteUrl", target.websiteUrl || "");
-    setValue(
-      "artistMusicUrls",
-      target.musicResources?.length
-        ? target.musicResources.map((item) => ({ title: item.title || "", url: item.url || "" }))
-        : [{ title: "", url: "" }],
-    );
-    setArtistMainImagePreviewUrl(target.mainImageUrl || undefined);
+    populateArtistForm(target);
   };
 
   useEffect(() => {
-    if (!id || artistsLoading) {
-      return;
-    }
-
-    const matchedArtist = artists.find((artist) => String(artist.id || artist._id || "") === String(id));
-
-    if (!matchedArtist) {
-      setError("Artist not found");
-      return;
-    }
-
-    const matchedArtistId = String(matchedArtist.id || matchedArtist._id || id);
-    if (editingArtistId === matchedArtistId) {
+    if (!artistFromServer) {
       return;
     }
 
     setError("");
-    handleLoadArtistForEdit(matchedArtistId);
-  }, [id, artistsLoading, artists, editingArtistId]);
+    populateArtistForm(artistFromServer);
+  }, [artistFromServer]);
+
+  useEffect(() => {
+    if (artistByIdError) {
+      setError("Failed to load artist");
+    }
+  }, [artistByIdError]);
 
   const handleToggleGenre = (genre: string) => {
     const prev = getValues("artistGenres");
@@ -349,7 +366,7 @@ export const EditArtist = () => {
     <div className="container mx-auto px-4 py-8">
       <GoBackBtn path="/managed-events" />
       <div className="mb-8">
-        <h1 className="text-4xl font-black text-white mb-2">Edit Artist</h1>
+        <h1 className="text-4xl font-black text-white mb-2">Managed Artist</h1>
         <p className="text-gray-400">Update the artist's details.</p>
       </div>
 
