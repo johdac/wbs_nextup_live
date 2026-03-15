@@ -1,4 +1,4 @@
-import type { Event, Artist, Location } from "#models";
+import type { Event, Artist, Location, User } from "#models";
 
 declare global {
   namespace Express {
@@ -12,6 +12,7 @@ declare global {
       event?: InstanceType<typeof Event>;
       artist?: InstanceType<typeof Artist>;
       location?: InstanceType<typeof Location>;
+      requestedUser?: InstanceType<typeof User>;
     }
   }
 }

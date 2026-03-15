@@ -3,6 +3,7 @@ import {
   authenticate,
   authorize,
   loadEvent,
+  optionalAuthenticate,
   validateBody,
   validateRouteParams,
 } from "#middleware";
@@ -24,14 +25,14 @@ eventRoutes
     authenticate,
     authorize("organizer"),
     validateBody(eventSchema),
-    eventCreate
+    eventCreate,
   )
-  .get(eventGetAll);
+  .get(optionalAuthenticate, eventGetAll);
 
 // prettier-ignore
 eventRoutes
   .route("/:id")
-  .get(validateRouteParams(idParamSchema), eventGetOne)
+  .get(validateRouteParams(idParamSchema), optionalAuthenticate, eventGetOne)
   .put(
     validateRouteParams(idParamSchema),
     authenticate,

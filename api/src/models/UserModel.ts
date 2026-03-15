@@ -25,18 +25,6 @@ const userSchema = new Schema(
       enum: ["user", "admin", "organizer"],
       default: "user",
     },
-    favoritedEventsIds: [
-      {
-        type: Types.ObjectId,
-        ref: "Event",
-      },
-    ],
-    excludedEventsIds: [
-      {
-        type: Types.ObjectId,
-        ref: "Event",
-      },
-    ],
   },
   { timestamps: { createdAt: true, updatedAt: true } },
 );

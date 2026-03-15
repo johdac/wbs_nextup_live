@@ -96,7 +96,9 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     if (playerState === "playing") setPlayerState("paused");
   };
 
-  const favoriteEvent = (eventId: string) => {};
+  const favoriteEvent = (eventId: string) => {
+    console.log(eventId);
+  };
 
   const player: Player = {
     playerStateId,

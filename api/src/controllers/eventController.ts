@@ -1,7 +1,22 @@
-import { Event, Location, Artist } from "#models";
+import { Event, Location, Artist, EventRelation } from "#models";
 import { assertExists, getPublicFileUrl } from "#utils";
 import type { RequestHandler } from "express";
 import { Types } from "mongoose";
+
+// Utility for events to get the relations that users might have to them (favorite, hidden)
+const getEventRelationship = async (
+  userId: Types.ObjectId,
+  eventIds: Types.ObjectId[],
+) => {
+  const relations = await EventRelation.find({
+    userId,
+    eventId: { $in: eventIds },
+  }).lean();
+
+  return new Map(
+    relations.map((r) => [r.eventId.toString(), r.interactionType]),
+  );
+};
 
 export const eventCreate: RequestHandler = async (req, res) => {
   // Setting the createdById value of the request to the current user we attached in authenticate
@@ -52,6 +67,7 @@ export const eventCreate: RequestHandler = async (req, res) => {
 
 export const eventGetAll: RequestHandler = async (req, res) => {
   const {
+    isFavorite,
     artistId,
     organizerId,
     genres,
@@ -71,6 +87,19 @@ export const eventGetAll: RequestHandler = async (req, res) => {
   // TODO To be adapted
   // if (search && typeof search === "string") filter.$text = { $search: search };
   // if (createdById && typeof createdById === "string") filter.createdById = createdById;
+
+  // Return only favorited events for logged in users
+  if (req.user && isFavorite === "true") {
+    const favorites = await EventRelation.find({
+      userId: req.user.id,
+      interactionType: "favorite",
+    })
+      .select("eventId")
+      .lean();
+
+    const favoriteIds = favorites.map((f) => f.eventId);
+    filter._id = { $in: favoriteIds };
+  }
 
   // Search by artistId
   if (artistId && typeof artistId === "string") {
@@ -139,9 +168,15 @@ export const eventGetAll: RequestHandler = async (req, res) => {
     .sort({ startDate: 1 })
     .lean();
 
+  // Add eventRelation info for logged in users (favorited, hidden)
+  const eventIds = eventsDb.map((e) => e._id);
+  let relationMap = new Map<string, string>();
+  if (req.user) relationMap = await getEventRelationship(req.user.id, eventIds);
+
   const events = eventsDb.map((event) => ({
     ...event,
     mainImageUrl: getPublicFileUrl(event.mainImageKey),
+    interactionType: relationMap.get(event._id.toString()) || null,
   }));
 
   res.json(events);
@@ -168,10 +203,16 @@ export const eventGetOne: RequestHandler = async (req, res) => {
     mainImageUrl: getPublicFileUrl(artist.mainImageKey),
   }));
 
+  // Add eventRelation info for logged in users (favorited, hidden)
+  const eventIds = [event._id];
+  let relationMap = new Map<string, string>();
+  if (req.user) relationMap = await getEventRelationship(req.user.id, eventIds);
+
   res.json({
     ...event,
     mainImageUrl: getPublicFileUrl(event.mainImageKey),
     artistsIds: artistsWithUrls,
+    interactionType: relationMap.get(event._id.toString()) || null,
   });
 };
 

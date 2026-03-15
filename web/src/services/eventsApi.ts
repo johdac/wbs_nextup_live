@@ -37,6 +37,7 @@ export interface EventListItem {
   mainImageUrl: string;
   isPopular: boolean;
   organizerName: string;
+  interactionType: "favorite" | "hidden";
 }
 
 interface EventSearchParams {
@@ -50,6 +51,7 @@ interface EventSearchParams {
   radius?: number;
   startAfter?: string; // ISO date string
   startUntil?: string; // ISO date string
+  isFavorite?: boolean;
   page?: number;
   limit?: number;
 }
@@ -121,6 +123,7 @@ export interface ApiEvent {
 
   createdAt: string;
   updatedAt: string;
+  interactionType: "favorite" | "hidden";
 }
 
 // Transform API response to MusicEvent format for display
@@ -160,6 +163,7 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
     mainImageUrl: event.mainImageUrl || "/placeholder.jpeg",
     isPopular: false,
     organizerName: organizer?.username || "Unknown Organizer",
+    interactionType: event.interactionType,
   };
 };
 
@@ -188,6 +192,7 @@ export const eventsService = {
       params.radius = filters.radius.toString();
     if (filters?.startAfter) params.startAfter = filters.startAfter;
     if (filters?.startUntil) params.startUntil = filters.startUntil;
+    if (filters?.isFavorite) params.isFavorite = "true";
 
     const { data } = await eventsApi.get<ApiEvent[]>("/events", { params });
     return data.map((event) => transformEventToMusicEvent(event));

@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { AppLayout } from "./components/layout/AppLayout";
 import { Landing } from "./components/pages/Landing";
-import EventList from "./components/layout/Events";
 import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
 import { EventDetails } from "./components/pages/EventDetails";
@@ -19,6 +18,8 @@ import { LocationDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
+import { FavoritesPage } from "./components/pages/FavoritesPage";
+import { EventArchivePage } from "./components/pages/EventArchivePage";
 import { EditLocation } from "./components/pages/EditLocation";
 
 export const router = createBrowserRouter([
@@ -31,7 +32,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/events",
-        element: <EventList></EventList>,
+        element: <EventArchivePage></EventArchivePage>,
       },
       {
         path: "/event/:id",
@@ -126,6 +127,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <UserSetting></UserSetting>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/favorites",
+        element: (
+          <ProtectedRoute>
+            <FavoritesPage></FavoritesPage>
           </ProtectedRoute>
         ),
       },

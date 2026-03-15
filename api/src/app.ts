@@ -3,6 +3,7 @@ import express from "express";
 import { errorHandler } from "#middleware";
 import {
   artistRoutes,
+  eventRelationRoutes,
   eventRoutes,
   locationRoutes,
   uploadRoutes,
@@ -28,6 +29,7 @@ app.use("/events", eventRoutes);
 app.use("/artists", artistRoutes);
 app.use("/locations", locationRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/eventrelations/", eventRelationRoutes);
 app.use("*splat", (req, res) => {
   throw new Error("Not found", { cause: { status: 404 } });
 });

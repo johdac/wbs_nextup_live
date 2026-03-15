@@ -12,7 +12,7 @@ if (!ACCESS_JWT_SECRET) {
     },
     ACCESS_JWT_SECRET,
     {
-      subject: "69a3051fae0d074d723d0da2", // this must be the id of an existing user
+      subject: "69aea83729ccb2ea0d5b0a12", // this must be the id of an existing user
       expiresIn: "55d",
     },
   );

@@ -8,7 +8,13 @@ import { mergeMusicResources } from "../../features/player/utils/mergeMusicResou
 import { PlayerTransports } from "../../features/player/PlayerTransports";
 import { FavoriteEventBtn } from "../buttons/FavoriteEventBtn";
 
-const EventCard = ({ event, index }: { event: EventListItem; index: number }) => {
+const EventCard = ({
+  event,
+  index,
+}: {
+  event: EventListItem;
+  index: number;
+}) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
   const timeStr = format(new Date(event.startDate), "h:mm a");
@@ -23,7 +29,9 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
       <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 mr-5 text-white shadow-xs w-20">
         <span className="text-6xl font-black leading-none">{dayStr}</span>
         {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">{monthStr}</span>
+        <span className="text-md font-bold uppercase tracking-wider">
+          {monthStr}
+        </span>
       </div>
       {/* IMAGE WITH MOBILE DATE STICKER */}
       <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -43,7 +51,9 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
         {/* DATE STICKER ON MOBILE ONLY */}
         <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider">{monthStr}</span>
+          <span className="text-xs font-bold uppercase tracking-wider">
+            {monthStr}
+          </span>
           <span className="text-xl font-black leading-none">{dayStr}</span>
           <span className="text-xs font-bold">{yearStr}</span>
         </div>
@@ -51,13 +61,18 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
       {/* TEXT INFO */}
       <div className="flex flex-col gap-1 w-full sm:w-auto">
         <Link to={`/event/${event.id}`}>
-          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple">{event.title}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple">
+            {event.title}
+          </h3>
         </Link>
         <div className="my-1.5 flex flex-wrap items-center gap-2">
           <div className="text-white flex items-center">
             {event.artists.map((artist) => {
               return (
-                <div key={artist.id} className="flex flex-row px-1 hover:text-purple hover:scale-105">
+                <div
+                  key={artist.id}
+                  className="flex flex-row px-1 hover:text-purple hover:scale-105"
+                >
                   <MicVocal className="mr-1" />
                   <Link to={`/artist/${artist.id}`}>
                     <p key={artist.id}>{artist.name}</p>
@@ -81,7 +96,7 @@ const EventCard = ({ event, index }: { event: EventListItem; index: number }) =>
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <FavoriteEventBtn className="" />
+        <FavoriteEventBtn event={event} />
         <PlayerTransports resources={mergedMusicResources} />
       </div>
     </div>

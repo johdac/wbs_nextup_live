@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{api}}/events?search=rot"
+  url: "{{api}}/events?search=Theo Croker"
   params:
     - name: search
-      value: rot
+      value: Theo Croker
       type: query
   auth: inherit
 

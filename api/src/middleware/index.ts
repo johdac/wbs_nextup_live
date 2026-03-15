@@ -5,3 +5,4 @@ export * from "./loaders.ts";
 export * from "./validateBody.ts";
 export * from "./validateQueryParams.ts";
 export * from "./validateRouteParams.ts";
+export * from "./optionalAuthenticate.ts";

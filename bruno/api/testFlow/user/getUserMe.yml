@@ -1,11 +1,11 @@
 info:
-  name: deleteEvent2
+  name: getUserMe
   type: http
-  seq: 15
+  seq: 2
 
 http:
-  method: DELETE
-  url: "{{api}}/events/{{createdEvent2}}"
+  method: GET
+  url: "{{api}}/users/me"
   auth: inherit
 
 settings:

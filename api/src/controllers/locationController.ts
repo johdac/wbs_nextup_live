@@ -1,4 +1,4 @@
-import { Location, User } from "#models";
+import { Location } from "#models";
 import { assertExists } from "#utils";
 import type { RequestHandler } from "express";
 import { Types } from "mongoose";

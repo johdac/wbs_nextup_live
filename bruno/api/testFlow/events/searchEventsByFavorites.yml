@@ -1,17 +1,15 @@
 info:
-  name: getEvent1
+  name: searchEventsByFavorites
   type: http
-  seq: 13
+  seq: 12
 
 http:
   method: GET
-  url: "{{api}}/events/{{createdEvent1}}"
+  url: "{{api}}/events"
   auth: inherit
 
 runtime:
   variables:
-    - name: createdEvent1
-      value: 69a9a93a9b9722a31a200260
     - name: api
       value: http://localhost:3000
 
