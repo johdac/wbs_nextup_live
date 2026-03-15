@@ -1,7 +1,10 @@
 import { useRef, useEffect, useState, type MutableRefObject } from "react";
 import { MapPin, Loader } from "lucide-react";
 import L from "leaflet";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEventFormContext } from "../../context/EventFormContext";
+import { useAuth } from "../../context/AuthContext";
+import { Button } from "../ui/Button";
 import { LocationSelectDropdown } from "../location/LocationSelectDropdown";
 import { LocationFormFields } from "../location/LocationFormFields";
 import "leaflet/dist/leaflet.css";
@@ -10,6 +13,7 @@ const DEFAULT_CREATE_MAP_CENTER: L.LatLngTuple = [52.52, 13.405];
 const DEFAULT_CREATE_MAP_ZOOM = 5;
 
 export const LocationLayout = () => {
+  const { user } = useAuth();
   const {
     isCreatingNewLocation,
     selectedLocationId,
@@ -30,6 +34,7 @@ export const LocationLayout = () => {
     isSearching,
     showSearchResults,
     onToggleCreateNewLocation,
+    onStartEditLocation,
     onToggleSelectExistingLocation,
     onLocationSelect,
     onLocationNameChange,
@@ -44,6 +49,39 @@ export const LocationLayout = () => {
   } = useEventFormContext();
 
   const [validationError, setValidationError] = useState("");
+
+  const getOwnerId = (location?: {
+    createdById?: { _id?: string; id?: string } | string;
+  }) => {
+    if (!location?.createdById) {
+      return "";
+    }
+
+    if (typeof location.createdById === "string") {
+      return location.createdById;
+    }
+
+    return location.createdById._id || location.createdById.id || "";
+  };
+
+  const selectedLocationOwnerId = getOwnerId(
+    selectedLocation as
+      | { createdById?: { _id?: string; id?: string } | string }
+      | undefined,
+  );
+
+  const currentUserId = user
+    ? String(
+        (user as { _id?: string; id?: string })._id ||
+          (user as { _id?: string; id?: string }).id ||
+          "",
+      )
+    : "";
+  const canEditSelectedLocation =
+    !!selectedLocation &&
+    !!currentUserId &&
+    !!selectedLocationOwnerId &&
+    selectedLocationOwnerId === currentUserId;
 
   const createMapContainer = useRef<HTMLDivElement>(null);
   const createMap = useRef<L.Map | null>(null);
@@ -208,114 +246,156 @@ export const LocationLayout = () => {
     onCreateLocation();
   };
 
+  const handleEditSelectedLocation = () => {
+    if (!selectedLocation) {
+      return;
+    }
+
+    const lat = selectedLocation.geo.coordinates[1];
+    const lng = selectedLocation.geo.coordinates[0];
+
+    onStartEditLocation();
+    setValidationError("");
+    onSelectSearchResult({
+      name: selectedLocation.name || "",
+      displayName: [
+        selectedLocation.name,
+        selectedLocation.address,
+        selectedLocation.city,
+        selectedLocation.country,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      lat,
+      lng,
+      address: selectedLocation.address || "",
+      city: selectedLocation.city || "",
+      country: selectedLocation.country || "",
+      zip: selectedLocation.zip || "",
+    });
+  };
+
   return (
     <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
-      <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-        <MapPin className="h-6 w-6" />
-        Location *
-      </h2>
-
-      {/* Toggle between Select Existing and Create New */}
-      <div className="mb-4 flex gap-2">
-        <button
-          type="button"
-          onClick={onToggleSelectExistingLocation}
-          className={`flex-1 cursor-pointer px-4 py-2 rounded-lg font-medium transition ${
-            !isCreatingNewLocation
-              ? "bg-primary text-white"
-              : "bg-black/40 text-gray-400 hover:bg-black/60"
-          }`}
-        >
-          Select Existing
-        </button>
-        <button
-          type="button"
-          onClick={onToggleCreateNewLocation}
-          className={`flex-1 cursor-pointer px-4 py-2 rounded-lg font-medium transition ${
-            isCreatingNewLocation
-              ? "bg-primary text-white"
-              : "bg-black/40 text-gray-400 hover:bg-black/60"
-          }`}
-        >
-          Create New
-        </button>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+          <MapPin className="h-6 w-6" />
+          Location *
+        </h2>
+        {!isCreatingNewLocation && (
+          <Button
+            type="button"
+            onClick={onToggleCreateNewLocation}
+            variant="secondary"
+            size="sm"
+            className="text-sm"
+          >
+            + Create New Location
+          </Button>
+        )}
       </div>
 
-      {!isCreatingNewLocation ? (
-        <>
-          {/* Location Selector */}
-          <div className="mb-4">
-            <LocationSelectDropdown
-              value={selectedLocationId}
-              onChange={onLocationSelect}
-              options={locations}
-              disabled={locationsLoading}
-              loading={locationsLoading}
-              loadingText="Loading locations..."
-              placeholder="Select a location"
-            />
-          </div>
-        </>
-      ) : (
-        <>
-          {/* Create New Location Form */}
-          <LocationFormFields
-            name={locationName}
-            address={locationAddress}
-            city={locationCity}
-            zip={locationZip}
-            country={locationCountry}
-            onNameChange={onLocationNameChange}
-            onAddressChange={onLocationAddressChange}
-            onCityChange={onLocationCityChange}
-            onZipChange={onLocationZipChange}
-            onCountryChange={onLocationCountryChange}
-            onSubmit={handleCreateLocation}
-            submitLabel="Save Location"
-            pendingLabel="Creating..."
-            isSubmitting={createLocationMutationIsPending}
-            validationMessage={validationError}
-            topSlot={
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Search Location
-                </label>
-                <input
-                  type="text"
-                  value={searchInput}
-                  onChange={(e) => onLocationSearch(e.target.value)}
-                  placeholder="Search address, place, business..."
-                  className="w-full px-4 py-3 input-event-form"
-                />
-
-                {isSearching && (
-                  <p className="mt-2 text-xs text-gray-400">Searching...</p>
-                )}
-
-                {showSearchResults && searchResults.length > 0 && (
-                  <div className="absolute z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-purple-500/40 bg-black/90 shadow-xl">
-                    {searchResults.map((result, idx) => (
-                      <button
-                        key={`${result.lat}-${result.lng}-${idx}`}
-                        type="button"
-                        onClick={() => onSelectSearchResult(result)}
-                        className="w-full text-left px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0"
-                      >
-                        <div className="text-white text-sm font-medium">
-                          {result.name || result.displayName}
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          {result.displayName}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            }
+      <div className="mb-4 flex items-center gap-2">
+        <div className="flex-1">
+          <LocationSelectDropdown
+            value={selectedLocationId}
+            onChange={onLocationSelect}
+            options={locations}
+            disabled={locationsLoading}
+            loading={locationsLoading}
+            loadingText="Loading locations..."
+            placeholder="Select a location"
           />
-        </>
-      )}
+        </div>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {isCreatingNewLocation && (
+          <motion.div
+            key="create-location-form"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <LocationFormFields
+              name={locationName}
+              address={locationAddress}
+              city={locationCity}
+              zip={locationZip}
+              country={locationCountry}
+              onNameChange={onLocationNameChange}
+              onAddressChange={onLocationAddressChange}
+              onCityChange={onLocationCityChange}
+              onZipChange={onLocationZipChange}
+              onCountryChange={onLocationCountryChange}
+              onSubmit={handleCreateLocation}
+              submitLabel="Save Location"
+              pendingLabel="Creating..."
+              isSubmitting={createLocationMutationIsPending}
+              validationMessage={validationError}
+              topSlot={
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Search Location
+                  </label>
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => onLocationSearch(e.target.value)}
+                    placeholder="Search address, place, business..."
+                    className="w-full px-4 py-3 input-event-form"
+                  />
+
+                  {isSearching && (
+                    <p className="mt-2 text-xs text-gray-400">Searching...</p>
+                  )}
+
+                  {showSearchResults && searchResults.length > 0 && (
+                    <div className="absolute z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-purple-500/40 bg-black/90 shadow-xl">
+                      {searchResults.map((result, idx) => (
+                        <button
+                          key={`${result.lat}-${result.lng}-${idx}`}
+                          type="button"
+                          onClick={() => onSelectSearchResult(result)}
+                          className="w-full text-left px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0"
+                        >
+                          <div className="text-white text-sm font-medium">
+                            {result.name || result.displayName}
+                          </div>
+                          <div className="text-gray-400 text-xs">
+                            {result.displayName}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              }
+              actionSlot={
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setValidationError("");
+                    onToggleSelectExistingLocation();
+                    // If a location was already selected (edit flow),
+                    // re-select it to restore form fields + map state
+                    if (selectedLocationId) {
+                      onLocationSelect(selectedLocationId);
+                    }
+                  }}
+                  variant="cancel"
+                  fullWidth
+                  className="mt-2"
+                >
+                  Cancel
+                </Button>
+              }
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Map Preview/Interactive Map */}
       <div className="w-full h-64 bg-black/40 rounded-lg border border-purple-500/30 overflow-hidden">
@@ -361,11 +441,24 @@ export const LocationLayout = () => {
       )}
 
       {/* Location Details */}
-      {(selectedLocation || locationName) && (
+      {!isCreatingNewLocation && (selectedLocation || locationName) && (
         <div className="mt-4 p-3 bg-black/20 rounded-lg">
-          <p className="text-white font-medium">
-            {selectedLocation?.name || locationName}
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-white font-medium">
+              {selectedLocation?.name || locationName}
+            </p>
+            {canEditSelectedLocation && (
+              <Button
+                type="button"
+                onClick={handleEditSelectedLocation}
+                variant="secondary"
+                size="sm"
+                className="shrink-0 text-xs"
+              >
+                Edit
+              </Button>
+            )}
+          </div>
           {(selectedLocation?.address || locationAddress) && (
             <p className="text-gray-400 text-sm">
               {selectedLocation?.address || locationAddress}

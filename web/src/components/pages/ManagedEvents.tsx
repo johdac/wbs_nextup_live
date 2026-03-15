@@ -4,6 +4,7 @@ import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { Heading } from "../ui/Heading";
 
 export const ManagedEvents = () => {
   const navigate = useNavigate();
@@ -41,10 +42,7 @@ export const ManagedEvents = () => {
     <>
       <div className="min-h-screen py-8">
         <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h1 className="text-4xl font-black text-white mb-2">Managed Events</h1>
-            <p className="text-gray-400">Edit your saved events</p>
-          </div>
+          <Heading title="Managed Events" subtitle="Edit your saved events" />
           <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
             {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
             {!isLoading && eventsList.length > 0

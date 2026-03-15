@@ -7,6 +7,9 @@ import { useNavigate, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { Pagination } from "@mui/material";
+import type { PlaylistItem } from "../../features/player/playerTypes";
+import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
+import { PlayerTransports } from "../../features/player/PlayerTransports";
 
 const ROOT_ITEMS_PER_PAGE = 10;
 const EVENTS_ITEMS_PER_PAGE = 20;
@@ -23,9 +26,12 @@ const EventList = () => {
   const isEventRoute = pathname === "/events";
 
   const pageParam = Number(searchParams.get("page") || "1");
-  const limitParam = Number(searchParams.get("limit") || String(EVENTS_ITEMS_PER_PAGE));
+  const limitParam = Number(
+    searchParams.get("limit") || String(EVENTS_ITEMS_PER_PAGE),
+  );
 
-  const currentPage = isEventRoute && Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+  const currentPage =
+    isEventRoute && Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
   const itemsPerPage =
     isEventRoute && Number.isFinite(limitParam) && limitParam > 0
       ? limitParam
@@ -47,7 +53,14 @@ const EventList = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["events-list", currentPage, itemsPerPage, genre, location, dateTime?.toISOString()],
+    queryKey: [
+      "events-list",
+      currentPage,
+      itemsPerPage,
+      genre,
+      location,
+      dateTime?.toISOString(),
+    ],
     queryFn: () =>
       eventsService.fetchEventsList(currentPage, {
         limit: itemsPerPage,
@@ -78,13 +91,17 @@ const EventList = () => {
     setSearchParams(params);
   };
 
+  const mergedMusicResources: PlaylistItem[] = mergeMusicResources(eventsList);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <section className=" ">
         <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
           All <span className="neon-gradient-text">Upcoming</span> Events
         </h2>
-        <p className="mb-6 font-body text-sm text-white">Your next unforgettable night awaits</p>
+        <p className="mb-6 font-body text-sm text-white">
+          Your next unforgettable night awaits
+        </p>
 
         <div className=" py-4 mb-10 ">
           <div
@@ -154,16 +171,29 @@ const EventList = () => {
         </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
-          {isLoading && <div className="py-12 text-center font-display text-lg text-white">Loading events...</div>}
-          {!isLoading && eventsList.length > 0
-            ? eventsList.map((event: EventListItem, index: number) => {
+          {isLoading && (
+            <div className="py-12 text-center font-display text-lg text-white">
+              Loading events...
+            </div>
+          )}
+          {!isLoading && eventsList.length > 0 ? (
+            <>
+              <div>
+                All songs <PlayerTransports resources={mergedMusicResources} />
+              </div>
+              {eventsList.map((event: EventListItem, index: number) => {
                 return <EventCard key={event.id} event={event} index={index} />;
-              })
-            : !isLoading && (
-                <p className="py-12 text-center font-display text-lg text-white">
-                  {error ? "Failed to load events from server" : "No events found"}
-                </p>
-              )}
+              })}
+            </>
+          ) : (
+            !isLoading && (
+              <p className="py-12 text-center font-display text-lg text-white">
+                {error
+                  ? "Failed to load events from server"
+                  : "No events found"}
+              </p>
+            )
+          )}
         </div>
 
         {/* Pagination or Load More Button */}
@@ -172,7 +202,9 @@ const EventList = () => {
             {isEventRoute ? (
               <Pagination
                 className="pagination-style"
-                count={currentPage + (eventsList.length === itemsPerPage ? 1 : 0)}
+                count={
+                  currentPage + (eventsList.length === itemsPerPage ? 1 : 0)
+                }
                 page={currentPage}
                 onChange={(_, page) => {
                   updatePage(page);

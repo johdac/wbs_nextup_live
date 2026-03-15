@@ -6,8 +6,8 @@ import { Link } from "lucide-react";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
-import { CirclePlayBtn } from "../buttons/CirclePlayBtn";
 import { GenresTag } from "../ui/GenresTag";
+import { PlayBtn } from "../buttons/PlayBtn";
 
 export const ArtistDetailsEdit = () => {
   const navigate = useNavigate();
@@ -68,8 +68,17 @@ export const ArtistDetailsEdit = () => {
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-5 justify-end pr-1">
         {/* error to be solved */}
         <EditBtn data={artist} path="managed-artists" />
-        <DeleteBtn id={artist.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
-        <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
+        <DeleteBtn
+          id={artist.id || ""}
+          setItemToDelete={setItemToDelete}
+          setShowModal={setShowModal}
+        />
+        <ConfirmModal
+          name="artist"
+          handleDelete={handleDelete}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
       </div>
 
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
@@ -93,7 +102,7 @@ export const ArtistDetailsEdit = () => {
               <h1 className="flex items-end gap-3 text-4xl sm:text-5xl md:text-5xl font-black tracking-tight uppercase text-white">
                 {artist.name}
               </h1>
-              <CirclePlayBtn />
+              <PlayBtn />
             </div>
             <GenresTag data={artist} />
             <div className="px-5 py-4 transition-all bg-gray-800/35">
@@ -102,7 +111,9 @@ export const ArtistDetailsEdit = () => {
                 <div className="space-y-3">
                   <p
                     className="text-lg font-light"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.description) }}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(artist.description),
+                    }}
                   />
                 </div>
               ) : (

@@ -2,10 +2,10 @@ import { Link } from "react-router";
 
 const NotFound = () => {
   return (
-    <div className="flex h-[80vh] flex-col items-center justify-center overflow-hidden bg-[#0d0d12] px-6 text-center font-sans">
+    <div className="flex flex-col items-center justify-center overflow-hidden px-6 text-center font-sans">
       {/* The Purple Glow - Radial Gradient */}
       <div
-        className="absolute top-[-10%] left-1/2 h-[600px] w-[800px] -translate-x-1/2 opacity-40 blur-[100px]"
+        className="absolute -z-10 top-[20%] left-1/2 h-[50vh] w-[50vw] -translate-x-1/2 opacity-40 blur-[100px]"
         style={{
           background: "radial-gradient(circle, #7c3aed 0%, transparent 70%)",
         }}

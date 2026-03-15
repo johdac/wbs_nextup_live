@@ -5,7 +5,7 @@ import { eventsApi } from "./events.services";
 interface MusicResource {
   url: string;
   title: string;
-  id: string;
+  _id: string;
 }
 
 export interface EventCardArtist {
@@ -75,7 +75,7 @@ interface ApiUserSummary {
   username: string;
 }
 
-interface ApiLocation {
+export interface ApiLocation {
   _id?: string;
   id?: string;
   name: string;
@@ -83,7 +83,7 @@ interface ApiLocation {
   address?: string;
 }
 
-interface ApiArtist {
+export interface ApiArtist {
   _id?: string;
   id?: string;
   name: string;
