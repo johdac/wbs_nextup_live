@@ -1,10 +1,11 @@
 import { Play } from "lucide-react";
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const PlayBtn = () => {
+export const PlayBtn = ({ className, ...props }: Props) => {
   return (
     <>
-      <button>
-        <Play className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
+      <button {...props}>
+        <Play className={`btn-icon ${className}`} />
       </button>
     </>
   );

@@ -1,4 +1,16 @@
-import { Sparkles, Heart, Plus, UserPlus, Menu, X, LogOut, User, CalendarRange, MapPin, Mic2 } from "lucide-react";
+import {
+  Sparkles,
+  Heart,
+  Plus,
+  UserPlus,
+  Menu,
+  X,
+  LogOut,
+  User,
+  CalendarRange,
+  MapPin,
+  Mic2,
+} from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -20,11 +32,16 @@ export const Header = () => {
   const currentRole = user?.role ?? user?.roles?.[0] ?? roleFromStorage;
   const isOrganizer = currentRole === "organizer";
   const hideCreateNew = signedIn && currentRole === "user";
-  const navItems = hideCreateNew ? baseNavItems : [...baseNavItems, organizerNavItem];
+  const navItems = hideCreateNew
+    ? baseNavItems
+    : [...baseNavItems, organizerNavItem];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target as Node)
+      ) {
         setUserDropdownOpen(false);
       }
     };
@@ -38,7 +55,7 @@ export const Header = () => {
   }, [userDropdownOpen]);
   return (
     <>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container pb-4 lg:pb-8 lg:pt-4">
         <nav className="flex justify-between items-center py-4 sm:py-8 text-white">
           <Link to="/">
             <div className="text-2xl sm:text-4xl font-black italic tracking-tighter">
@@ -46,28 +63,30 @@ export const Header = () => {
             </div>
           </Link>
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center font-medium gap-x-6 bg-purple rounded-lg overflow-visible relative">
-            {navItems.map(({ to, label, icon: Icon }) => {
-              const active = location.pathname === to;
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  className={`flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer ${
-                    active ? "bg-hover-purple " : " hover:bg-hover-purple "
-                  }`}
-                >
-                  {Icon && <Icon className="h-4 w-4 mr-2" />}
-                  <span>{label}</span>
-                </Link>
-              );
-            })}
+          <div className="hidden lg:flex items-center font-medium relative">
+            <div className="hidden rounded-l-lg overflow-hidden lg:flex bg-purple ">
+              {navItems.map(({ to, label, icon: Icon }) => {
+                const active = location.pathname === to;
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer ${
+                      active ? "bg-hover-purple " : " hover:bg-hover-purple "
+                    }`}
+                  >
+                    {Icon && <Icon className="h-4 w-4 mr-2" />}
+                    <span>{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
             {/* User Menu or Login Button */}
             {signedIn && user ? (
               <div className="relative" ref={userDropdownRef}>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className={`flex items-center px-8 py-4 transition ${userDropdownOpen ? "bg-hover-purple" : "hover:bg-hover-purple"} cursor-pointer gap-2`}
+                  className={`flex items-center bg-purple rounded-r-lg overflow-hidden px-8 py-4 transition ${userDropdownOpen ? "bg-hover-purple" : "hover:bg-hover-purple"} cursor-pointer gap-2`}
                 >
                   <User className="h-4 w-4" />
                   <span className="truncate max-w-37.5">{user.username}</span>
@@ -75,7 +94,7 @@ export const Header = () => {
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 top-16 w-52 bg-purple rounded-lg shadow-xl py-2 z-50 border border-purple-500/50">
+                  <div className="absolute right-0 top-16 w-52 bg-purple rounded-lg shadow-xl py-2 z-50">
                     <Link
                       to="/profile"
                       onClick={() => setUserDropdownOpen(false)}
@@ -129,7 +148,7 @@ export const Header = () => {
               <Link
                 to="/login"
                 state={{ from: location }}
-                className="flex items-center px-8 py-4 transition hover:bg-hover-purple cursor-pointer"
+                className="flex items-center px-8 py-4 transition bg-purple rounded-r-lg hover:bg-hover-purple cursor-pointer"
               >
                 <UserPlus className="h-4 w-4 mr-2" />
                 <span>Login</span>
@@ -150,7 +169,10 @@ export const Header = () => {
         ${open ? "translate-x-0" : "translate-x-full"}`}
           >
             {/* X Button inside drawer */}
-            <button onClick={() => setOpen(false)} className="self-end m-4 p-2 rounded-full hover:bg-purple-dark">
+            <button
+              onClick={() => setOpen(false)}
+              className="self-end m-4 p-2 rounded-full hover:bg-purple-dark"
+            >
               <X size={24} />
             </button>
 

@@ -1,11 +1,11 @@
 import { ListPlus } from "lucide-react";
 
-export const AddToListBtn = () => {
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+export const AddToListBtn = ({ className, ...props }: Props) => {
   return (
-    <>
-      <button>
-        <ListPlus className="w-8 h-8 transition-colors duration-100 hover:text-purple hover:scale-115 cursor-pointer" />
-      </button>
-    </>
+    <button {...props}>
+      <ListPlus className={`btn-icon ${className}`} />
+    </button>
   );
 };

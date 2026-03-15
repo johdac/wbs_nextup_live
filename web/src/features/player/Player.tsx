@@ -9,6 +9,7 @@ import Marquee from "react-fast-marquee";
 export const Player = () => {
   // We manage the player state in context and get it here
   const {
+    playerStateId,
     currentIndex,
     playlist,
     playerState,
@@ -16,32 +17,29 @@ export const Player = () => {
     soundcloudRef,
     togglePlayPause,
     playNext,
+    playPrev,
   } = usePlayer();
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Derived data from usePlayer context
   const currentSong = playlist[currentIndex];
 
-  const destroyAllPlayers = () => {
-    youtubeRef.current = null;
-    soundcloudRef.current = null;
-  };
-
   /**
-   * If currentIndex loaded from context changes, we must switch out the players. We first destroy the old ones
-   * and then initialize new players. When doing that we also update the youtubeRef and soundcloudRef respectively
-   * We do not add the song url to the player though, that happens in the
+   * If currentIndex loaded from context changes, we must switch out the players. By changing the src
+   * of the iframe the players are automatically replaced. We then need to bind the api again to the
+   * new iframe players. When doing that we also update the youtubeRef and soundcloudRef respectively
    */
   useEffect(() => {
-    destroyAllPlayers();
     if (!currentSong) return;
-    if (currentSong.song.vendor === "youtube")
-      initYoutubePlayer(playerState === "playing");
-    if (currentSong.song.vendor === "soundcloud")
-      initSoundCloudWidget(playerState === "playing");
-  }, [currentIndex]);
+    if (currentSong.song.vendor === "youtube") {
+      bindYoutubePlayer(playerState === "playing");
+    }
+    if (currentSong.song.vendor === "soundcloud") {
+      bindSoundCloudPlayer(playerState === "playing");
+    }
+  }, [currentIndex, playerStateId]);
 
-  const initYoutubePlayer = (autoplay: boolean) => {
+  const bindYoutubePlayer = (autoplay: boolean) => {
     const bindYoutube = () => {
       if (
         typeof (window as any).YT === "undefined" ||
@@ -52,8 +50,8 @@ export const Player = () => {
       try {
         new (window as any).YT.Player(iframeRef.current, {
           events: {
-            // This is where we pass the instance of the player to the context
             onReady: (event: any) => {
+              // This is where we pass the instance of the player to the context
               youtubeRef.current = event.target;
               if (autoplay) event.target.playVideo();
             },
@@ -84,28 +82,31 @@ export const Player = () => {
     }
   };
 
-  const initSoundCloudWidget = (autoplay: boolean) => {
-    if (iframeRef.current?.onload) {
-      iframeRef.current.onload = () => {
-        try {
-          if (
-            typeof (window as any).SC !== "undefined" &&
-            (window as any).SC.Widget
-          ) {
-            const widget = (window as any).SC.Widget(iframeRef.current);
+  const bindSoundCloudPlayer = (autoplay: boolean) => {
+    const bindSoundCloud = () => {
+      const SC = (window as any).SC;
 
-            soundcloudRef.current = widget;
+      if (!SC?.Widget || !iframeRef.current) return;
 
-            if (autoplay && widget.play) widget.play();
+      try {
+        const widget = SC.Widget(iframeRef.current);
+        soundcloudRef.current = widget;
+        if (autoplay) widget.play();
+        widget.bind(SC.Widget.Events.FINISH, () => {
+          playNext();
+        });
+      } catch (e) {
+        console.warn("SoundCloud Player init:", e);
+      }
+    };
 
-            widget.bind((window as any).SC.Widget.Events.FINISH, () => {
-              playNext();
-            });
-          }
-        } catch (e) {
-          console.warn("SoundCloud Widget init:", e);
-        }
-      };
+    if ((window as any).SC?.Widget) {
+      bindSoundCloud();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://w.soundcloud.com/player/api.js";
+      script.onload = bindSoundCloud;
+      document.body.appendChild(script);
     }
   };
 
@@ -132,7 +133,7 @@ export const Player = () => {
             {/* Controls */}
             <div className="flex items-center justify-center gap-1 mr-5 py-2">
               <button
-                // onClick={goPrev}
+                onClick={playPrev}
                 disabled={!canGoPrev}
                 className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
               >
@@ -164,7 +165,7 @@ export const Player = () => {
               {currentSong && (
                 <iframe
                   ref={iframeRef}
-                  src={currentSong.song.embedUrl}
+                  src={`${currentSong.song.embedUrl}?${playerStateId}`}
                   className="w-3xs aspect-video absolute bottom-2 rounded-lg "
                   style={{
                     boxShadow: "rgb(255 191 81 / 20%) 0px 0px 20px 5px",
