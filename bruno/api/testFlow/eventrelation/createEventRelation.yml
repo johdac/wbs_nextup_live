@@ -4,7 +4,7 @@ info:
   seq: 1
 
 http:
-  method: POST
+  method: PUT
   url: "{{api}}/eventrelations/69a9a93a9b9722a31a200260"
   body:
     type: json

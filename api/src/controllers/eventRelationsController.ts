@@ -3,7 +3,7 @@ import type { RequestHandler } from "express";
 import { assertExists, getPublicFileUrl } from "#utils";
 import { Types } from "mongoose";
 
-export const eventRelationCreate: RequestHandler = async (req, res) => {
+export const eventRelationUpsert: RequestHandler = async (req, res) => {
   const { id: eventId } = req.params;
   const { interactionType } = req.body;
 

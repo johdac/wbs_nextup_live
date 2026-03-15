@@ -20,6 +20,7 @@ import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
 import { FavoritesPage } from "./components/pages/FavoritesPage";
+import { EventArchivePage } from "./components/pages/EventArchivePage";
 
 export const router = createBrowserRouter([
   {
@@ -31,7 +32,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/events",
-        element: <EventList></EventList>,
+        element: <EventArchivePage></EventArchivePage>,
       },
       {
         path: "/event/:id",

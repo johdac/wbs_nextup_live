@@ -1,9 +1,8 @@
-import { Play, MapPin, Heart, MicVocal, ListPlus } from "lucide-react";
+import { MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
 import { GenresTag } from "../ui/GenresTag";
-import { usePlayer } from "../../features/player/PlayerContext";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
 import { PlayerTransports } from "../../features/player/PlayerTransports";
@@ -97,7 +96,7 @@ const EventCard = ({
 
       {/* ACTION BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <FavoriteEventBtn className="" />
+        <FavoriteEventBtn event={event} />
         <PlayerTransports resources={mergedMusicResources} />
       </div>
     </div>

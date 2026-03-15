@@ -1,18 +1,18 @@
 import { Router } from "express";
 import { authenticate, validateBody, validateRouteParams } from "#middleware";
-import { eventRelationCreate, eventRelationDelete } from "#controllers";
+import { eventRelationUpsert, eventRelationDelete } from "#controllers";
 import { idParamSchema, eventRelationSchema } from "#schema";
 
 export const eventRelationRoutes = Router();
 
-// No need to authorize. All requests will always add entries for the currently authenticated user
+// No need to authorize. All requests will always alter entries for the currently authenticated user
 eventRelationRoutes
   .route("/:id")
-  .post(
+  .put(
     validateRouteParams(idParamSchema),
     authenticate,
     validateBody(eventRelationSchema),
-    eventRelationCreate,
+    eventRelationUpsert,
   )
   .delete(
     validateRouteParams(idParamSchema),

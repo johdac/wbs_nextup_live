@@ -12,39 +12,26 @@ import { PlayerTransports } from "../../features/player/PlayerTransports";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
 import { FavoriteEventBtn } from "../buttons/FavoriteEventBtn";
+import { useQuery } from "@tanstack/react-query";
 
 export const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [event, setEvent] = useState<EventListItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: event,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["events", id],
+    queryFn: () => {
+      if (!id) throw new Error("Missing event id");
+      return eventsService.getEventById(id);
+    },
+    enabled: Boolean(id),
+  });
 
-  useEffect(() => {
-    if (!id) {
-      setError("Missing event id");
-      setLoading(false);
-      return;
-    }
-
-    const fetchEvent = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await eventsService.getEventById(id);
-        setEvent(data);
-      } catch (err) {
-        setError("Failed to load event");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [id]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Failed to load event</p>;
   if (!event) return <p>Event not found</p>;
 
   const startDate = format(new Date(event.startDate), "dd MMM hh:mm a");
@@ -119,8 +106,9 @@ export const EventDetails = () => {
           <aside className="order-1 md:order-2 md:un-border-l basis-full md:basis-70 lg:basis-100 shrink-0">
             <div className="flex gap-4 items-center un-border-b un-box-t-padding md:un-box-l-padding un-box-b-padding w-full -mt-1">
               <FavoriteEventBtn
+                event={event}
                 className="mr-4"
-                buttonText="Add Event to Favorites"
+                withText={true}
               />
             </div>
             <div className="un-box-t-padding md:un-box-l-padding un-border-b md:border-none">

@@ -1,11 +1,10 @@
 import EventList from "../layout/Events";
 
-export const FavoritesPage = () => {
+export const EventArchivePage = () => {
   return (
     <>
       <div className="container">
-        Favorites
-        <EventList favorited={true}></EventList>
+        <EventList></EventList>
       </div>
     </>
   );
