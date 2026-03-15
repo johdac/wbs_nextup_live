@@ -5,22 +5,21 @@ import L from "leaflet";
 import { useAuth } from "../../context/AuthContext";
 import { LocationSelectDropdown } from "../location/LocationSelectDropdown";
 import { LocationFormFields } from "../location/LocationFormFields";
-import {
-  locationsService,
-  type UpdateLocationInput,
-} from "../../services/locationsApi";
+import { locationsService, type UpdateLocationInput } from "../../services/locationsApi";
 import "leaflet/dist/leaflet.css";
 import { Heading } from "../ui/Heading";
 
 const DEFAULT_CENTER: L.LatLngTuple = [52.52, 13.405];
 
-export const ManagedLocations = () => {
+interface ManagedLocationsProps {
+  preselectedLocationId?: string;
+}
+
+export const ManagedLocations = ({ preselectedLocationId }: ManagedLocationsProps = {}) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const currentUserId = String(
-    (user as { _id?: string; id?: string } | null)?._id ||
-      (user as { _id?: string; id?: string } | null)?.id ||
-      "",
+    (user as { _id?: string; id?: string } | null)?._id || (user as { _id?: string; id?: string } | null)?.id || "",
   );
 
   const [selectedLocationId, setSelectedLocationId] = useState("");
@@ -50,22 +49,14 @@ export const ManagedLocations = () => {
       return false;
     }
 
-    const ownerId =
-      typeof owner === "string"
-        ? owner
-        : owner._id || (owner as { id?: string }).id || "";
+    const ownerId = typeof owner === "string" ? owner : owner._id || (owner as { id?: string }).id || "";
 
     return String(ownerId) === currentUserId;
   });
 
   const updateLocationMutation = useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdateLocationInput;
-    }) => locationsService.updateLocation(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateLocationInput }) =>
+      locationsService.updateLocation(id, payload),
     onSuccess: () => {
       setSuccess("Location updated successfully.");
       setError("");
@@ -79,11 +70,7 @@ export const ManagedLocations = () => {
         message?: string;
       };
       setSuccess("");
-      setError(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to update location.",
-      );
+      setError(error?.response?.data?.message || error?.message || "Failed to update location.");
     },
   });
 
@@ -110,11 +97,7 @@ export const ManagedLocations = () => {
         message?: string;
       };
       setSuccess("");
-      setError(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete location.",
-      );
+      setError(error?.response?.data?.message || error?.message || "Failed to delete location.");
     },
   });
 
@@ -134,8 +117,7 @@ export const ManagedLocations = () => {
       );
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
       }).addTo(mapRef.current);
 
@@ -158,9 +140,7 @@ export const ManagedLocations = () => {
             const data = await response.json();
             const addressData = data.address || {};
             setAddress(data.name || addressData.road || "");
-            setCity(
-              addressData.city || addressData.town || addressData.village || "",
-            );
+            setCity(addressData.city || addressData.town || addressData.village || "");
             setZip(addressData.postcode || "");
             setCountry(addressData.country || "");
           }
@@ -177,9 +157,7 @@ export const ManagedLocations = () => {
     if (hasCoords) {
       mapRef.current.setView([parsedLat, parsedLng], 13);
       if (!markerRef.current) {
-        markerRef.current = L.marker([parsedLat, parsedLng]).addTo(
-          mapRef.current,
-        );
+        markerRef.current = L.marker([parsedLat, parsedLng]).addTo(mapRef.current);
       } else {
         markerRef.current.setLatLng([parsedLat, parsedLng]);
       }
@@ -255,9 +233,7 @@ export const ManagedLocations = () => {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this location?",
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this location?");
     if (!confirmed) {
       return;
     }
@@ -267,24 +243,42 @@ export const ManagedLocations = () => {
     deleteLocationMutation.mutate(selectedLocationId);
   };
 
+  useEffect(() => {
+    if (!preselectedLocationId || locationsLoading) {
+      return;
+    }
+
+    if (selectedLocationId === preselectedLocationId) {
+      return;
+    }
+
+    const selectedLocation = ownedLocations.find((location) => (location.id || location._id) === preselectedLocationId);
+
+    if (!selectedLocation) {
+      return;
+    }
+
+    setSelectedLocationId(preselectedLocationId);
+    setName(selectedLocation.name || "");
+    setAddress(selectedLocation.address || "");
+    setCity(selectedLocation.city || "");
+    setZip(selectedLocation.zip || "");
+    setCountry(selectedLocation.country || "");
+    setLat(selectedLocation.geo.coordinates[1].toString());
+    setLng(selectedLocation.geo.coordinates[0].toString());
+    setError("");
+    setSuccess("");
+  }, [preselectedLocationId, locationsLoading, ownedLocations, selectedLocationId]);
+
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <Heading
-          title="Managed Locations"
-          subtitle="Select and edit your saved locations"
-        />
+        <Heading title="Managed Locations" subtitle="Select and edit your saved locations" />
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400">{error}</div>}
 
         {success && (
-          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
-            {success}
-          </div>
+          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">{success}</div>
         )}
 
         <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
