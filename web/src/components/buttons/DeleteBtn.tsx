@@ -15,7 +15,9 @@ export const DeleteBtn = ({ id, setItemToDelete, setShowModal }: DeleteBtnProps)
           setShowModal(true);
         }}
       >
-        <Trash2 className="h-6 w-6 text-white transition-colors duration-100 hover:text-red-500" />
+        <div className="btn-icon">
+          <Trash2 className="text-white transition-colors duration-100 hover:text-red-500" />
+        </div>
       </button>
     </>
   );
