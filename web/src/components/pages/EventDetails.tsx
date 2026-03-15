@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, MapPin, MapPinHouse, Share2, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Share2, Sparkles } from "lucide-react";
 import { eventsService, type EventListItem } from "../../services/eventsApi";
 import { ArtistCard } from "../artists/ArtistCard";
 import { GenresTag } from "../ui/GenresTag";

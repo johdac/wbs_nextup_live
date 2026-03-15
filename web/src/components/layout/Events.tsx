@@ -98,10 +98,7 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
   return (
     <section className=" ">
       <div className=" py-4 mb-10 ">
-        <div
-          className=" flex flex-col gap-4
-                lg:flex-row lg:items-end lg:gap-4"
-        >
+        <div className=" flex flex-col gap-4">
           {/* Date / Time Picker */}
           <div className="w-full lg:flex-1 mui-white-outline">
             <DateTimeInput value={dateTime} onChange={setDateTime} />

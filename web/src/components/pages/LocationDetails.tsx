@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { locationsService, type Location } from "../../services/locationsApi";
 import { Link } from "lucide-react";
 import { EventByLocation } from "../location/EventsByLocation";
+import { Kicker } from "../ui/Kicker";
 
 export const LocationDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,34 +44,36 @@ export const LocationDetails = () => {
   return (
     <div className="container mx-auto">
       <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="w-full max-w-8xl mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
-          <div className="w-full overflow-hidden rounded-lg border-0">
+          <div className="w-full overflow-hidden rounded-xl border-0 object-cover">
             <iframe
               src={mapEmbedUrl}
               width="100%"
-              height="260"
+              height="100%"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
           </div>
           {/* right */}
-          <div className="flex flex-col items-start gap-3">
-            <div className="grid">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase text-white">
-                {location.name}
-              </h1>
+          <div className="flex flex-col items-start">
+            <div className="pb-6">
+              <Kicker text="Location" />
+              <div className="flex flex-row gap-10 items-center pb-2">
+                <h1>{location.name}</h1>
+              </div>
             </div>
 
-            <div className="px-5 py-4 transition-all bg-gray-800/35">
-              {/* description */}
+            {/* description */}
+            <div>
               <p>{location.address}</p>
               <p>
                 {location.zip} {location.city}
               </p>
+              <p>{location.country}</p>
             </div>
-            <div>
+            <div className="py-5">
               <a
                 href={location.websiteUrl}
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
