@@ -6,7 +6,6 @@ import { Login } from "./components/pages/Login";
 import { SingleEventPage } from "./components/pages/SingleEventPage";
 import { SingleArtistPage } from "./components/pages/SingleArtistPage";
 import { CreateEvent } from "./components/pages/CreateEvent";
-import { ManagedLocations } from "./components/pages/ManagedLocations";
 import { ManagedEventsPage } from "./components/pages/ManagedEventsPage";
 import { ManagedArtistsPage } from "./components/pages/ManagedArtistsPage";
 import { SingleLocationPage } from "./components/pages/SingleLocationPage";
