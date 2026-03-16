@@ -1,4 +1,4 @@
-import { MapPin, MicVocal } from "lucide-react";
+import { MapPin, MicVocal, Music4 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { EventListItem } from "../../services/eventsApi";
@@ -24,17 +24,34 @@ const EventCard = ({
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md py-3  sm:py-5 px-0 transition-all bg-dark">
+    <div className="flex py-10 items-start lg:un-border-b text-white ">
       {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 mr-5 text-white shadow-xs w-20">
-        <span className="text-6xl font-black leading-none">{dayStr}</span>
-        {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">
+      <div className="bg-pink p-2 rounded-md text-black text-center w-18 mr-8">
+        <div className="text-5xl font-black leading-none">{dayStr}</div>
+        <div className="text-md font-bold uppercase tracking-wider">
           {monthStr}
-        </span>
+        </div>
       </div>
+
+      <div className="mr-10 w-1/3">
+        <Link to={`/event/${event.id}`}>
+          <h3 className="text-4xl font-bold text-yellow transition-colors hover:text-purple">
+            {event.title}
+          </h3>
+        </Link>
+        <Link to={`/location/${event.location.id}`}>
+          <div className="flex items-start leading-[1.4rem] hover:text-purple mt-1 text-[18px]">
+            <MapPin className="mr-1.5 mt-0.5 h-5 w-5 " />
+            <div>
+              {event.location.city ? `${event.location.city}, ` : ``}
+              {event.location.name}
+            </div>
+          </div>
+        </Link>
+      </div>
+
       {/* IMAGE WITH MOBILE DATE STICKER */}
-      <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
+      <div className="relative  h-25 aspect-4/3  rounded-md overflow-hidden mr-8">
         {event.mainImageUrl ? (
           <img
             src={event.mainImageUrl}
@@ -58,40 +75,34 @@ const EventCard = ({
           <span className="text-xs font-bold">{yearStr}</span>
         </div>
       </div>
+
       {/* TEXT INFO */}
-      <div className="flex flex-col gap-1 w-full sm:w-auto">
-        <Link to={`/event/${event.id}`}>
-          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple">
-            {event.title}
-          </h3>
-        </Link>
-        <div className="my-1.5 flex flex-wrap items-center gap-2">
-          <div className="text-white flex items-center">
-            {event.artists.map((artist) => {
+      <div className="flex gap-1 w-full sm:w-auto">
+        <div>
+          <Music4 className="mr-2 mt-1" />
+        </div>
+        <div className="">
+          <div className="flex items-center">
+            {event.artists.map((artist, index) => {
+              const isLast = index === event.artists.length - 1;
+
               return (
                 <div
                   key={artist.id}
-                  className="flex flex-row px-1 hover:text-purple hover:scale-105"
+                  className="flex flex-row mr-2 text-[18px] hover:text-purple"
                 >
-                  <MicVocal className="mr-1" />
                   <Link to={`/artist/${artist.id}`}>
-                    <p key={artist.id}>{artist.name}</p>
+                    {artist.name}
+                    {!isLast && ","}
                   </Link>
                 </div>
               );
             })}
           </div>
+          <div className="mt-1">
+            <GenresTag data={event} />
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
-          <span>{timeStr}</span>
-          <Link to={`/location/${event.location.id}`}>
-            <span className="flex items-center hover:text-purple hover:scale-105">
-              <MapPin className="mr-1 h-5 w-5 " />
-              {event.location.city}
-            </span>
-          </Link>
-        </div>
-        <GenresTag data={event} />
       </div>
 
       {/* ACTION BUTTONS */}
