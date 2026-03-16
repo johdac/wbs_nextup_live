@@ -1,5 +1,7 @@
 import { CalendarHeart } from "lucide-react";
 import type { EventListItem } from "../../services/eventsApi";
+import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 import {
   useDeleteEventRelation,
   useUpsertEventRelation,
@@ -16,6 +18,7 @@ export const FavoriteEventBtn = ({
   withText,
   ...props
 }: Props) => {
+  const { signedIn } = useAuth();
   const activeClass =
     event.interactionType === "favorite" ? "btn-icon-active" : "";
 
@@ -24,6 +27,9 @@ export const FavoriteEventBtn = ({
   const { mutate: deleteRelation } = useDeleteEventRelation();
 
   const handleClick = () => {
+    if (!signedIn) {
+      toast.error("Please log in first");
+    }
     if (event.interactionType === "favorite") {
       deleteRelation({
         id: event.id,
