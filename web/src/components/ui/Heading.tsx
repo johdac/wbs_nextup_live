@@ -23,7 +23,7 @@ export const Heading = ({
     <div className={["mb-8", containerClassName].join(" ").trim()}>
       <TitleTag
         className={[
-          "text-4xl font-black text-white mb-2",
+          "text-2xl md:text-4xl font-black text-white mb-2",
           titleClassName,
         ]
           .join(" ")
