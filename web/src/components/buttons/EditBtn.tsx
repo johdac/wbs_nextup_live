@@ -1,7 +1,13 @@
 import { Pencil } from "lucide-react";
 import { useNavigate } from "react-router";
 
-export const EditBtn = <T extends { id?: string; _id?: string }>({ data, path }: { data: T; path: string }) => {
+export const EditBtn = <T extends { id?: string; _id?: string }>({
+  data,
+  path,
+}: {
+  data: T;
+  path: string;
+}) => {
   const navigate = useNavigate();
   const id = data.id || data._id;
 
@@ -9,15 +15,14 @@ export const EditBtn = <T extends { id?: string; _id?: string }>({ data, path }:
 
   return (
     <button
+      className="flex group items-center"
       onClick={() =>
         navigate(`/${path}/${id}/edit`, {
           state: { data },
         })
       }
     >
-      <div className="btn-icon">
-        <Pencil />
-      </div>
+      <Pencil className="btn-icon" />
     </button>
   );
 };

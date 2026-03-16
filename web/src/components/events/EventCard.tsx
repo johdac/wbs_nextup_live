@@ -1,6 +1,7 @@
 import { MapPin, MicVocal } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
+import type { ReactNode } from "react";
 import type { EventListItem } from "../../services/eventsApi";
 import { GenresTag } from "../ui/GenresTag";
 import type { PlaylistItem } from "../../features/player/playerTypes";
@@ -10,10 +11,12 @@ import { FavoriteEventBtn } from "../buttons/FavoriteEventBtn";
 
 const EventCard = ({
   event,
-  index,
+  actionSlot,
+  showDefaultActions = true,
 }: {
   event: EventListItem;
-  index: number;
+  actionSlot?: ReactNode;
+  showDefaultActions?: boolean;
 }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
@@ -95,9 +98,14 @@ const EventCard = ({
       </div>
 
       {/* ACTION BUTTONS */}
-      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4">
-        <FavoriteEventBtn event={event} />
-        <PlayerTransports resources={mergedMusicResources} />
+      <div className="flex flex-col mt-2 sm:mt-0 sm:ml-auto gap-4">
+        {showDefaultActions && (
+          <div className="flex flex-row gap-4">
+            <FavoriteEventBtn event={event} />
+            <PlayerTransports resources={mergedMusicResources} />
+          </div>
+        )}
+        {actionSlot && <div>{actionSlot}</div>}
       </div>
     </div>
   );

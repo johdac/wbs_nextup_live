@@ -3,7 +3,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { Landing } from "./components/pages/Landing";
 import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
-import { EventDetails } from "./components/pages/EventDetails";
+import { SingleEventPage } from "./components/pages/SingleEventPage";
 import { ArtistDetails } from "./components/pages/ArtistDetails";
 import { CreateEvent } from "./components/pages/CreateEvent";
 import { ManagedLocations } from "./components/pages/ManagedLocations";
@@ -13,7 +13,6 @@ import { LocationDetails } from "./components/pages/LocationDetails";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserSetting } from "./components/pages/UserSetting";
 import { EditEvent } from "./components/pages/EditEvent";
-import { EventDetailsEdit } from "./components/pages/EventDetailsEdit";
 import { LocationDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
@@ -36,7 +35,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/event/:id",
-        element: <EventDetails></EventDetails>,
+        element: <SingleEventPage></SingleEventPage>,
       },
       {
         path: "/artist/:id",
@@ -85,10 +84,6 @@ export const router = createBrowserRouter([
             <ManagedEvents></ManagedEvents>
           </ProtectedRoute>
         ),
-      },
-      {
-        path: "/managed-events/:id",
-        element: <EventDetailsEdit></EventDetailsEdit>,
       },
       {
         path: "/managed-events/:id/edit",
