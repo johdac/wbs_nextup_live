@@ -21,6 +21,8 @@ interface EventInfoFormProps {
   EventMutation: {
     isPending: boolean;
   };
+  submitLabel?: string;
+  pendingLabel?: string;
 }
 
 export const EventInfoForm = ({
@@ -34,6 +36,8 @@ export const EventInfoForm = ({
   setEventMainImageFile,
   onCancel,
   EventMutation,
+  submitLabel = "Save Event",
+  pendingLabel = "Creating Event...",
 }: EventInfoFormProps) => {
   return (
     <div
@@ -134,7 +138,7 @@ export const EventInfoForm = ({
           className="flex-1"
           leftIcon={<Save className="h-5 w-5" />}
         >
-          {EventMutation.isPending ? "Creating Event..." : "Save Event"}
+          {EventMutation.isPending ? pendingLabel : submitLabel}
         </Button>
       </div>
     </div>

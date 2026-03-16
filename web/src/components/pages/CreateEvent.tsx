@@ -19,11 +19,18 @@ import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
 import { Heading } from "../ui/Heading";
+import { GoBackBtn } from "../buttons/GoBackBtn";
 
-export const CreateEvent = () => {
+interface CreateEventProps {
+  mode?: "create" | "edit";
+  eventId?: string;
+}
+
+export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
+  const isEditMode = mode === "edit";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { setValue, watch, getValues } = useForm<EventFormValues>({
+  const { setValue, watch, getValues, reset } = useForm<EventFormValues>({
     defaultValues: {
       title: "",
       description: "",
@@ -47,6 +54,58 @@ export const CreateEvent = () => {
       artistMusicUrls: [{ title: "", url: "" }],
     },
   });
+
+  const { data: eventFromServer, error: eventError } = useQuery({
+    queryKey: ["event", eventId],
+    queryFn: async () => {
+      if (!eventId) {
+        throw new Error("Missing event id");
+      }
+
+      return await eventsService.getEventById(eventId);
+    },
+    enabled: isEditMode && Boolean(eventId),
+  });
+
+  useEffect(() => {
+    if (!isEditMode || !eventFromServer) return;
+
+    reset({
+      title: eventFromServer.title ?? "",
+      description: eventFromServer.description ?? "",
+      startDate: eventFromServer.startDate ?? dayjs().toISOString(),
+      endDate: eventFromServer.endDate ?? dayjs().add(2, "hour").toISOString(),
+      selectedLocationId: eventFromServer.location?.id ?? "",
+      selectedArtistIds:
+        eventFromServer.artists
+          ?.map((artist) => artist.id || artist._id || "")
+          .filter(Boolean) ?? [],
+      isCreatingNewLocation: false,
+      locationName: eventFromServer.location?.name ?? "",
+      locationAddress: eventFromServer.location?.address ?? "",
+      locationCity: eventFromServer.location?.city ?? "",
+      locationZip: eventFromServer.location?.zip ?? "",
+      locationCountry: eventFromServer.location?.country ?? "",
+      locationLat:
+        eventFromServer.location?.geo?.coordinates?.[1]?.toString() ?? "",
+      locationLng:
+        eventFromServer.location?.geo?.coordinates?.[0]?.toString() ?? "",
+      isCreatingNewArtist: false,
+      artistName: "",
+      artistGenres: [],
+      artistDescription: "",
+      artistWebsiteUrl: "",
+      artistMusicUrls: [{ title: "", url: "" }],
+    });
+  }, [isEditMode, eventFromServer, reset]);
+
+  useEffect(() => {
+    if (!isEditMode || !eventError) {
+      return;
+    }
+
+    setError("Failed to load event");
+  }, [isEditMode, eventError]);
 
   // Form state
   const title = watch("title");
@@ -418,6 +477,34 @@ export const CreateEvent = () => {
         error?.response?.data?.message ||
           error?.message ||
           "Failed to create event",
+      );
+    },
+  });
+
+  const updateEventMutation = useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Parameters<typeof eventsService.updateEvent>[1];
+    }) => eventsService.updateEvent(id, payload),
+    onSuccess: () => {
+      setSuccess(true);
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      setTimeout(() => {
+        navigate("/managed-events");
+      }, 1500);
+    },
+    onError: (err: Error | unknown) => {
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update event",
       );
     },
   });
@@ -977,6 +1064,11 @@ export const CreateEvent = () => {
   const handleSubmit = async () => {
     setError("");
 
+    if (isEditMode && !eventId) {
+      setError("Missing event id");
+      return;
+    }
+
     // Validation
     if (!title.trim()) {
       setError("Event title is required");
@@ -1014,6 +1106,21 @@ export const CreateEvent = () => {
     let eventMainImageKey = undefined;
     if (eventMainImageFile)
       eventMainImageKey = await uploadFile(eventMainImageFile, "eventImage");
+
+    if (isEditMode) {
+      updateEventMutation.mutate({
+        id: eventId as string,
+        payload: {
+          title,
+          description,
+          locationId: selectedLocationId,
+          artistsIds: selectedArtistIds,
+          startDate: startDate?.toISOString() || "",
+          endDate: endDate?.toISOString() || "",
+        },
+      });
+      return;
+    }
 
     createEventMutation.mutate({
       title,
@@ -1199,21 +1306,31 @@ export const CreateEvent = () => {
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      <div className="hidden sm:block text-white">
-        <Link to="/">
-          <ArrowLeft></ArrowLeft>
-        </Link>
-      </div>
+      {isEditMode ? (
+        <GoBackBtn path="/managed-events" />
+      ) : (
+        <div className="hidden sm:block text-white">
+          <Link to="/">
+            <ArrowLeft></ArrowLeft>
+          </Link>
+        </div>
+      )}
       <div className="max-w-4xl mx-auto">
         <Heading
-          title="Create New Event"
-          subtitle="Fill in the details to create a new event"
+          title={isEditMode ? "Managed Events" : "Create New Event"}
+          subtitle={
+            isEditMode
+              ? "Edit your selected event"
+              : "Fill in the details to create a new event"
+          }
         />
 
         {/* Success Message */}
         {success && (
           <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
-            Event created successfully! Redirecting...
+            {isEditMode
+              ? "Event updated successfully! Redirecting..."
+              : "Event created successfully! Redirecting..."}
           </div>
         )}
 
@@ -1248,8 +1365,16 @@ export const CreateEvent = () => {
               setValue={setValue}
               setIsDateRangePickerOpen={setIsDateRangePickerOpen}
               setEventMainImageFile={setEventMainImageFile}
-              onCancel={() => navigate("/events")}
-              EventMutation={createEventMutation}
+              onCancel={() =>
+                navigate(isEditMode ? "/managed-events" : "/events")
+              }
+              EventMutation={
+                isEditMode ? updateEventMutation : createEventMutation
+              }
+              submitLabel={isEditMode ? "Save Changes" : "Save Event"}
+              pendingLabel={
+                isEditMode ? "Updating Event..." : "Creating Event..."
+              }
             />
           </div>
         </form>
