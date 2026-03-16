@@ -13,12 +13,12 @@ import { SingleLocationPage } from "./components/pages/SingleLocationPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserSetting } from "./components/pages/UserSetting";
 import { EditEvent } from "./components/pages/EditEvent";
-import { LocationDetailsEdit } from "./components/pages/LocationDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
 import { FavoritesPage } from "./components/pages/FavoritesPage";
 import { EventArchivePage } from "./components/pages/EventArchivePage";
 import { EditLocation } from "./components/pages/EditLocation";
+import { ManagedLocationsPage } from "./components/pages/ManagedLocationsPage";
 
 export const router = createBrowserRouter([
   {
@@ -88,7 +88,7 @@ export const router = createBrowserRouter([
         path: "/managed-locations/",
         element: (
           <ProtectedRoute>
-            <ManagedLocations></ManagedLocations>
+            <ManagedLocationsPage></ManagedLocationsPage>
           </ProtectedRoute>
         ),
       },
@@ -97,14 +97,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <EditLocation></EditLocation>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/managed-locations/:id",
-        element: (
-          <ProtectedRoute>
-            <LocationDetailsEdit></LocationDetailsEdit>
           </ProtectedRoute>
         ),
       },
