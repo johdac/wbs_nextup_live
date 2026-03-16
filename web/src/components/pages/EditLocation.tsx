@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Trash2 } from "lucide-react";
+// import { Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import L from "leaflet";
@@ -111,36 +111,36 @@ export const EditLocation = ({
     },
   });
 
-  const deleteLocationMutation = useMutation({
-    mutationFn: (id: string) => locationsService.deleteLocation(id),
-    onSuccess: () => {
-      setSuccess("Location deleted successfully.");
-      setError("");
-      setSelectedLocationId("");
-      setName("");
-      setAddress("");
-      setCity("");
-      setZip("");
-      setCountry("");
-      setLat("");
-      setLng("");
-      queryClient.invalidateQueries({
-        queryKey: ["managedLocations", currentUserId],
-      });
-    },
-    onError: (err: Error | unknown) => {
-      const error = err as {
-        response?: { data?: { message?: string } };
-        message?: string;
-      };
-      setSuccess("");
-      setError(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to delete location.",
-      );
-    },
-  });
+  // const deleteLocationMutation = useMutation({
+  //   mutationFn: (id: string) => locationsService.deleteLocation(id),
+  //   onSuccess: () => {
+  //     setSuccess("Location deleted successfully.");
+  //     setError("");
+  //     setSelectedLocationId("");
+  //     setName("");
+  //     setAddress("");
+  //     setCity("");
+  //     setZip("");
+  //     setCountry("");
+  //     setLat("");
+  //     setLng("");
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["managedLocations", currentUserId],
+  //     });
+  //   },
+  //   onError: (err: Error | unknown) => {
+  //     const error = err as {
+  //       response?: { data?: { message?: string } };
+  //       message?: string;
+  //     };
+  //     setSuccess("");
+  //     setError(
+  //       error?.response?.data?.message ||
+  //         error?.message ||
+  //         "Failed to delete location.",
+  //     );
+  //   },
+  // });
 
   useEffect(() => {
     if (!success) {
@@ -233,23 +233,23 @@ export const EditLocation = ({
     });
   };
 
-  const handleDelete = () => {
-    if (!selectedLocationId) {
-      setError("Please select a location.");
-      return;
-    }
+  // const handleDelete = () => {
+  //   if (!selectedLocationId) {
+  //     setError("Please select a location.");
+  //     return;
+  //   }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this location?",
-    );
-    if (!confirmed) {
-      return;
-    }
+  //   const confirmed = window.confirm(
+  //     "Are you sure you want to delete this location?",
+  //   );
+  //   if (!confirmed) {
+  //     return;
+  //   }
 
-    setError("");
-    setSuccess("");
-    deleteLocationMutation.mutate(selectedLocationId);
-  };
+  //   setError("");
+  //   setSuccess("");
+  //   deleteLocationMutation.mutate(selectedLocationId);
+  // };
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     const { lat: clickLat, lng: clickLng } = e.latlng;
