@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
 import { Link } from "lucide-react";
@@ -7,9 +7,18 @@ import { EventByArtist } from "../artists/EventsByArtist";
 import { GenresTag } from "../ui/GenresTag";
 import { PlayBtn } from "../buttons/PlayBtn";
 import { Kicker } from "../ui/Kicker";
+import { GoBackBtn } from "../buttons/GoBackBtn";
+import { EditBtn } from "../buttons/EditBtn";
+import { DeleteBtn } from "../buttons/DeleteBtn";
+import { useAuth } from "../../context/AuthContext";
+import { ConfirmModal } from "../layout/ConfirmModal";
 
-export const ArtistDetails = () => {
+export const SingleArtistPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { signedIn, user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState("");
 
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,9 +53,46 @@ export const ArtistDetails = () => {
   if (error) return <p>{error}</p>;
   if (!artist) return <p>Artist not found</p>;
 
+  const artistOwnerId =
+    artist.organizerId ||
+    (typeof artist.createdById === "string"
+      ? artist.createdById
+      : artist.createdById?._id || "");
+  const isOwner = signedIn && Boolean(user?._id) && user?._id === artistOwnerId;
+
+  const handleDelete = async () => {
+    if (!isOwner) return;
+    if (!itemToDelete) return;
+
+    try {
+      await artistsService.deleteArtist(itemToDelete);
+      navigate("/managed-artists");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setShowModal(false);
+      setItemToDelete("");
+    }
+  };
+
   return (
     <div className="container mx-auto">
-      <div className="pb-5 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
+      {isOwner && (
+        <div className="pb-10 flex flex-row justify-between items-center">
+          <div className="text-white">
+            <GoBackBtn path="/managed-artists" />
+          </div>
+          <div className="mt-4 flex items-center justify-end gap-3">
+            <EditBtn data={artist} path="managed-artists" />
+            <DeleteBtn
+              id={artist.id || artist._id || ""}
+              setItemToDelete={setItemToDelete}
+              setShowModal={setShowModal}
+            />
+          </div>
+        </div>
+      )}
+      <div className="pb-20 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
 
@@ -93,6 +139,14 @@ export const ArtistDetails = () => {
             </div>
           </div>
         </div>
+        {isOwner && (
+          <ConfirmModal
+            name="artist"
+            handleDelete={handleDelete}
+            showModal={showModal}
+            setShowModal={setShowModal}
+          />
+        )}
       </div>
       <EventByArtist artistId={artist.id || artist._id || ""} />
     </div>

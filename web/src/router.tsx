@@ -4,17 +4,16 @@ import { Landing } from "./components/pages/Landing";
 import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
 import { SingleEventPage } from "./components/pages/SingleEventPage";
-import { ArtistDetails } from "./components/pages/ArtistDetails";
+import { SingleArtistPage } from "./components/pages/SingleArtistPage";
 import { CreateEvent } from "./components/pages/CreateEvent";
 import { ManagedLocations } from "./components/pages/ManagedLocations";
 import { ManagedEventsPage } from "./components/pages/ManagedEventsPage";
-import { ManagedArtists } from "./components/pages/ManagedArtists";
+import { ManagedArtistsPage } from "./components/pages/ManagedArtistsPage";
 import { LocationDetails } from "./components/pages/LocationDetails";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserSetting } from "./components/pages/UserSetting";
 import { EditEvent } from "./components/pages/EditEvent";
 import { LocationDetailsEdit } from "./components/pages/LocationDetailsEdit";
-import { ArtistDetailsEdit } from "./components/pages/ArtistDetailsEdit";
 import { EditArtist } from "./components/pages/EditArtist";
 import NotFound from "./components/pages/notFound";
 import { FavoritesPage } from "./components/pages/FavoritesPage";
@@ -39,7 +38,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/artist/:id",
-        element: <ArtistDetails></ArtistDetails>,
+        element: <SingleArtistPage></SingleArtistPage>,
       },
       {
         path: "/location/:id",
@@ -50,6 +49,38 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <CreateEvent></CreateEvent>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-events",
+        element: (
+          <ProtectedRoute>
+            <ManagedEventsPage></ManagedEventsPage>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-events/:id/edit",
+        element: (
+          <ProtectedRoute>
+            <EditEvent></EditEvent>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-artists",
+        element: (
+          <ProtectedRoute>
+            <ManagedArtistsPage></ManagedArtistsPage>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/managed-artists/:id/edit",
+        element: (
+          <ProtectedRoute>
+            <EditArtist></EditArtist>
           </ProtectedRoute>
         ),
       },
@@ -74,46 +105,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <LocationDetailsEdit></LocationDetailsEdit>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/managed-events",
-        element: (
-          <ProtectedRoute>
-            <ManagedEventsPage></ManagedEventsPage>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/managed-events/:id/edit",
-        element: (
-          <ProtectedRoute>
-            <EditEvent></EditEvent>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/managed-artists",
-        element: (
-          <ProtectedRoute>
-            <ManagedArtists></ManagedArtists>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/managed-artists/:id",
-        element: (
-          <ProtectedRoute>
-            <ArtistDetailsEdit></ArtistDetailsEdit>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/managed-artists/:id/edit",
-        element: (
-          <ProtectedRoute>
-            <EditArtist></EditArtist>
           </ProtectedRoute>
         ),
       },

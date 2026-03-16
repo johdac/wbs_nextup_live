@@ -28,8 +28,8 @@ export const EventByArtist = ({ artistId }: { artistId: string | any }) => {
           </div>
         )}
         {!isLoading && eventsList.length > 0
-          ? eventsList.map((event: EventListItem, index: number) => {
-              return <EventCard key={event.id} event={event} index={index} />;
+          ? eventsList.map((event: EventListItem) => {
+              return <EventCard key={event.id} event={event} />;
             })
           : !isLoading && (
               <p className="py-12 text-center font-display text-lg text-white">

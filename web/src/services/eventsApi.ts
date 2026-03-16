@@ -162,6 +162,7 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
           imageUrl: "/placeholder.svg",
           websiteUrl: artist.websiteUrl || "",
           musicResources: artist.musicResources,
+          organizerId: artist.organizerId || "",
         };
       }) || [],
     genres: event.genres || "Unknown",

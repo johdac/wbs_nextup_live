@@ -1,4 +1,4 @@
-import EventList from "../layout/EventList";
+import EventList from "../events/EventList";
 
 export const FavoritesPage = () => {
   return (

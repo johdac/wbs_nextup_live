@@ -1,6 +1,5 @@
 import EventCard from "../events/EventCard";
 import { useState } from "react";
-import DateTimeInput from "./DateTimeInput";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate, useSearchParams, useLocation } from "react-router";
@@ -10,6 +9,7 @@ import { Pagination } from "@mui/material";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
 import { PlayerTransports } from "../../features/player/PlayerTransports";
+import DateTimeInput from "../layout/DateTimeInput";
 
 const ROOT_ITEMS_PER_PAGE = 10;
 const EVENTS_ITEMS_PER_PAGE = 20;
