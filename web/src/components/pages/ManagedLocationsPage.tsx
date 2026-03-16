@@ -55,7 +55,7 @@ export const ManagedLocationsPage = () => {
             title="Managed Locations"
             subtitle="Update your saved locations"
           />
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 lg:gap-10">
             {isLoading ? (
               <div className="py-12 text-center font-display text-lg text-white">
                 Loading locations...

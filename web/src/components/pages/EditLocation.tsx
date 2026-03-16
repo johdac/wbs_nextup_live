@@ -382,6 +382,7 @@ export const EditLocation = ({
             {success}
           </div>
         )}
+
         {/* Mingshen: we might not need a delete button here. If users want to delete the location, they would delete it before coming to editpage */}
         {/* <div className="mb-4 flex justify-end">
           <button

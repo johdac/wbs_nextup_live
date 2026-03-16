@@ -3,7 +3,12 @@ import { useNavigate, useParams } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { AlertCircle } from "lucide-react";
-import { artistsService, type Artist, type CreateArtistInput, type UpdateArtistInput } from "../../services/artistsApi";
+import {
+  artistsService,
+  type Artist,
+  type CreateArtistInput,
+  type UpdateArtistInput,
+} from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
 import { EventFormContext } from "../../context/EventFormContext";
 import { GoBackBtn } from "../buttons/GoBackBtn";
@@ -53,9 +58,13 @@ export const EditArtist = () => {
     genres: string[];
     musicResources: { title: string; url: string }[];
   } | null>(null);
-  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<string | null>(null);
+  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<
+    string | null
+  >(null);
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
-  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<string | undefined>(undefined);
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<
+    string | undefined
+  >(undefined);
 
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
     queryKey: ["artists"],
@@ -98,7 +107,9 @@ export const EditArtist = () => {
 
   const updateArtistMutation = useMutation({
     mutationFn: (data: UpdateArtistInput) =>
-      editingArtistId ? artistsService.updateArtist(editingArtistId, data) : Promise.reject("No artist id"),
+      editingArtistId
+        ? artistsService.updateArtist(editingArtistId, data)
+        : Promise.reject("No artist id"),
     onSuccess: (updatedArtist) => {
       setSuccess(true);
       queryClient.invalidateQueries({ queryKey: ["artists"] });
@@ -119,8 +130,15 @@ export const EditArtist = () => {
       }, 1500);
     },
     onError: (err: Error | unknown) => {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error?.response?.data?.message || error?.message || "Failed to update artist");
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update artist",
+      );
     },
   });
 
@@ -146,8 +164,15 @@ export const EditArtist = () => {
       }, 1500);
     },
     onError: (err: Error | unknown) => {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error?.response?.data?.message || error?.message || "Failed to create artist");
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to create artist",
+      );
     },
   });
 
@@ -166,7 +191,10 @@ export const EditArtist = () => {
 
     const musicResources = artistMusicUrls
       .filter((item) => item.url.trim())
-      .map((item) => ({ url: item.url.trim(), title: item.title.trim() || "YouTube" }));
+      .map((item) => ({
+        url: item.url.trim(),
+        title: item.title.trim() || "YouTube",
+      }));
 
     const payload: UpdateArtistInput = {
       name: artistName,
@@ -186,7 +214,8 @@ export const EditArtist = () => {
           genres: artistGenres,
           description: artistDescription || undefined,
           websiteUrl: artistWebsiteUrl || undefined,
-          musicResources: musicResources.length > 0 ? musicResources : undefined,
+          musicResources:
+            musicResources.length > 0 ? musicResources : undefined,
         };
         await createArtistMutation.mutateAsync(createPayload);
       }
@@ -196,7 +225,9 @@ export const EditArtist = () => {
   };
 
   const handleLoadArtistForEdit = (artistId: string) => {
-    const target = artists.find((a) => String(a.id || a._id || "") === String(artistId));
+    const target = artists.find(
+      (a) => String(a.id || a._id || "") === String(artistId),
+    );
     if (!target) return;
 
     populateArtistForm(target);
@@ -219,7 +250,10 @@ export const EditArtist = () => {
 
   const handleToggleGenre = (genre: string) => {
     const prev = getValues("artistGenres");
-    setValue("artistGenres", prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]);
+    setValue(
+      "artistGenres",
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre],
+    );
   };
 
   const handleAddMusicUrl = () => {
@@ -235,7 +269,11 @@ export const EditArtist = () => {
     );
   };
 
-  const handleMusicUrlChange = (index: number, field: "title" | "url", value: string) => {
+  const handleMusicUrlChange = (
+    index: number,
+    field: "title" | "url",
+    value: string,
+  ) => {
     const prev = getValues("artistMusicUrls");
     const next = [...prev];
     next[index] = {
@@ -322,8 +360,10 @@ export const EditArtist = () => {
     },
     onArtistNameChange: (value: string) => setValue("artistName", value),
     onArtistGenreToggle: handleToggleGenre,
-    onArtistDescriptionChange: (value: string) => setValue("artistDescription", value),
-    onArtistWebsiteUrlChange: (value: string) => setValue("artistWebsiteUrl", value),
+    onArtistDescriptionChange: (value: string) =>
+      setValue("artistDescription", value),
+    onArtistWebsiteUrlChange: (value: string) =>
+      setValue("artistWebsiteUrl", value),
     onArtistMusicUrlChange: handleMusicUrlChange,
     onAddArtistMusicUrl: handleAddMusicUrl,
     onRemoveArtistMusicUrl: handleRemoveMusicUrl,
@@ -367,7 +407,9 @@ export const EditArtist = () => {
   };
 
   if (!isAuthorized) {
-    return <div className="text-red-500">You are not authorized to edit artists</div>;
+    return (
+      <div className="text-red-500">You are not authorized to edit artists</div>
+    );
   }
 
   return (
@@ -387,7 +429,7 @@ export const EditArtist = () => {
 
       {success && (
         <div className="mb-4 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-100">
-          Artist updated successfully! Redirecting...
+          Artist updated successfully!
         </div>
       )}
 
