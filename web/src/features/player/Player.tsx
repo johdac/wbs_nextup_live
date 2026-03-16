@@ -5,6 +5,7 @@ import { usePlayer } from "../../features/player/PlayerContext";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import Marquee from "react-fast-marquee";
+import { FavoriteEventBtn } from "../../components/buttons/FavoriteEventBtn";
 
 export const Player = () => {
   // We manage the player state in context and get it here
@@ -127,66 +128,71 @@ export const Player = () => {
 
   return (
     <div className="w-full fixed bottom-0 z-990">
-      <div className="w-full container flex justify-end">
+      <div className="w-full sm:container flex justify-end">
         {playlist.length > 0 && (
-          <div className="bg-gradient-to-r from-pink to-yellow h-20 rounded-t-2xl px-4 w-3xl flex">
-            {/* Controls */}
-            <div className="flex items-center justify-center gap-1 mr-5 py-2">
-              <button
-                onClick={playPrev}
-                disabled={!canGoPrev}
-                className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
-              >
-                <SkipBack size={16} />
-              </button>
+          <div className="bg-linear-to-r from-pink to-yellow h-20 sm:rounded-t-2xl px-2 sm:px-4 w-162.5  overflow-hidden flex flex-wrap sm:flex-nowrap">
+            <div className="flex flex-col justify-end xs:flex-row">
+              {/* Controls */}
+              <div className="order-2 sm:order-0 flex items-center justify-center gap-1 xs:mx-2 sm:mr-5 py-2">
+                <button
+                  onClick={playPrev}
+                  disabled={!canGoPrev}
+                  className="p-2 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
+                >
+                  <SkipBack className="w-4 h-4" />
+                </button>
 
-              <button
-                onClick={togglePlayPause}
-                className="p-4 btn-default rounded-full text-white transition"
-              >
-                {playerState === "playing" ? (
-                  <Pause size={20} />
-                ) : (
-                  <Play size={20} />
+                <button
+                  onClick={togglePlayPause}
+                  className="p-2 btn-default rounded-full text-white transition"
+                >
+                  {playerState === "playing" ? (
+                    <Pause className="w-6 h-6" />
+                  ) : (
+                    <Play className="w-6 h-6" />
+                  )}
+                </button>
+
+                <button
+                  onClick={playNext}
+                  disabled={!canGoNext}
+                  className="p-2 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
+                >
+                  <SkipForward className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* iFrame */}
+              <div className="w-40 sm:w-3xs order-0 overflow-hidden shrink-0 ">
+                {currentSong && (
+                  <iframe
+                    ref={iframeRef}
+                    src={`${currentSong.song.embedUrl}?${playerStateId}`}
+                    className="w-40 sm:w-3xs aspect-video absolute bottom-14 xs:bottom-2 rounded-lg "
+                    style={{
+                      boxShadow: "rgb(255 191 81 / 20%) 0px 0px 20px 5px",
+                    }}
+                    title="Embedded player"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                  />
                 )}
-              </button>
-
-              <button
-                onClick={playNext}
-                disabled={!canGoNext}
-                className="p-3 btn-default rounded-full disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
-              >
-                <SkipForward size={16} />
-              </button>
-            </div>
-
-            {/* iFrame */}
-            <div className="w-3xs overflow-hidden ">
-              {currentSong && (
-                <iframe
-                  ref={iframeRef}
-                  src={`${currentSong.song.embedUrl}?${playerStateId}`}
-                  className="w-3xs aspect-video absolute bottom-2 rounded-lg "
-                  style={{
-                    boxShadow: "rgb(255 191 81 / 20%) 0px 0px 20px 5px",
-                  }}
-                  title="Embedded player"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                />
-              )}
+              </div>
             </div>
 
             {/* Song Info */}
-            <div className="w-44  py-1.5">
+            <div className="flex-1 order-5 overflow-hidden py-1.5">
               <p className="pl-3 text-xs mt-1">
                 Now Playing {currentIndex + 1} / {playlist.length}
               </p>
               {currentSong && (
-                <div className="text-md font-bold mb-0.5 ">
+                <div className="text-md font-bold mb-0.5 overflow-hidden">
                   <div className="relative">
-                    <div className="marqueeGradient"></div>
-                    <Marquee speed={20} delay={5} className="pl-3">
+                    <Marquee
+                      speed={20}
+                      delay={5}
+                      className="pl-3 marqueeGradient"
+                    >
                       <span className="mr-20">
                         {currentSong?.song.artist.name} –{" "}
                         {currentSong?.song.title}
@@ -195,28 +201,32 @@ export const Player = () => {
                   </div>
                 </div>
               )}
-              <div className="text-sm mb-0.25 ">
+              <div className="text-sm mb-px ">
                 {currentSong?.event && (
                   <>
                     <Link to={`/event/${currentSong.event.id}`}>
                       <div className="flex">
-                        <div>
-                          <Chip
-                            className={"ml-3 whitespace-nowrap"}
-                            string={format(
-                              new Date(currentSong.event.start),
-                              "dd MMM",
-                            )}
-                          />
-                        </div>
-                        <div className="relative w-27">
+                        <Chip
+                          className={"ml-3 whitespace-nowrap"}
+                          string={format(
+                            new Date(currentSong.event.start),
+                            "dd MMM",
+                          )}
+                        />
+                        <div className="relative flex-1 overflow-hidden">
                           <div className="marqueeGradient"></div>
-                          <Marquee speed={20} delay={5} className="pl-2">
-                            <span className="mr-20">
-                              {currentSong.event.location.city},{" "}
-                              {currentSong.event.location.name}
-                            </span>
-                          </Marquee>
+                          <div>
+                            <Marquee
+                              speed={20}
+                              delay={5}
+                              className="pl-2 marqueeGradient"
+                            >
+                              <span className="mr-20">
+                                {currentSong.event.location.city},{" "}
+                                {currentSong.event.location.name}
+                              </span>
+                            </Marquee>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -226,7 +236,16 @@ export const Player = () => {
             </div>
 
             {/* Actions */}
-            <div></div>
+            {/* Johannes: Implement after presentation */}
+            {/* <div>
+              {" "}
+              <FavoriteEventBtn
+                eventId={currentSong.event.id}
+                interactionType={currentSong.event.interactionType}
+                className="mr-4"
+                withText={false}
+              />
+            </div> */}
           </div>
         )}
       </div>

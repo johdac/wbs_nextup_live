@@ -147,7 +147,8 @@ export const SingleEventPage = () => {
           <aside className="order-1 md:order-2 md:un-border-l basis-full md:basis-70 lg:basis-100 shrink-0">
             <div className="flex gap-4 items-center un-border-b un-box-t-padding md:un-box-l-padding un-box-b-padding w-full -mt-1">
               <FavoriteEventBtn
-                event={event}
+                eventId={event.id}
+                interactionType={event.interactionType}
                 className="mr-4"
                 withText={true}
               />

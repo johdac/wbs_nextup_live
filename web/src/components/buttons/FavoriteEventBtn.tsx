@@ -1,5 +1,4 @@
 import { CalendarHeart } from "lucide-react";
-import type { EventListItem } from "../../services/eventsApi";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -9,18 +8,19 @@ import {
 
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   withText?: boolean;
-  event: EventListItem;
+  interactionType: "hidden" | "favorite";
+  eventId: string;
 };
 
 export const FavoriteEventBtn = ({
-  event,
+  interactionType,
+  eventId,
   className,
   withText,
   ...props
 }: Props) => {
   const { signedIn } = useAuth();
-  const activeClass =
-    event.interactionType === "favorite" ? "btn-icon-active" : "";
+  const activeClass = interactionType === "favorite" ? "btn-icon-active" : "";
 
   // Handling button clicks with react query hooks
   const { mutate: upsertRelation } = useUpsertEventRelation();
@@ -30,13 +30,13 @@ export const FavoriteEventBtn = ({
     if (!signedIn) {
       toast.error("Please log in first");
     }
-    if (event.interactionType === "favorite") {
+    if (interactionType === "favorite") {
       deleteRelation({
-        id: event.id,
+        id: eventId,
       });
     } else {
       upsertRelation({
-        id: event.id,
+        id: eventId,
         data: { interactionType: "favorite" },
       });
     }
@@ -54,7 +54,7 @@ export const FavoriteEventBtn = ({
         />
         {withText && (
           <div className="btn-default px-4 py-2">
-            {event.interactionType === "favorite"
+            {interactionType === "favorite"
               ? "Remove from favorites"
               : "Add event to favorites"}
           </div>

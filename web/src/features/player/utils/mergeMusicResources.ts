@@ -33,7 +33,7 @@ export const mergeMusicResources = (
               city: event.location.city,
             },
             start: event.startDate,
-            favoritedEvent: false,
+            interactionType: event.interactionType,
           },
         };
         mergedMusicResources.push(obj);
