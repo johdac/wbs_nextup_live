@@ -5,7 +5,7 @@ import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 import { GoBackBtn } from "../buttons/GoBackBtn";
 import { EditBtn } from "../buttons/EditBtn";
-import { LocationDetails } from "./LocationDetails";
+import { SingleLocationPage } from "./SingleLocationPage";
 
 export const LocationDetailsEdit = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,11 +66,20 @@ export const LocationDetailsEdit = () => {
         <div className="flex mt-2 sm:mt-0 gap-3 justify-end">
           {/* error to be solved */}
           <EditBtn data={location} path="managed-locations" />
-          <DeleteBtn id={location.id || ""} setItemToDelete={setItemToDelete} setShowModal={setShowModal} />
-          <ConfirmModal name="artist" handleDelete={handleDelete} showModal={showModal} setShowModal={setShowModal} />
+          <DeleteBtn
+            id={location.id || ""}
+            setItemToDelete={setItemToDelete}
+            setShowModal={setShowModal}
+          />
+          <ConfirmModal
+            name="artist"
+            handleDelete={handleDelete}
+            showModal={showModal}
+            setShowModal={setShowModal}
+          />
         </div>
       </div>
-      <LocationDetails />
+      <SingleLocationPage />
     </div>
   );
 };

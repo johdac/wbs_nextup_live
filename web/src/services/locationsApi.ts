@@ -23,12 +23,16 @@ export interface Location {
   country?: string;
   description?: string;
   websiteUrl?: string;
-  createdById?: {
-    _id: string;
-    username: string;
-  };
+  createdById?:
+    | string
+    | {
+        _id?: string;
+        id?: string;
+        username: string;
+      };
   createdAt?: string;
   updatedAt?: string;
+  organizerId?: string;
 }
 
 export interface CreateLocationInput {
@@ -55,7 +59,9 @@ export const locationsService = {
     const { data } = await eventsApi.get<Location>(`/locations/${id}`);
     return data;
   },
-  createLocation: async (locationData: CreateLocationInput): Promise<Location> => {
+  createLocation: async (
+    locationData: CreateLocationInput,
+  ): Promise<Location> => {
     const { data } = await eventsApi.post<Location>("/locations", locationData);
     return data;
   },

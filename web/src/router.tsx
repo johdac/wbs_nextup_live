@@ -9,7 +9,7 @@ import { CreateEvent } from "./components/pages/CreateEvent";
 import { ManagedLocations } from "./components/pages/ManagedLocations";
 import { ManagedEventsPage } from "./components/pages/ManagedEventsPage";
 import { ManagedArtistsPage } from "./components/pages/ManagedArtistsPage";
-import { LocationDetails } from "./components/pages/LocationDetails";
+import { SingleLocationPage } from "./components/pages/SingleLocationPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserSetting } from "./components/pages/UserSetting";
 import { EditEvent } from "./components/pages/EditEvent";
@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/location/:id",
-        element: <LocationDetails></LocationDetails>,
+        element: <SingleLocationPage></SingleLocationPage>,
       },
       {
         path: "/create",

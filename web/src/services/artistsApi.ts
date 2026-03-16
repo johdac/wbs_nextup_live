@@ -20,7 +20,7 @@ export interface Artist {
   };
   createdAt?: string;
   updatedAt?: string;
-  organizerId: string;
+  organizerId?: string;
 }
 
 export interface CreateArtistInput {

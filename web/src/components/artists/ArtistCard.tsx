@@ -40,11 +40,11 @@ export const ArtistCard = ({
         <div className="flex gap-2">
           <div className="gap-1">
             <Link to={`/artist/${artistId}`}>
-              <h3 className="text-white transition-colors duration-100 hover:text-purple cursor-pointer">
+              <h3 className="text-white text-xl transition-colors duration-100 hover:text-purple cursor-pointer">
                 {artist.name}
               </h3>
               <div
-                className="text-base text-gray line-clamp-2"
+                className="text-md text-gray line-clamp-2"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(artist.description || ""),
                 }}
