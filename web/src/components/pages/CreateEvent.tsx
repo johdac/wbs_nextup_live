@@ -1199,7 +1199,7 @@ export const CreateEvent = () => {
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      <div className="text-white">
+      <div className="hidden sm:block text-white">
         <Link to="/">
           <ArrowLeft></ArrowLeft>
         </Link>
