@@ -1,6 +1,5 @@
 import { useParams } from "react-router";
 import { locationsService } from "../../services/locationsApi";
-import type { Location as AppLocation } from "../../services/locationsApi";
 import { GoBackBtn } from "../buttons/GoBackBtn";
 import { ManagedLocations } from "./ManagedLocations";
 import { useEffect, useState } from "react";
@@ -8,12 +7,13 @@ import { useEffect, useState } from "react";
 export const EditLocation = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [location, setLocation] = useState<AppLocation | null>(null);
+  const [preselectedLocationId, setPreselectedLocationId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!id) {
       setError("Missing location id");
       setLoading(false);
@@ -25,27 +25,46 @@ export const EditLocation = () => {
         setLoading(true);
         setError(null);
         const data = await locationsService.getLocationById(id);
-        setLocation(data);
+        if (!isMounted) {
+          return;
+        }
+
+        setPreselectedLocationId(String(data.id || data._id || id));
       } catch (err) {
+        if (!isMounted) {
+          return;
+        }
+
         setError("Failed to load location");
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchLocation();
-  }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!location) return <p>Location not found</p>;
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   return (
     <div className="container mx-auto pb-10">
       <div className="flex justify-between">
-        <GoBackBtn path="/managed-events" />
+        <GoBackBtn path="/managed-locations" />
       </div>
-      <ManagedLocations preselectedLocationId={location.id || location._id || ""} />
+
+      {loading ? (
+        <p className="py-8 text-center text-white">Loading...</p>
+      ) : error ? (
+        <p className="py-8 text-center text-red-400">{error}</p>
+      ) : preselectedLocationId ? (
+        <ManagedLocations preselectedLocationId={preselectedLocationId} />
+      ) : (
+        <p className="py-8 text-center text-white">Location not found</p>
+      )}
     </div>
   );
 };
