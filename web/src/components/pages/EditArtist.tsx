@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { AlertCircle } from "lucide-react";
 import { artistsService, type Artist, type CreateArtistInput, type UpdateArtistInput } from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
-import { ArtistForm } from "../artists/ArtistForm";
 import { EventFormContext } from "../../context/EventFormContext";
 import { GoBackBtn } from "../buttons/GoBackBtn";
+import { ArtistLayout } from "../layout/ArtistLayout";
 
 type ArtistMusicUrl = { title: string; url: string };
 
@@ -354,6 +354,14 @@ export const EditArtist = () => {
     onCancelArtistEdit: () => {
       setEditingArtistId(null);
       setShowSavedArtistPreview(false);
+      setValue("artistName", "");
+      setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
+      setArtistMainImagePreviewUrl(undefined);
+      setError("");
+      setSuccess(false);
     },
     onCreateArtist: handleSave,
   };
@@ -384,43 +392,7 @@ export const EditArtist = () => {
       )}
 
       <EventFormContext.Provider value={eventFormContextValue}>
-        <div className="mb-6 rounded-lg border border-purple-500/30 bg-purple/30 p-6 backdrop-blur-sm">
-          <ArtistForm
-            artistName={artistName}
-            artistDescription={artistDescription}
-            artistWebsiteUrl={artistWebsiteUrl}
-            artistGenres={artistGenres}
-            artistMusicUrls={artistMusicUrls}
-            artistMainImagePreviewUrl={artistMainImagePreviewUrl}
-            genres={["Jazz", "Rock", "Pop", "Hip Hop", "Electronic", "Classical"]}
-            artistNameError={!artistName.trim() ? "Artist name is required" : ""}
-            isSaving={isSaving}
-            saveLabel={editingArtistId ? "Update Artist" : "Save Artist"}
-            onArtistNameChange={(value) => {
-              setValue("artistName", value);
-              if (error) setError("");
-            }}
-            onArtistDescriptionChange={(value) => setValue("artistDescription", value)}
-            onArtistWebsiteUrlChange={(value) => setValue("artistWebsiteUrl", value)}
-            onArtistGenreToggle={handleToggleGenre}
-            onArtistMusicUrlChange={handleMusicUrlChange}
-            onAddArtistMusicUrl={handleAddMusicUrl}
-            onRemoveArtistMusicUrl={handleRemoveMusicUrl}
-            onArtistMainImageFileChange={handleArtistMainImageFileChange}
-            onCancel={() => {
-              setEditingArtistId(null);
-              setValue("artistName", "");
-              setValue("artistGenres", []);
-              setValue("artistDescription", "");
-              setValue("artistWebsiteUrl", "");
-              setValue("artistMusicUrls", [{ title: "", url: "" }]);
-              setArtistMainImagePreviewUrl(undefined);
-              setError("");
-              setSuccess(false);
-            }}
-            onSave={handleSave}
-          />
-        </div>
+        <ArtistLayout mode="standalone" />
       </EventFormContext.Provider>
     </div>
   );

@@ -12,7 +12,12 @@ import "leaflet/dist/leaflet.css";
 const DEFAULT_CREATE_MAP_CENTER: L.LatLngTuple = [52.52, 13.405];
 const DEFAULT_CREATE_MAP_ZOOM = 5;
 
-export const LocationLayout = () => {
+type LocationLayoutProps = {
+  mode?: "event" | "standalone";
+};
+
+export const LocationLayout = ({ mode = "event" }: LocationLayoutProps) => {
+  const isStandalone = mode === "standalone";
   const { user } = useAuth();
   const {
     isCreatingNewLocation,
@@ -49,6 +54,8 @@ export const LocationLayout = () => {
   } = useEventFormContext();
 
   const [validationError, setValidationError] = useState("");
+  const submitLabel = isStandalone ? "Save Changes" : "Save Location";
+  const pendingLabel = isStandalone ? "Saving..." : "Creating...";
 
   const getOwnerId = (location?: {
     createdById?: { _id?: string; id?: string } | string;
@@ -282,7 +289,7 @@ export const LocationLayout = () => {
           <MapPin className="h-6 w-6" />
           Location *
         </h2>
-        {!isCreatingNewLocation && (
+        {!isCreatingNewLocation && !isStandalone && (
           <Button
             type="button"
             onClick={onToggleCreateNewLocation}
@@ -331,66 +338,72 @@ export const LocationLayout = () => {
               onZipChange={onLocationZipChange}
               onCountryChange={onLocationCountryChange}
               onSubmit={handleCreateLocation}
-              submitLabel="Save Location"
-              pendingLabel="Creating..."
+              submitLabel={submitLabel}
+              pendingLabel={pendingLabel}
               isSubmitting={createLocationMutationIsPending}
               validationMessage={validationError}
               topSlot={
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Search Location
-                  </label>
-                  <input
-                    type="text"
-                    value={searchInput}
-                    onChange={(e) => onLocationSearch(e.target.value)}
-                    placeholder="Search address, place, business..."
-                    className="w-full px-4 py-3 input-event-form"
-                  />
+                isStandalone ? undefined : (
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                      Search Location
+                    </label>
+                    <input
+                      type="text"
+                      value={searchInput}
+                      onChange={(e) => onLocationSearch(e.target.value)}
+                      placeholder="Search address, place, business..."
+                      className="w-full px-4 py-3 input-event-form"
+                    />
 
-                  {isSearching && (
-                    <p className="mt-2 text-xs text-gray-400">Searching...</p>
-                  )}
+                    {isSearching && (
+                      <p className="mt-2 text-xs text-gray-400">Searching...</p>
+                    )}
 
-                  {showSearchResults && searchResults.length > 0 && (
-                    <div className="absolute z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-purple-500/40 bg-black/90 shadow-xl">
-                      {searchResults.map((result, idx) => (
-                        <button
-                          key={`${result.lat}-${result.lng}-${idx}`}
-                          type="button"
-                          onClick={() => onSelectSearchResult(result)}
-                          className="w-full text-left px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0"
-                        >
-                          <div className="text-white text-sm font-medium">
-                            {result.name || result.displayName}
-                          </div>
-                          <div className="text-gray-400 text-xs">
-                            {result.displayName}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                    {showSearchResults && searchResults.length > 0 && (
+                      <div className="absolute z-50 mt-2 w-full max-h-64 overflow-y-auto rounded-lg border border-purple-500/40 bg-black/90 shadow-xl">
+                        {searchResults.map((result, idx) => (
+                          <button
+                            key={`${result.lat}-${result.lng}-${idx}`}
+                            type="button"
+                            onClick={() => onSelectSearchResult(result)}
+                            className="w-full text-left px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0"
+                          >
+                            <div className="text-white text-sm font-medium">
+                              {result.name || result.displayName}
+                            </div>
+                            <div className="text-gray-400 text-xs">
+                              {result.displayName}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
               }
               actionSlot={
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setValidationError("");
-                    onToggleSelectExistingLocation();
-                    // If a location was already selected (edit flow),
-                    // re-select it to restore form fields + map state
-                    if (selectedLocationId) {
-                      onLocationSelect(selectedLocationId);
-                    }
-                  }}
-                  variant="cancel"
-                  fullWidth
-                  className="mt-2"
-                >
-                  Cancel
-                </Button>
+                isStandalone ? undefined : (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setValidationError("");
+                        onToggleSelectExistingLocation();
+                        // If a location was already selected (edit flow),
+                        // re-select it to restore form fields + map state
+                        if (selectedLocationId) {
+                          onLocationSelect(selectedLocationId);
+                        }
+                      }}
+                      variant="cancel"
+                      fullWidth
+                      className="mt-2"
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                )
               }
             />
           </motion.div>
