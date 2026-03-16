@@ -235,6 +235,9 @@
   --color-background: hsl(222 47% 6%);
   --color-foreground: #ffffff;
 
+  --color-lightgray: hsl(0deg 0% 15%);
+  --color-darkgray: hsl(0deg 0% 8%);
+
   --color-secondary-foreground: hsl(240, 0%, 44%);
 
   --color-hover-purple: hsl(246, 67%, 26%);
@@ -267,12 +270,16 @@
     @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary group-hover:bg-secondary transition px-8 py-3;
   }
 
+  .btn-default-small {
+    @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary group-hover:bg-secondary transition px-4 py-2;
+  }
+
   .btn-secondary {
     @apply cursor-pointer bg-primary text-white font-medium rounded-lg hover:bg-secondary group-hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-cancel {
-    @apply cursor-pointer bg-gray-800 text-gray-300 font-medium rounded-lg hover:bg-black/60 group-hover:bg-black/60 border border-purple-500/30 transition;
+    @apply cursor-pointer border border-gray-600 text-gray-300 font-medium rounded-lg hover:bg-black/20 group-hover:bg-black/60 transition;
   }
 
   .btn-icon {
@@ -284,11 +291,11 @@
   }
 
   .input-default {
-    @apply flex h-12 w-full rounded-md border border-input  px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
+    @apply flex h-12 w-full rounded-md px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
   }
 
   .input-event-form {
-    @apply px-3 py-2 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition;
+    @apply px-3 py-2 bg-black/40  rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition;
   }
 
   .label-event-form {
@@ -296,23 +303,14 @@
   }
 
   .managed-card {
-    @apply flex flex-col sm:flex-row justify-between items-center rounded-lg border border-purple/60 bg-black/15 p-4 gap-5 sm:h-40;
+    @apply flex flex-col sm:flex-row justify-between items-center rounded-lg bg-black/15 p-4 gap-5 sm:h-40;
+  }
+
+  .form-box {
+    background-color: var(--light-gray);
   }
 
   .marqueeGradient {
-    /* position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    bottom: 0;
-    background: linear-gradient(
-      to right,
-      rgba(255, 165, 0, 0) 0%,
-      rgba(255, 255, 0, 0) 80%,
-      #ffbc50 100%
-    );
-    z-index: 3; */
-
     overflow: hidden;
     white-space: nowrap;
     mask-image: linear-gradient(
@@ -415,35 +413,23 @@
 }
 
 /* DayPicker overrides for NextUp purple theme */
-.nxp-daypicker {
-  --rdp-accent-color: rgb(147 51 234);
-  --rdp-accent-background-color: rgba(147, 51, 234, 0.18);
-}
-
 .nxp-daypicker .rdp-selected .rdp-day_button {
   background-color: transparent !important;
-  color: rgb(147 51 234) !important;
   border: 0 !important;
   border-radius: 9999px !important;
 }
 
 .nxp-daypicker .rdp-day_button:focus-visible {
-  outline: 2px solid rgb(147 51 234) !important;
   outline-offset: 2px !important;
 }
 
 .nxp-daypicker .rdp-today:not(.rdp-outside) .rdp-day_button {
-  color: rgb(147 51 234) !important;
   font-weight: 700 !important;
-}
-
-.nxp-daypicker .rdp-button_previous,
-.nxp-daypicker .rdp-button_next {
-  color: rgb(147 51 234) !important;
+  color: #555;
 }
 
 .nxp-daypicker .rdp-chevron {
-  stroke: currentColor !important;
-  fill: currentColor !important;
+  stroke: white !important;
+  fill: white !important;
   opacity: 1 !important;
 }

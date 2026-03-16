@@ -34,7 +34,7 @@ export const ArtistCard = ({
     <>
       <div
         key={artist.id}
-        className="flex flex-wrap sm:flex-nowrap py-10 items-start un-border-b text-white relative px-3 sm:px-0 gap-6"
+        className="flex flex-wrap sm:flex-nowrap my-12 items-start text-white relative px-3 sm:px-0 gap-6"
       >
         <div className="relative w-full aspect-video sm:w-auto sm:h-40 sm:aspect-square md:aspect-4/3 shrink-0 overflow-visible rounded-md">
           <div className="h-full overflow-hidden rounded-md">
@@ -63,7 +63,9 @@ export const ArtistCard = ({
               <h3 className="my-1 sm:mt-0 text-2xl md:text-2xl lg:text-3xl font-bold text-yellow transition-colors hover:text-purple">
                 {artist.name}
               </h3>
-              <GenresTag data={artist} />
+              <div className="mb-1">
+                <GenresTag data={artist} />
+              </div>
             </Link>
           </div>
           <div

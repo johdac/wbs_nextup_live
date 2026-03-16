@@ -96,16 +96,16 @@ export const DateTimePicker = ({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-left text-white focus:outline-none focus:border-purple-500 transition flex items-center justify-between"
+        className="w-full px-4 py-3 bg-black/40 border-0 rounded-lg text-left text-white focus:outline-none transition flex items-center justify-between"
       >
         <span className={value ? "text-white" : "text-gray-400"}>
           {buttonLabel}
         </span>
-        <CalendarIcon className="h-4 w-4 text-purple-300" />
+        <CalendarIcon className="h-4 w-4 text-white" />
       </button>
 
       {open && (
-        <div className="absolute z-120 mt-2 w-full min-w-72.5 rounded-lg border border-purple-500/40 bg-[#110b27] p-3 shadow-xl">
+        <div className="absolute z-120 mt-2 w-full min-w-72.5 rounded-lg p-3 shadow-xl">
           <div className="rounded-md bg-black/20 p-2">
             <DayPicker
               mode="single"
@@ -117,13 +117,13 @@ export const DateTimePicker = ({
           </div>
 
           <div className="mt-3 flex items-center gap-2">
-            <Clock3 className="h-4 w-4 text-purple-300" />
+            <Clock3 className="h-4 w-4 text-white" />
             <input
               type="time"
               value={toTimeValue(value)}
               onChange={(event) => handleTimeChange(event.target.value)}
               disabled={!value}
-              className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-md text-white disabled:opacity-50"
+              className="w-full px-3 py-2 bg-black/40 rounded-md text-white disabled:opacity-50"
             />
           </div>
 
@@ -134,14 +134,14 @@ export const DateTimePicker = ({
                 onChange(null);
                 setOpen(false);
               }}
-              className="px-3 py-1.5 text-sm rounded-md border border-purple-500/40 text-purple-200 hover:bg-purple-500/10"
+              className="px-3 py-1.5 text-sm rounded-md text-white"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="px-3 py-1.5 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-500"
+              className="px-3 py-1.5 text-sm rounded-md text-white"
             >
               Done
             </button>
@@ -246,23 +246,21 @@ export const DateTimeRangePicker = ({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-left text-white focus:outline-none focus:border-purple-500 transition flex items-center justify-between"
+        className="w-full px-4 py-3 bg-black/40 border-0 rounded-lg text-left text-white focus:outline-none transition flex items-center justify-between"
       >
         <span
           className={startValue && endValue ? "text-white" : "text-gray-400"}
         >
           {buttonLabel}
         </span>
-        <CalendarIcon className="h-4 w-4 text-purple-300" />
+        <CalendarIcon className="h-4 w-4 text-white" />
       </button>
 
       {open && (
-        <div className="absolute z-120 mt-2 w-full min-w-72.5 rounded-lg border border-purple-500/40 bg-[#110b27] p-3 shadow-xl">
+        <div className="absolute z-120 mt-2 w-full min-w-72.5 rounded-lg  bg-darkgray p-3 shadow-xl">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div>
-              <p className="mb-2 text-sm font-semibold text-purple-200">
-                Start
-              </p>
+              <p className="mb-2 text-sm font-semibold text-white">Start</p>
               <div className="rounded-md bg-black/20 p-2">
                 <DayPicker
                   mode="single"
@@ -273,19 +271,19 @@ export const DateTimeRangePicker = ({
                 />
               </div>
               <div className="mt-3 flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-purple-300" />
+                <Clock3 className="h-4 w-4 text-white" />
                 <input
                   type="time"
                   value={toTimeValue(startValue)}
                   onChange={(event) => updateStartTime(event.target.value)}
                   disabled={!startValue}
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-md text-white disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-black/40 rounded-md text-white disabled:opacity-50"
                 />
               </div>
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-semibold text-purple-200">End</p>
+              <p className="mb-2 text-sm font-semibold text-white">End</p>
               <div className="rounded-md bg-black/20 p-2">
                 <DayPicker
                   mode="single"
@@ -296,13 +294,13 @@ export const DateTimeRangePicker = ({
                 />
               </div>
               <div className="mt-3 flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-purple-300" />
+                <Clock3 className="h-4 w-4 text-white" />
                 <input
                   type="time"
                   value={toTimeValue(endValue)}
                   onChange={(event) => updateEndTime(event.target.value)}
                   disabled={!endValue}
-                  className="w-full px-3 py-2 bg-black/40 border border-purple-500/50 rounded-md text-white disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-black/40  rounded-md text-white disabled:opacity-50"
                 />
               </div>
             </div>
@@ -315,14 +313,14 @@ export const DateTimeRangePicker = ({
                 onChange(null, null);
                 setOpen(false);
               }}
-              className="px-3 py-1.5 text-sm rounded-md border border-purple-500/40 text-purple-200 hover:bg-purple-500/10"
+              className="px-3 py-1.5 text-sm rounded-md text-white cursor-pointer"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="px-3 py-1.5 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-500"
+              className="btn-default-small"
             >
               Done
             </button>

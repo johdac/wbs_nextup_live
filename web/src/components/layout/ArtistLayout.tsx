@@ -100,8 +100,10 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
   };
 
   const currentUserId = user?._id ? String(user._id) : "";
-  const showCreateArtistForm = isStandalone || (isCreatingArtist && !showSavedArtistPreview);
-  const shouldShowSavedPreview = !isStandalone && showSavedArtistPreview && savedArtistPreview;
+  const showCreateArtistForm =
+    isStandalone || (isCreatingArtist && !showSavedArtistPreview);
+  const shouldShowSavedPreview =
+    !isStandalone && showSavedArtistPreview && savedArtistPreview;
   const selectedArtistsForPreview = useMemo(() => {
     if (!showSavedArtistPreview || !savedArtistPreviewId) {
       return selectedArtists;
@@ -114,7 +116,7 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
   }, [selectedArtists, showSavedArtistPreview, savedArtistPreviewId]);
 
   return (
-    <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
+    <div className="bg-lightgray rounded-lg p-6">
       <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
         <Music className="h-4 w-4 md:h-6 md:w-6" />
         Artists * ({selectedArtistIds.length} selected)
@@ -141,19 +143,15 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
               </Button>
             </div>
 
-            <div
-              className="w-full rounded-lg border border-purple-500/40 shadow-xl overflow-hidden"
-              style={{ backgroundColor: "#110b27" }}
-            >
+            <div className="w-full rounded-lg shadow-xl overflow-hidden bg-darkgray">
               {!showCreateArtistForm && (
-                <div className="p-3 border-b border-purple-500/20">
+                <div className="p-3 border-b border-lightgray">
                   <input
                     type="text"
                     value={artistSearch}
                     onChange={(e) => setArtistSearch(e.target.value)}
                     placeholder="Search by artist name..."
-                    className="w-full px-3 py-2 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
-                    style={{ backgroundColor: "#110b27" }}
+                    className="w-full px-3 py-2 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition"
                   />
                 </div>
               )}
@@ -166,7 +164,7 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
                   return (
                     <label
                       key={artistId}
-                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-purple-500/20 border-b border-purple-500/20 last:border-b-0 cursor-pointer"
+                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-lightgray cursor-pointer border-b border-lightgray last:border-b-0 cursor-pointer"
                     >
                       <input
                         type="checkbox"
