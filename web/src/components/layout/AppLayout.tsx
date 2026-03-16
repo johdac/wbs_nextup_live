@@ -3,6 +3,7 @@ import { Header } from "./Header";
 import Footer from "./Footer";
 import { Player } from "../../features/player/Player";
 import { PlayerProvider } from "../../features/player/PlayerContext";
+import { AppToaster } from "../ui/AppToaster";
 
 export const AppLayout = () => {
   const navigation = useNavigation();
@@ -10,6 +11,7 @@ export const AppLayout = () => {
   return (
     <div>
       <PlayerProvider>
+        <AppToaster></AppToaster>
         <Player></Player>
         <Header></Header>
         {navigation.state === "loading" && <p>Loading...</p>}

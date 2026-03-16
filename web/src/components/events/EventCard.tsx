@@ -83,6 +83,7 @@ const EventCard = ({
               const isLast = index === event.artists.length - 1;
               return (
                 <Link
+                  key={artist.id}
                   to={`/artist/${artist.id}`}
                   className=" hover:text-purple mr-2"
                 >
