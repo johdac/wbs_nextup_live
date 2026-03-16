@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import { Calendar, MapPin, Sparkles } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
@@ -12,9 +12,19 @@ import type { PlaylistItem } from "../../features/player/playerTypes";
 import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
 import { FavoriteEventBtn } from "../buttons/FavoriteEventBtn";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { EditBtn } from "../buttons/EditBtn";
+import { DeleteBtn } from "../buttons/DeleteBtn";
+import { ConfirmModal } from "../layout/ConfirmModal";
+import { useAuth } from "../../context/AuthContext";
+import { GoBackBtn } from "../buttons/GoBackBtn";
 
-export const EventDetails = () => {
+export const SingleEventPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { signedIn, user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState("");
 
   const {
     data: event,
@@ -33,6 +43,23 @@ export const EventDetails = () => {
   if (error) return <p>Failed to load event</p>;
   if (!event) return <p>Event not found</p>;
 
+  const isOwner = signedIn && user?._id === event.organizerId;
+
+  const handleDelete = async () => {
+    if (!isOwner) return;
+    if (!itemToDelete) return;
+
+    try {
+      await eventsService.deleteEvent(itemToDelete);
+      navigate("/managed-events");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setShowModal(false);
+      setItemToDelete("");
+    }
+  };
+
   const startDate = format(new Date(event.startDate), "dd MMM hh:mm a");
   const endDate = format(new Date(event.endDate), "dd MMM hh:mm a");
 
@@ -41,6 +68,21 @@ export const EventDetails = () => {
 
   return (
     <div className="container mx-auto">
+      {isOwner && (
+        <div>
+          <div className="text-white">
+            <GoBackBtn path="/managed-events" />
+          </div>
+          <div className="mt-4 flex items-center justify-end gap-3">
+            <EditBtn data={event} path="managed-events" />
+            <DeleteBtn
+              id={event.id}
+              setItemToDelete={setItemToDelete}
+              setShowModal={setShowModal}
+            />
+          </div>
+        </div>
+      )}
       <div className="pb-5 sm:mt-10 sm:px-0 text-white">
         {/* TOP SECTION */}
 
@@ -149,6 +191,14 @@ export const EventDetails = () => {
           </aside>
         </div>
       </div>
+      {isOwner && (
+        <ConfirmModal
+          name="event"
+          handleDelete={handleDelete}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      )}
     </div>
   );
 };

@@ -36,6 +36,7 @@ export interface EventListItem {
   genres: string[];
   mainImageUrl: string;
   isPopular: boolean;
+  organizerId: string;
   organizerName: string;
   interactionType: "favorite" | "hidden";
 }
@@ -130,6 +131,10 @@ export interface ApiEvent {
 const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
   const organizer =
     typeof event.createdById === "object" ? event.createdById : undefined;
+  const organizerId =
+    typeof event.createdById === "string"
+      ? event.createdById
+      : organizer?.id || organizer?._id || "";
   const location =
     typeof event.locationId === "object" ? event.locationId : undefined;
 
@@ -157,11 +162,13 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
           imageUrl: "/placeholder.svg",
           websiteUrl: artist.websiteUrl || "",
           musicResources: artist.musicResources,
+          organizerId: artist.organizerId || "",
         };
       }) || [],
     genres: event.genres || "Unknown",
     mainImageUrl: event.mainImageUrl || "/placeholder.jpeg",
     isPopular: false,
+    organizerId,
     organizerName: organizer?.username || "Unknown Organizer",
     interactionType: event.interactionType,
   };

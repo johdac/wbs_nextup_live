@@ -1,4 +1,4 @@
-import EventList from "../layout/Events";
+import EventList from "../events/EventList";
 
 export const EventArchivePage = () => {
   return (

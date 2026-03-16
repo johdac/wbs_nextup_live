@@ -1,6 +1,7 @@
-import { MapPin, MicVocal, Music4 } from "lucide-react";
+import { MapPin, Music4 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
+import type { ReactNode } from "react";
 import type { EventListItem } from "../../services/eventsApi";
 import { GenresTag } from "../ui/GenresTag";
 import type { PlaylistItem } from "../../features/player/playerTypes";
@@ -10,10 +11,12 @@ import { FavoriteEventBtn } from "../buttons/FavoriteEventBtn";
 
 const EventCard = ({
   event,
-  index,
+  actionSlot,
+  showDefaultActions = true,
 }: {
   event: EventListItem;
-  index: number;
+  actionSlot?: ReactNode;
+  showDefaultActions?: boolean;
 }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
@@ -51,7 +54,6 @@ const EventCard = ({
           </Link>
         </div>
       </div>
-
       <div className="flex flex-1 flex-wrap">
         {/* EVENT TITLE AND LOCATION */}
         <div className="sm:mr-10 w-full lg:w-1/2">
@@ -98,8 +100,13 @@ const EventCard = ({
 
       {/* MUSICT TRANSPORT BUTTONS */}
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 absolute sm:static sm:bg-transparent bg-purple rounded-md right-0 top-[calc(-40px+50vw)] px-2 pt-1 pb-1.5 sm:p-0">
-        <FavoriteEventBtn event={event} />
-        <PlayerTransports resources={mergedMusicResources} />
+        {showDefaultActions && (
+          <div className="flex flex-row gap-4">
+            <FavoriteEventBtn event={event} />
+            <PlayerTransports resources={mergedMusicResources} />
+          </div>
+        )}
+        {actionSlot && <div>{actionSlot}</div>}
       </div>
     </div>
   );
