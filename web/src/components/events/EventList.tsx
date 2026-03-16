@@ -254,7 +254,7 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
         </div>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+      <div className="grid grid-cols-1">
         {isLoading && (
           <div className="py-12 text-center font-display text-lg text-white">
             Loading events...

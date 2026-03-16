@@ -1,4 +1,4 @@
-import { MapPin, MicVocal } from "lucide-react";
+import { MapPin, Music4 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import type { ReactNode } from "react";
@@ -27,78 +27,79 @@ const EventCard = ({
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-start gap-4 sm:gap-5 rounded-lg border md:border-none border-gray-600 shadow-md py-3  sm:py-5 px-0 transition-all bg-dark">
-      {/* DATE STICKER ON DESKTOP ONLY */}
-      <div className="hidden sm:flex flex-col items-center justify-center rounded-lg gap-y-3 mr-5 text-white shadow-xs w-20">
-        <span className="text-6xl font-black leading-none">{dayStr}</span>
-        {/* <span className="text-md font-bold">{yearStr}</span> */}
-        <span className="text-md font-bold uppercase tracking-wider">
-          {monthStr}
-        </span>
-      </div>
-      {/* IMAGE WITH MOBILE DATE STICKER */}
-      <div className="relative w-full sm:w-30 h-40 sm:h-30 shrink-0 overflow-hidden rounded-md bg-muted">
-        {event.mainImageUrl ? (
-          <img
-            src={event.mainImageUrl}
-            alt={event.title}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/placeholder.jpeg";
-            }}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          <div className="absolute inset-0 neon-gradient-bg opacity-60" />
-        )}
-
-        {/* DATE STICKER ON MOBILE ONLY */}
-        <div className="absolute top-2 left-2 flex flex-col items-center justify-center rounded-lg px-5 py-5 text-white bg-black/70 backdrop-blur-sm sm:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider">
+    <div className="flex flex-wrap sm:flex-nowrap py-10 items-start un-border-b text-white relative px-3 sm:px-0">
+      <div className="flex items-start w-full sm:w-auto">
+        {/* DATE*/}
+        <div className="bg-pink p-2 rounded-md text-black text-center w-13 lg:w-15 -mr-5 z-10 -mt-3 left-0 absolute sm:relative">
+          <div className="text-3xl lg:text-4xl font-black leading-none">
+            {dayStr}
+          </div>
+          <div className="text-sm lg:text-md font-bold uppercase tracking-wider">
             {monthStr}
-          </span>
-          <span className="text-xl font-black leading-none">{dayStr}</span>
-          <span className="text-xs font-bold">{yearStr}</span>
-        </div>
-      </div>
-      {/* TEXT INFO */}
-      <div className="flex flex-col gap-1 w-full sm:w-auto">
-        <Link to={`/event/${event.id}`}>
-          <h3 className="text-lg sm:text-xl font-bold text-white transition-colors hover:text-purple">
-            {event.title}
-          </h3>
-        </Link>
-        <div className="my-1.5 flex flex-wrap items-center gap-2">
-          <div className="text-white flex items-center">
-            {event.artists.map((artist) => {
-              return (
-                <div
-                  key={artist.id}
-                  className="flex flex-row px-1 hover:text-purple hover:scale-105"
-                >
-                  <MicVocal className="mr-1" />
-                  <Link to={`/artist/${artist.id}`}>
-                    <p key={artist.id}>{artist.name}</p>
-                  </Link>
-                </div>
-              );
-            })}
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm sm:text-md text-gray-400">
-          <span>{timeStr}</span>
-          <Link to={`/location/${event.location.id}`}>
-            <span className="flex items-center hover:text-purple hover:scale-105">
-              <MapPin className="mr-1 h-5 w-5 " />
-              {event.location.city}
-            </span>
+
+        {/* IMAGE */}
+        <div className="relative w-full aspect-video rounded-md overflow-hidden sm:mr-8 sm:w-auto sm:h-30 sm:aspect-square md:aspect-4/3">
+          <Link to={`/event/${event.id}`}>
+            <img
+              src={event.mainImageUrl}
+              alt={event.title}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/placeholder.jpeg";
+              }}
+              className="h-full w-full object-cover"
+            />
           </Link>
         </div>
-        <GenresTag data={event} />
+      </div>
+      <div className="flex flex-1 flex-wrap">
+        {/* EVENT TITLE AND LOCATION */}
+        <div className="sm:mr-10 w-full lg:w-1/2">
+          <Link to={`/event/${event.id}`}>
+            <h3 className="my-3 sm:mt-0 text-2xl md:text-3xl lg:text-4xl font-bold text-yellow transition-colors hover:text-purple">
+              {event.title}
+            </h3>
+          </Link>
+          <Link to={`/location/${event.location.id}`}>
+            <div className="flex items-start leading-[1.4rem] hover:text-purple mt-1 md:text-[18px]">
+              <MapPin className="mr-1.5 mb-1 mt-0.5 h-5 w-5 shrink-0 " />
+              <div>
+                {event.location.city ? `${event.location.city}, ` : ``}
+                {event.location.name}
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* ARTISTS AND GENRES */}
+        <div className="flex sm:w-auto">
+          <div>
+            <Music4 className="mr-1.5 mt-1 w-5 h-5 shrink-0" />
+          </div>
+          <div className="md:text-[18px]">
+            {event.artists.map((artist, index) => {
+              const isLast = index === event.artists.length - 1;
+              return (
+                <Link
+                  to={`/artist/${artist.id}`}
+                  className=" hover:text-purple mr-2"
+                >
+                  {artist.name}
+                  {!isLast && ", "}
+                </Link>
+              );
+            })}
+            <div className="mt-1">
+              <GenresTag data={event} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ACTION BUTTONS */}
-      <div className="flex flex-col mt-2 sm:mt-0 sm:ml-auto gap-4">
+      {/* MUSICT TRANSPORT BUTTONS */}
+      <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 absolute sm:static sm:bg-transparent bg-purple rounded-md right-0 top-[calc(-40px+50vw)] px-2 pt-1 pb-1.5 sm:p-0">
         {showDefaultActions && (
           <div className="flex flex-row gap-4">
             <FavoriteEventBtn event={event} />

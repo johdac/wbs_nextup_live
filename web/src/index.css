@@ -274,7 +274,7 @@
   }
 
   .btn-icon-active {
-    @apply text-purple;
+    @apply text-yellow;
   }
 
   .input-default {
