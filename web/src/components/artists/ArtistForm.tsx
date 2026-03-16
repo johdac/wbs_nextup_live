@@ -135,7 +135,7 @@ export const ArtistForm = ({
             type="button"
             onClick={onAddArtistMusicUrl}
             variant="secondary"
-            size="md"
+            size="sm"
           >
             + Add more
           </Button>

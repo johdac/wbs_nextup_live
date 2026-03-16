@@ -20,8 +20,8 @@ const EventCard = ({
 }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
-  const timeStr = format(new Date(event.startDate), "h:mm a");
-  const yearStr = format(new Date(event.startDate), "yyyy");
+  // const timeStr = format(new Date(event.startDate), "h:mm a");
+  // const yearStr = format(new Date(event.startDate), "yyyy");
 
   // Player integration
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
