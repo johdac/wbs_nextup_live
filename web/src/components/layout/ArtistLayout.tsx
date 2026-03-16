@@ -17,7 +17,12 @@ const GENRES = [
   "world",
 ] as const;
 
-export const ArtistLayout = () => {
+type ArtistLayoutProps = {
+  mode?: "event" | "standalone";
+};
+
+export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
+  const isStandalone = mode === "standalone";
   const { user } = useAuth();
   const [artistSearch, setArtistSearch] = useState("");
   const [isCreatingArtist, setIsCreatingArtist] = useState(false);
@@ -86,14 +91,17 @@ export const ArtistLayout = () => {
     setArtistNameError("");
     try {
       await onCreateArtist();
-      setIsCreatingArtist(false);
+      if (!isStandalone) {
+        setIsCreatingArtist(false);
+      }
     } catch {
       // Keep form open when save fails
     }
   };
 
   const currentUserId = user?._id ? String(user._id) : "";
-  const showCreateArtistForm = isCreatingArtist && !showSavedArtistPreview;
+  const showCreateArtistForm = isStandalone || (isCreatingArtist && !showSavedArtistPreview);
+  const shouldShowSavedPreview = !isStandalone && showSavedArtistPreview && savedArtistPreview;
   const selectedArtistsForPreview = useMemo(() => {
     if (!showSavedArtistPreview || !savedArtistPreviewId) {
       return selectedArtists;
@@ -218,7 +226,7 @@ export const ArtistLayout = () => {
           </div>
         ))}
 
-      {showSavedArtistPreview && savedArtistPreview ? (
+      {shouldShowSavedPreview ? (
         <div className="mb-4">
           <ArtistPreviewCard
             artistId={savedArtistPreview.name}
@@ -272,7 +280,9 @@ export const ArtistLayout = () => {
                 onCancel={() => {
                   onCancelArtistEdit();
                   setArtistNameError("");
-                  setIsCreatingArtist(false);
+                  if (!isStandalone) {
+                    setIsCreatingArtist(false);
+                  }
                 }}
                 onSave={handleSaveArtistClick}
               />

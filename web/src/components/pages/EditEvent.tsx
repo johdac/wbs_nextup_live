@@ -1051,6 +1051,53 @@ export const EditEvent = () => {
     savedArtistPreviewId,
     savedArtistPreview,
     onCreateArtist: handleCreateArtist,
+    onLoadArtistForEdit: (artistId: string) => {
+      const targetArtist = artists.find(
+        (artist) => String(artist.id || artist._id || "") === String(artistId),
+      );
+
+      if (!targetArtist) {
+        return;
+      }
+
+      setValue("artistName", targetArtist.name || "");
+      setValue("artistDescription", targetArtist.description || "");
+      setValue("artistWebsiteUrl", targetArtist.websiteUrl || "");
+      setValue("artistGenres", targetArtist.genres || []);
+      setValue(
+        "artistMusicUrls",
+        targetArtist.musicResources?.length
+          ? targetArtist.musicResources.map((resource) => ({
+              title: resource.title || "",
+              url: resource.url,
+            }))
+          : [{ title: "", url: "" }],
+      );
+      setArtistMainImagePreviewUrl(
+        targetArtist.mainImageUrl || targetArtist.imageUrls?.[0] || undefined,
+      );
+
+      const targetArtistId = String(targetArtist.id || targetArtist._id || "");
+      const nextSelectedArtistIds = getValues("selectedArtistIds")
+        .map((value) => String(value))
+        .filter((value) => value !== targetArtistId);
+      setValue("selectedArtistIds", nextSelectedArtistIds);
+
+      setValue("isCreatingNewArtist", true);
+      setShowSavedArtistPreview(false);
+      setArtistMainImageFile(null);
+    },
+    onCancelArtistEdit: () => {
+      setValue("isCreatingNewArtist", false);
+      setValue("artistName", "");
+      setValue("artistGenres", []);
+      setValue("artistDescription", "");
+      setValue("artistWebsiteUrl", "");
+      setValue("artistMusicUrls", [{ title: "", url: "" }]);
+      setArtistMainImageFile(null);
+      setArtistMainImagePreviewUrl(undefined);
+      setShowSavedArtistPreview(false);
+    },
     onEditSavedArtist: () => {
       if (savedArtistPreview) {
         setValue("artistName", savedArtistPreview.name || "");

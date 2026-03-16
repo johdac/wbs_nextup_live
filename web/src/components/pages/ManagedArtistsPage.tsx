@@ -57,7 +57,7 @@ export const ManagedArtistsPage = () => {
           </div>
         )}
 
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
           {isLoading ? (
             <div className="py-12 text-center font-display text-lg text-white">
               Loading artists...

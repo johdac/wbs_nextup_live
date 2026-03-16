@@ -111,8 +111,6 @@ export const SingleLocationPage = () => {
                 <h1>{location.name}</h1>
               </div>
             </div>
-
-            {/* description */}
             <div>
               <p>{location.address}</p>
               <p>
