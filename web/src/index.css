@@ -43,8 +43,6 @@
 .mui-white-outline .MuiInputLabel-root.Mui-focused {
   color: rgb(158, 153, 153);
 }
-*/
-
 
 /* Text color */
 .mui-white-outline .MuiInputBase-input {
@@ -212,6 +210,14 @@
 }
 
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/outfit.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
   --breakpoint-xs: 480px;
