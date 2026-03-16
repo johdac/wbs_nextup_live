@@ -5,7 +5,6 @@ import { usePlayer } from "../../features/player/PlayerContext";
 import { format } from "date-fns";
 import { Link } from "react-router";
 import Marquee from "react-fast-marquee";
-import { FavoriteEventBtn } from "../../components/buttons/FavoriteEventBtn";
 
 export const Player = () => {
   // We manage the player state in context and get it here
