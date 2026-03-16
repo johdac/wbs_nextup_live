@@ -11,7 +11,6 @@ export const EditLocation = () => {
   const [location, setLocation] = useState<AppLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -45,7 +44,9 @@ export const EditLocation = () => {
       <div className="flex justify-between">
         <GoBackBtn path="/managed-events" />
       </div>
-      <ManagedLocations preselectedLocationId={location.id || location._id || ""} />
+      <ManagedLocations
+        preselectedLocationId={location.id || location._id || ""}
+      />
     </div>
   );
 };
