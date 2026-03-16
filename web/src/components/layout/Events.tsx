@@ -10,20 +10,48 @@ import { Pagination } from "@mui/material";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
 import { PlayerTransports } from "../../features/player/PlayerTransports";
+import LocationSearch, {
+  type LocationSearchResult,
+} from "../ui/LocationSearch";
 
 const ROOT_ITEMS_PER_PAGE = 10;
 const EVENTS_ITEMS_PER_PAGE = 20;
 
 const EventList = ({ favorited }: { favorited?: boolean }) => {
-  const [dateTime, setDateTime] = useState<Date | null>(null);
-  const [radius, setRadius] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
+  const initialStartAfter = searchParams.get("startAfter");
+  const initialRadiusMeters = Number(searchParams.get("radius") || "0");
+  const initialLat = searchParams.get("lat");
+  const initialLng = searchParams.get("lng");
+  const [defaultStartDate] = useState<Date>(() =>
+    initialStartAfter ? new Date(initialStartAfter) : new Date(),
+  );
+
+  const [dateTime, setDateTime] = useState<Date | null>(defaultStartDate);
+  const [radius, setRadius] = useState(
+    Number.isFinite(initialRadiusMeters) && initialRadiusMeters > 0
+      ? initialRadiusMeters / 1000
+      : 1,
+  );
   const [genre, setGenre] = useState(searchParams.get("genre") || "");
   const [location, setLocation] = useState(searchParams.get("location") || "");
+  const [selectedLat, setSelectedLat] = useState<number | null>(
+    initialLat ? Number(initialLat) : null,
+  );
+  const [selectedLng, setSelectedLng] = useState<number | null>(
+    initialLng ? Number(initialLng) : null,
+  );
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isEventRoute = pathname === "/events";
+  const radiusInMeters = Math.round(radius * 1000);
+  const appliedGenre = searchParams.get("genre") || "";
+  const appliedStartAfter =
+    searchParams.get("startAfter") || defaultStartDate.toISOString();
+  const appliedLat = searchParams.get("lat");
+  const appliedLng = searchParams.get("lng");
+  const appliedRadiusMeters = Number(searchParams.get("radius") || "0");
 
   const pageParam = Number(searchParams.get("page") || "1");
   const limitParam = Number(
@@ -58,30 +86,87 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
       "list",
       currentPage,
       itemsPerPage,
-      genre,
-      location,
-      dateTime?.toISOString(),
+      appliedGenre,
+      appliedLat,
+      appliedLng,
+      appliedRadiusMeters,
+      appliedStartAfter,
+      favorited,
     ],
     queryFn: () =>
       eventsService.fetchEventsList(currentPage, {
         limit: itemsPerPage,
-        genres: genre ? [genre] : undefined,
-        search: location || undefined,
-        startAfter: dateTime ? dateTime.toISOString() : undefined,
+        genres: appliedGenre ? [appliedGenre] : undefined,
+        lat: appliedLat ? Number(appliedLat) : undefined,
+        lng: appliedLng ? Number(appliedLng) : undefined,
+        radius:
+          appliedLat && appliedLng && appliedRadiusMeters > 0
+            ? appliedRadiusMeters
+            : undefined,
+        startAfter: appliedStartAfter,
         isFavorite: favorited ? true : undefined,
       }),
     retry: 1,
   });
 
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (genre) params.append("genre", genre);
-    if (location) params.append("location", location);
+  const handleLocationSelect = ({
+    displayName,
+    lat,
+    lng,
+  }: LocationSearchResult) => {
+    setLocation(displayName);
+    setSelectedLat(lat);
+    setSelectedLng(lng);
+  };
 
-    if (isEventRoute) {
-      params.set("page", "1");
-      params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
+  const handleLocationClear = () => {
+    setLocation("");
+    setSelectedLat(null);
+    setSelectedLng(null);
+    setRadius(1);
+    // Remove location/lat/lng/radius from URL params and trigger search for all events
+    const params = new URLSearchParams(searchParams);
+    params.delete("location");
+    params.delete("lat");
+    params.delete("lng");
+    params.delete("radius");
+    params.set("page", "1");
+    setSearchParams(params);
+  };
+
+  const buildParams = () => {
+    const params = new URLSearchParams();
+    const normalizedLocation = location.trim();
+    if (genre) params.append("genre", genre);
+    if (normalizedLocation) params.append("location", normalizedLocation);
+    if (dateTime) params.set("startAfter", dateTime.toISOString());
+    if (normalizedLocation && selectedLat !== null) {
+      params.set("lat", String(selectedLat));
     }
+    if (normalizedLocation && selectedLng !== null) {
+      params.set("lng", String(selectedLng));
+    }
+    if (
+      normalizedLocation &&
+      selectedLat !== null &&
+      selectedLng !== null &&
+      Number.isFinite(radiusInMeters) &&
+      radiusInMeters > 0
+    ) {
+      params.set("radius", String(radiusInMeters));
+    }
+
+    return params;
+  };
+
+  const handleSearch = () => {
+    const params = buildParams();
+
+    params.set("page", "1");
+    params.set(
+      "limit",
+      String(isEventRoute ? EVENTS_ITEMS_PER_PAGE : ROOT_ITEMS_PER_PAGE),
+    );
 
     setSearchParams(params);
   };
@@ -96,7 +181,7 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources(eventsList);
 
   return (
-    <section className=" ">
+    <section>
       <div className=" py-4 mb-10 ">
         <div className=" flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-4">
           {/* Date / Time Picker */}
@@ -106,20 +191,25 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
 
           {/* Location + Radius */}
           <div className="w-full lg:flex-[1.5] flex gap-2">
-            <TextField
-              label="Location"
+            <LocationSearch
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              fullWidth
-              size="small"
-              variant="outlined"
-              className="mui-white-outline"
+              onChange={(nextLocation) => {
+                setLocation(nextLocation);
+                if (!nextLocation.trim()) {
+                  setSelectedLat(null);
+                  setSelectedLng(null);
+                }
+              }}
+              onSelect={handleLocationSelect}
+              onClear={handleLocationClear}
             />
             <TextField
-              label="Radius"
+              label="Radius (km)"
               type="number"
               value={radius}
-              onChange={(e) => setRadius(Number(e.target.value))}
+              onChange={(e) =>
+                setRadius(Math.max(1, Number(e.target.value) || 1))
+              }
               size="small"
               inputProps={{ min: 1, max: 100 }}
               className="mui-white-outline"
@@ -153,7 +243,10 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
             <button
               onClick={handleSearch}
               className="btn-default w-full py-4"
-              // className="bg-purple w-full py-2.5 md:py-3 rounded-md text-lg text-white font-bold active:bg-orange lg:hover:bg-orange transition-all cursor-pointer"
+              disabled={
+                Boolean(location) &&
+                (selectedLat === null || selectedLng === null)
+              }
             >
               Find Events
             </button>
@@ -202,9 +295,7 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
           ) : (
             <button
               onClick={() => {
-                const params = new URLSearchParams();
-                if (genre) params.append("genre", genre);
-                if (location) params.append("location", location);
+                const params = buildParams();
                 params.set("page", "1");
                 params.set("limit", String(EVENTS_ITEMS_PER_PAGE));
                 navigate(`/events?${params.toString()}`);
@@ -212,7 +303,7 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
               }}
               className="btn-default px-8 py-3"
             >
-              Dicover more Events
+              Discover more Events
             </button>
           )}
         </div>
