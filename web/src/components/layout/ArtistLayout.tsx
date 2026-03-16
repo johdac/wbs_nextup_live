@@ -5,8 +5,17 @@ import { useEventFormContext } from "../../context/EventFormContext";
 import { useAuth } from "../../context/AuthContext";
 import { ArtistPreviewCard } from "../artists/ArtistPreviewCard";
 import { ArtistForm } from "../artists/ArtistForm";
+import { Button } from "../ui/Button";
 
-const GENRES = ["classical", "electronic", "hiphop", "jazz", "pop", "rock", "world"] as const;
+const GENRES = [
+  "classical",
+  "electronic",
+  "hiphop",
+  "jazz",
+  "pop",
+  "rock",
+  "world",
+] as const;
 
 type ArtistLayoutProps = {
   mode?: "event" | "standalone";
@@ -47,7 +56,10 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
     onCreateArtist,
   } = useEventFormContext();
 
-  const selectedIdsSet = useMemo(() => new Set(selectedArtistIds.map((id) => String(id))), [selectedArtistIds]);
+  const selectedIdsSet = useMemo(
+    () => new Set(selectedArtistIds.map((id) => String(id))),
+    [selectedArtistIds],
+  );
 
   const selectedArtists = useMemo(
     () =>
@@ -95,13 +107,16 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
       return selectedArtists;
     }
 
-    return selectedArtists.filter((artist) => String(artist.id || artist._id || "") !== String(savedArtistPreviewId));
+    return selectedArtists.filter(
+      (artist) =>
+        String(artist.id || artist._id || "") !== String(savedArtistPreviewId),
+    );
   }, [selectedArtists, showSavedArtistPreview, savedArtistPreviewId]);
 
   return (
     <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
-      <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-        <Music className="h-6 w-6" />
+      <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <Music className="h-4 w-4 md:h-6 md:w-6" />
         Artists * ({selectedArtistIds.length} selected)
       </h2>
 
@@ -112,14 +127,18 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
         ) : (
           <div className="space-y-2 mb-6">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-300">Select Artists</label>
-              <button
+              <label className="block text-sm font-medium text-gray-300">
+                Select Artists
+              </label>
+              <Button
                 type="button"
                 onClick={() => setIsCreatingArtist(!isCreatingArtist)}
-                className="px-3 py-2 cursor-pointer rounded-lg bg-primary text-white text-sm hover:bg-primary/25 transition"
+                variant="secondary"
+                size="sm"
+                className="text-sm"
               >
                 + Create New Artist
-              </button>
+              </Button>
             </div>
 
             <div
@@ -156,19 +175,27 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
                         className="mt-1 h-4 w-4 rounded border-purple-500 text-purple-500 focus:ring-purple-500"
                       />
                       <div className="flex-1">
-                        <p className="text-white text-sm font-medium">{artist.name}</p>
+                        <p className="text-white text-sm font-medium">
+                          {artist.name}
+                        </p>
                       </div>
                     </label>
                   );
                 })}
 
                 {artists.length === 0 && (
-                  <p className="text-gray-400 text-center py-8">No artists available. Create artists first.</p>
+                  <p className="text-gray-400 text-center py-8">
+                    No artists available. Create artists first.
+                  </p>
                 )}
 
-                {!showCreateArtistForm && artists.length > 0 && filteredArtists.length === 0 && (
-                  <p className="text-gray-400 text-center py-8">No artists found for this search.</p>
-                )}
+                {!showCreateArtistForm &&
+                  artists.length > 0 &&
+                  filteredArtists.length === 0 && (
+                    <p className="text-gray-400 text-center py-8">
+                      No artists found for this search.
+                    </p>
+                  )}
               </div>
             </div>
 
@@ -176,7 +203,9 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
               <div className="mt-3 space-y-3">
                 {selectedArtistsForPreview.map((artist) => {
                   const artistId = String(artist.id || artist._id || "");
-                  const canEdit = !!currentUserId && String(artist.createdById?._id || "") === currentUserId;
+                  const canEdit =
+                    !!currentUserId &&
+                    String(artist.createdById?._id || "") === currentUserId;
                   return (
                     <ArtistPreviewCard
                       key={`selected-${artistId}`}
@@ -232,7 +261,9 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
                 genres={GENRES}
                 artistNameError={artistNameError}
                 isSaving={createArtistMutationIsPending}
-                saveLabel={createArtistMutationIsPending ? "Saving..." : "Save Artist"}
+                saveLabel={
+                  createArtistMutationIsPending ? "Saving..." : "Save Artist"
+                }
                 onArtistNameChange={(value) => {
                   onArtistNameChange(value);
                   if (artistNameError) {

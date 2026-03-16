@@ -285,8 +285,8 @@ export const LocationLayout = ({ mode = "event" }: LocationLayoutProps) => {
   return (
     <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <MapPin className="h-6 w-6" />
+        <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+          <MapPin className="h-4 w-4 md:h-6 md:w-6" />
           Location *
         </h2>
         {!isCreatingNewLocation && !isStandalone && (

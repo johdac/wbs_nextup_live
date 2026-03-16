@@ -1,4 +1,5 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import {
   eventRelationService,
   type EventRelationInput,
@@ -12,6 +13,7 @@ export const useUpsertEventRelation = () => {
       eventRelationService.upsertEventRelation(id, data),
 
     onSuccess: () => {
+      toast.success("Event added to Favorites");
       queryClient.invalidateQueries({ queryKey: ["events"] });
     },
   });
@@ -25,6 +27,7 @@ export const useDeleteEventRelation = () => {
       eventRelationService.deleteEventRelation(id),
 
     onSuccess: () => {
+      toast.success("Event removed from Favorites");
       queryClient.invalidateQueries({ queryKey: ["events"] });
     },
   });

@@ -17,7 +17,7 @@ export type PlaylistEvent = {
   id: string;
   location: PlaylistLocation;
   start: string;
-  favoritedEvent: Boolean;
+  interactionType: "hidden" | "favorite";
 };
 
 export type PlaylistSong = {

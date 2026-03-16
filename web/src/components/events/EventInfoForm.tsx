@@ -41,8 +41,8 @@ export const EventInfoForm = ({
         isDateRangePickerOpen ? "pb-120" : ""
       }`}
     >
-      <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-        <CalendarIcon className="h-6 w-6" />
+      <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+        <CalendarIcon className="h-4 w-4 md:h-6 md:w-6" />
         Event Information
       </h2>
 

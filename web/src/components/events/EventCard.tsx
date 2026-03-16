@@ -20,8 +20,6 @@ const EventCard = ({
 }) => {
   const monthStr = format(new Date(event.startDate), "MMM");
   const dayStr = format(new Date(event.startDate), "dd");
-  const timeStr = format(new Date(event.startDate), "h:mm a");
-  const yearStr = format(new Date(event.startDate), "yyyy");
 
   // Player integration
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
@@ -54,9 +52,9 @@ const EventCard = ({
           </Link>
         </div>
       </div>
-      <div className="flex flex-1 flex-wrap">
+      <div className="flex flex-1 flex-wrap lg:flex-nowrap">
         {/* EVENT TITLE AND LOCATION */}
-        <div className="sm:mr-10 w-full lg:w-1/2">
+        <div className="sm:mr-10 w-full lg:w-1/2 shrink-0">
           <Link to={`/event/${event.id}`}>
             <h3 className="my-3 sm:mt-0 text-2xl md:text-3xl lg:text-4xl font-bold text-yellow transition-colors hover:text-purple">
               {event.title}
@@ -74,23 +72,26 @@ const EventCard = ({
         </div>
 
         {/* ARTISTS AND GENRES */}
-        <div className="flex sm:w-auto">
+        <div className="flex sm:w-auto mr-3">
           <div>
             <Music4 className="mr-1.5 mt-1 w-5 h-5 shrink-0" />
           </div>
           <div className="md:text-[18px]">
-            {event.artists.map((artist, index) => {
-              const isLast = index === event.artists.length - 1;
-              return (
-                <Link
-                  to={`/artist/${artist.id}`}
-                  className=" hover:text-purple mr-2"
-                >
-                  {artist.name}
-                  {!isLast && ", "}
-                </Link>
-              );
-            })}
+            <div className="leading-[1.4em]">
+              {event.artists.map((artist, index) => {
+                const isLast = index === event.artists.length - 1;
+                return (
+                  <Link
+                    key={artist.id}
+                    to={`/artist/${artist.id}`}
+                    className=" hover:text-purple mr-2"
+                  >
+                    {artist.name}
+                    {!isLast && ", "}
+                  </Link>
+                );
+              })}
+            </div>
             <div className="mt-1">
               <GenresTag data={event} />
             </div>
@@ -102,7 +103,10 @@ const EventCard = ({
       <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 absolute sm:static sm:bg-transparent bg-purple rounded-md right-0 top-[calc(-40px+50vw)] px-2 pt-1 pb-1.5 sm:p-0">
         {showDefaultActions && (
           <div className="flex flex-row gap-4">
-            <FavoriteEventBtn event={event} />
+            <FavoriteEventBtn
+              eventId={event.id}
+              interactionType={event.interactionType}
+            />
             <PlayerTransports resources={mergedMusicResources} />
           </div>
         )}
