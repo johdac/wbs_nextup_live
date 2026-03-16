@@ -14,10 +14,13 @@ export const GoBackBtn = ({ path }: { path: string }) => {
   };
 
   return (
-    <div className="text-white">
-      <button type="button" onClick={handleGoBack} aria-label="Go back" className="inline-flex cursor-pointer">
-        <ArrowLeft></ArrowLeft>
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={handleGoBack}
+      aria-label="Go back"
+      className="inline-flex cursor-pointer text-white"
+    >
+      <ArrowLeft></ArrowLeft>
+    </button>
   );
 };

@@ -37,7 +37,7 @@ export const EventInfoForm = ({
 }: EventInfoFormProps) => {
   return (
     <div
-      className={`bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30 space-y-6 transition-all duration-300 ${
+      className={`bg-lightgray rounded-lg p-6 space-y-6 transition-all duration-300 ${
         isDateRangePickerOpen ? "pb-120" : ""
       }`}
     >
@@ -80,7 +80,7 @@ export const EventInfoForm = ({
           onChange={(e) => setValue("description", e.target.value)}
           placeholder="Describe your event..."
           rows={4}
-          className="w-full px-4 py-3 bg-black/40 border border-purple-500/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition resize-none"
+          className="w-full px-4 py-3 bg-black/40 border  rounded-lg text-white placeholder-gray-500 focus:outline-none border-0 transition resize-none"
         />
       </div>
 
@@ -129,7 +129,7 @@ export const EventInfoForm = ({
         <Button
           type="submit"
           disabled={EventMutation.isPending}
-          variant="gradient"
+          variant="default"
           size="lg"
           className="flex-1"
           leftIcon={<Save className="h-5 w-5" />}

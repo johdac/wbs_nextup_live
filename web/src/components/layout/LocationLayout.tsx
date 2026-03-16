@@ -283,7 +283,7 @@ export const LocationLayout = ({ mode = "event" }: LocationLayoutProps) => {
   };
 
   return (
-    <div className="bg-purple/30 backdrop-blur-sm rounded-lg p-6 border border-purple-500/30">
+    <div className="rounded-lg p-6 bg-lightgray ">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
           <MapPin className="h-4 w-4 md:h-6 md:w-6" />
@@ -411,7 +411,7 @@ export const LocationLayout = ({ mode = "event" }: LocationLayoutProps) => {
       </AnimatePresence>
 
       {/* Map Preview/Interactive Map */}
-      <div className="w-full h-64 bg-black/40 rounded-lg border border-purple-500/30 overflow-hidden">
+      <div className="w-full h-64 bg-black/40 rounded-lg overflow-hidden">
         {isCreatingNewLocation ? (
           <div
             key="create-map"

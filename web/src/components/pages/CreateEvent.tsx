@@ -432,7 +432,6 @@ export const CreateEvent = () => {
     const { lat, lng } = e.latlng;
     setValue("locationLat", lat.toString());
     setValue("locationLng", lng.toString());
-    console.log("✓ Coordinates from map click:", { lat, lng });
     setError("");
     setIsGeocodingLocation(true);
 

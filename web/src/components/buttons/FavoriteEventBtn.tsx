@@ -50,7 +50,7 @@ export const FavoriteEventBtn = ({
         onClick={handleClick}
       >
         <CalendarHeart
-          className={`w-6 sm:w-7 btn-icon ${className} ${activeClass}`}
+          className={`w-6 h-6 sm:w-7 sm:h-7 btn-icon ${className} ${activeClass}`}
         />
         {withText && (
           <div className="btn-default px-4 py-2">

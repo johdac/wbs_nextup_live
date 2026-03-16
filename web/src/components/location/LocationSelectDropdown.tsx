@@ -31,8 +31,7 @@ export const LocationSelectDropdown = ({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 pr-10 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition appearance-none"
-        style={{ backgroundColor: "#110b27" }}
+        className="w-full px-4 py-3 pr-10 rounded-lg bg-darkgray text-white focus:outline-none transition appearance-none"
         disabled={disabled}
         required
       >

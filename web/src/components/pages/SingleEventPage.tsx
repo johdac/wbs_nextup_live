@@ -69,11 +69,9 @@ export const SingleEventPage = () => {
   return (
     <div className="container mx-auto">
       {isOwner && (
-        <div>
-          <div className="text-white">
-            <GoBackBtn path="/managed-events" />
-          </div>
-          <div className="mt-4 flex items-center justify-end gap-3">
+        <div className="flex flex-1 text-white justify-between items-center md:-mt-4 lg:-mt-7.5">
+          <GoBackBtn path="/managed-events" />
+          <div className="flex items-center justify-end gap-3">
             <EditBtn data={event} path="managed-events" />
             <DeleteBtn
               id={event.id}
@@ -96,8 +94,10 @@ export const SingleEventPage = () => {
               </div>
               <div className="ml-4 flex items-center font-light">
                 <MapPin className="mr-1 h-5 w-5 " />
-                {event.location.city && `${event.location.city}, `}
-                {event.location.name}
+                <Link to={`/location/${event.location.id}`}>
+                  {event.location.city && `${event.location.city}, `}
+                  {event.location.name}
+                </Link>
               </div>
             </div>
           </div>
@@ -111,12 +111,12 @@ export const SingleEventPage = () => {
 
         {/* BOTTOM SECTION */}
 
-        <div className="lg:mt-25 mt-10 flex flex-wrap md:flex-nowrap">
+        <div className="lg:mt-25 mt-10 flex flex-wrap md:flex-nowrap w-full">
           {/* LEFT MAIN CONTENT */}
-          <div className="order-2 md:order-1 md:col-span-2 gap-10 un-box-t-padding md:un-box-r-padding">
+          <div className="order-2 md:order-1 flex-1 gap-10 un-box-t-padding md:un-box-r-padding">
             {/* artists */}
             {event.artists?.length && (
-              <div className="space-y-3 un-box-b-padding">
+              <div className="space-y-3">
                 <div className="flex justify-between">
                   <h2>Artists</h2>
                   <div className="flex gap-4">
