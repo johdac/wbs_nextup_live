@@ -1,4 +1,4 @@
-import EventList from "../layout/Events";
+import EventList from "../events/EventList";
 import { Hero } from "./Hero";
 
 export const Landing = () => {

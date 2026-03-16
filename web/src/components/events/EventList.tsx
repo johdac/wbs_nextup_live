@@ -1,6 +1,5 @@
-import EventCard from "./EventCard";
+import EventCard from "../events/EventCard";
 import { useState } from "react";
-import DateTimeInput from "./DateTimeInput";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate, useSearchParams, useLocation } from "react-router";
@@ -10,6 +9,7 @@ import { Pagination } from "@mui/material";
 import type { PlaylistItem } from "../../features/player/playerTypes";
 import { mergeMusicResources } from "../../features/player/utils/mergeMusicResources";
 import { PlayerTransports } from "../../features/player/PlayerTransports";
+import DateTimeInput from "../layout/DateTimeInput";
 import LocationSearch, {
   type LocationSearchResult,
 } from "../ui/LocationSearch";
@@ -254,7 +254,7 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
         </div>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+      <div className="grid grid-cols-1">
         {isLoading && (
           <div className="py-12 text-center font-display text-lg text-white">
             Loading events...
@@ -265,8 +265,8 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
             <div>
               All songs <PlayerTransports resources={mergedMusicResources} />
             </div>
-            {eventsList.map((event: EventListItem, index: number) => {
-              return <EventCard key={event.id} event={event} index={index} />;
+            {eventsList.map((event: EventListItem) => {
+              return <EventCard key={event.id} event={event} />;
             })}
           </>
         ) : (

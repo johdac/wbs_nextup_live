@@ -270,11 +270,11 @@
   }
 
   .btn-icon {
-    @apply w-8 h-8 transition-colors duration-100 hover:text-purple/80 group-hover:text-purple/80 cursor-pointer text-white;
+    @apply w-6 h-6 transition-colors duration-100 hover:text-purple/80 group-hover:text-purple/80 cursor-pointer text-white;
   }
 
   .btn-icon-active {
-    @apply text-purple;
+    @apply text-yellow;
   }
 
   .input-default {

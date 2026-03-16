@@ -6,7 +6,11 @@ interface DeleteBtnProps {
   setShowModal: (show: boolean) => void;
 }
 
-export const DeleteBtn = ({ id, setItemToDelete, setShowModal }: DeleteBtnProps) => {
+export const DeleteBtn = ({
+  id,
+  setItemToDelete,
+  setShowModal,
+}: DeleteBtnProps) => {
   return (
     <>
       <button
@@ -15,9 +19,7 @@ export const DeleteBtn = ({ id, setItemToDelete, setShowModal }: DeleteBtnProps)
           setShowModal(true);
         }}
       >
-        <div className="btn-icon">
-          <Trash2 className="text-white transition-colors duration-100 hover:text-red-500" />
-        </div>
+        <Trash2 className="btn-icon transition-colors duration-100 hover:text-red-500" />
       </button>
     </>
   );

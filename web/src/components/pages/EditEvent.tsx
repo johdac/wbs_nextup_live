@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useBeforeUnload, useBlocker, useNavigate, useParams } from "react-router";
+import {
+  useBeforeUnload,
+  useBlocker,
+  useNavigate,
+  useParams,
+} from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Alert, Snackbar } from "@mui/material";
 import dayjs from "dayjs";
+import { Toast } from "../ui/Toast";
+import { useToast } from "../../hooks/useToast";
 import { useForm } from "react-hook-form";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
@@ -10,7 +16,11 @@ import { locationsService } from "../../services/locationsApi";
 import { LocationLayout } from "../layout/LocationLayout";
 import { ArtistLayout } from "../layout/ArtistLayout";
 import { EventFormContext } from "../../context/EventFormContext";
-import type { LocationSearchResult, NominatimSearchItem, EventFormValues } from "../../types/event";
+import type {
+  LocationSearchResult,
+  NominatimSearchItem,
+  EventFormValues,
+} from "../../types/event";
 import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
@@ -56,10 +66,16 @@ export const EditEvent = () => {
     },
   });
 
-  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(null);
+  const [eventMainImageFile, setEventMainImageFile] = useState<File | null>(
+    null,
+  );
   const [isSavingArtist, setIsSavingArtist] = useState(false);
-  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(null);
-  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<string | undefined>(undefined);
+  const [artistMainImageFile, setArtistMainImageFile] = useState<File | null>(
+    null,
+  );
+  const [artistMainImagePreviewUrl, setArtistMainImagePreviewUrl] = useState<
+    string | undefined
+  >(undefined);
 
   const title = watch("title");
   const description = watch("description");
@@ -69,20 +85,16 @@ export const EditEvent = () => {
   const selectedArtistIds = watch("selectedArtistIds");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [toast, setToast] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  const { toast, showToast, closeToast } = useToast();
   const startDate = startDateValue ? dayjs(startDateValue) : null;
   const endDate = endDateValue ? dayjs(endDateValue) : null;
   const [showSavedArtistPreview, setShowSavedArtistPreview] = useState(false);
-  const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(null);
-  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<string | null>(null);
+  const [lastCreatedArtistId, setLastCreatedArtistId] = useState<string | null>(
+    null,
+  );
+  const [savedArtistPreviewId, setSavedArtistPreviewId] = useState<
+    string | null
+  >(null);
   const [savedArtistPreview, setSavedArtistPreview] = useState<{
     name: string;
     mainImageUrl?: string;
@@ -107,7 +119,9 @@ export const EditEvent = () => {
   const [isGeocodingLocation, setIsGeocodingLocation] = useState(false);
 
   const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState<LocationSearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<LocationSearchResult[]>(
+    [],
+  );
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isDateRangePickerOpen, setIsDateRangePickerOpen] = useState(false);
@@ -162,15 +176,20 @@ export const EditEvent = () => {
       startDate: eventFromServer.startDate ?? dayjs().toISOString(),
       endDate: eventFromServer.endDate ?? dayjs().add(2, "hour").toISOString(),
       selectedLocationId: eventFromServer.location?.id ?? "",
-      selectedArtistIds: eventFromServer.artists?.map((artist) => artist.id || artist._id || "").filter(Boolean) ?? [],
+      selectedArtistIds:
+        eventFromServer.artists
+          ?.map((artist) => artist.id || artist._id || "")
+          .filter(Boolean) ?? [],
       isCreatingNewLocation: false,
       locationName: eventFromServer.location?.name ?? "",
       locationAddress: eventFromServer.location?.address ?? "",
       locationCity: eventFromServer.location?.city ?? "",
       locationZip: eventFromServer.location?.zip ?? "",
       locationCountry: eventFromServer.location?.country ?? "",
-      locationLat: eventFromServer.location?.geo?.coordinates?.[1]?.toString() ?? "",
-      locationLng: eventFromServer.location?.geo?.coordinates?.[0]?.toString() ?? "",
+      locationLat:
+        eventFromServer.location?.geo?.coordinates?.[1]?.toString() ?? "",
+      locationLng:
+        eventFromServer.location?.geo?.coordinates?.[0]?.toString() ?? "",
       isCreatingNewArtist: false,
       artistName: "",
       artistGenres: [],
@@ -191,11 +210,7 @@ export const EditEvent = () => {
       return;
     }
 
-    setToast({
-      open: true,
-      message: error,
-      severity: "error",
-    });
+    showToast(error, "error");
   }, [error]);
 
   useEffect(() => {
@@ -203,11 +218,7 @@ export const EditEvent = () => {
       return;
     }
 
-    setToast({
-      open: true,
-      message: successMessage,
-      severity: "success",
-    });
+    showToast(successMessage, "success");
   }, [success, successMessage]);
 
   useEffect(() => {
@@ -235,7 +246,11 @@ export const EditEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to create location");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to create location",
+      );
     },
   });
 
@@ -247,7 +262,9 @@ export const EditEvent = () => {
         artistPreviewObjectUrlRef.current = null;
       }
 
-      const fallbackLocalImageUrl = artistMainImageFile ? URL.createObjectURL(artistMainImageFile) : undefined;
+      const fallbackLocalImageUrl = artistMainImageFile
+        ? URL.createObjectURL(artistMainImageFile)
+        : undefined;
 
       if (fallbackLocalImageUrl) {
         artistPreviewObjectUrlRef.current = fallbackLocalImageUrl;
@@ -263,7 +280,10 @@ export const EditEvent = () => {
       setShowSavedArtistPreview(true);
       setSavedArtistPreview({
         name: newArtist.name,
-        mainImageUrl: newArtist.mainImageUrl || newArtist.imageUrls?.[0] || fallbackLocalImageUrl,
+        mainImageUrl:
+          newArtist.mainImageUrl ||
+          newArtist.imageUrls?.[0] ||
+          fallbackLocalImageUrl,
         description: newArtist.description,
         websiteUrl: newArtist.websiteUrl,
         genres: newArtist.genres || [],
@@ -288,12 +308,17 @@ export const EditEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to create artist");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to create artist",
+      );
     },
   });
 
   const updateEventMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: any }) => eventsService.updateEvent(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: any }) =>
+      eventsService.updateEvent(id, payload),
     onSuccess: () => {
       setSuccess(true);
       queryClient.invalidateQueries({ queryKey: ["events"] });
@@ -306,11 +331,17 @@ export const EditEvent = () => {
         response?: { data?: { message?: string } };
         message?: string;
       };
-      setError(error?.response?.data?.message || error?.message || "Failed to update event");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update event",
+      );
     },
   });
 
-  const selectedLocation = locations.find((loc) => (loc.id || loc._id) === selectedLocationId);
+  const selectedLocation = locations.find(
+    (loc) => (loc.id || loc._id) === selectedLocationId,
+  );
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     const { lat, lng } = e.latlng;
@@ -320,11 +351,14 @@ export const EditEvent = () => {
     setIsGeocodingLocation(true);
 
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
-        headers: {
-          "User-Agent": "NextUpLive Event Creation",
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+        {
+          headers: {
+            "User-Agent": "NextUpLive Event Creation",
+          },
         },
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -336,7 +370,10 @@ export const EditEvent = () => {
         setValue("locationZip", addressData.postcode || "");
         setValue("locationCountry", addressData.country || "");
 
-        if ((data.name || addressData.road) && (addressData.city || addressData.town)) {
+        if (
+          (data.name || addressData.road) &&
+          (addressData.city || addressData.town)
+        ) {
           setTimeout(() => {
             autoComputeCoordinatesSilent(
               data.name || addressData.road || "",
@@ -385,7 +422,8 @@ export const EditEvent = () => {
           const forwardLat = parseFloat(data[0].lat);
           const forwardLng = parseFloat(data[0].lon);
 
-          const distance = Math.abs(forwardLat - clickLat) + Math.abs(forwardLng - clickLng);
+          const distance =
+            Math.abs(forwardLat - clickLat) + Math.abs(forwardLng - clickLng);
           if (distance < 1) {
             setValue("locationLat", forwardLat.toString());
             setValue("locationLng", forwardLng.toString());
@@ -402,7 +440,12 @@ export const EditEvent = () => {
       return true;
     }
 
-    const addressParts = [locationAddress, locationCity, locationZip, locationCountry].filter(Boolean);
+    const addressParts = [
+      locationAddress,
+      locationCity,
+      locationZip,
+      locationCountry,
+    ].filter(Boolean);
 
     if (addressParts.length === 0) {
       setError("Please select a location on the map or enter address details");
@@ -442,7 +485,11 @@ export const EditEvent = () => {
   };
 
   const handleAddressFieldChange = (
-    field: "locationAddress" | "locationCity" | "locationZip" | "locationCountry",
+    field:
+      | "locationAddress"
+      | "locationCity"
+      | "locationZip"
+      | "locationCountry",
     value: string,
   ) => {
     setValue(field, value);
@@ -454,7 +501,9 @@ export const EditEvent = () => {
 
   const handleLocationSelect = (locationId: string) => {
     setValue("selectedLocationId", locationId);
-    const location = locations.find((loc) => (loc.id || loc._id) === locationId);
+    const location = locations.find(
+      (loc) => (loc.id || loc._id) === locationId,
+    );
     if (location) {
       setValue("locationName", location.name);
       setValue("locationAddress", location.address || "");
@@ -520,7 +569,9 @@ export const EditEvent = () => {
     }
 
     const normalizedQuery = query.trim().toLowerCase();
-    const germanQuery = /\b(germany|deutschland|de)\b/i.test(query.trim()) ? query.trim() : `${query.trim()}, Germany`;
+    const germanQuery = /\b(germany|deutschland|de)\b/i.test(query.trim())
+      ? query.trim()
+      : `${query.trim()}, Germany`;
     const localMatches: LocationSearchResult[] = locations
       .filter((location) => {
         const haystack = [
@@ -538,7 +589,14 @@ export const EditEvent = () => {
       .slice(0, 5)
       .map((location) => ({
         name: location.name,
-        displayName: [location.name, location.address, location.city, location.country].filter(Boolean).join(", "),
+        displayName: [
+          location.name,
+          location.address,
+          location.city,
+          location.country,
+        ]
+          .filter(Boolean)
+          .join(", "),
         lat: location.geo.coordinates[1],
         lng: location.geo.coordinates[0],
         address: location.address || "",
@@ -600,7 +658,12 @@ export const EditEvent = () => {
             lat: Number(item.lat),
             lng: Number(item.lon),
             address: street || "",
-            city: address.city || address.town || address.village || address.county || "",
+            city:
+              address.city ||
+              address.town ||
+              address.village ||
+              address.county ||
+              "",
             country: address.country || "",
             zip: address.postcode || "",
           };
@@ -648,7 +711,10 @@ export const EditEvent = () => {
   };
 
   const hasUnsavedChanges = useMemo(() => {
-    const hasEventChanges = title.trim().length > 0 || description.trim().length > 0 || !!eventMainImageFile;
+    const hasEventChanges =
+      title.trim().length > 0 ||
+      description.trim().length > 0 ||
+      !!eventMainImageFile;
 
     const hasLocationChanges =
       isCreatingNewLocation ||
@@ -668,7 +734,9 @@ export const EditEvent = () => {
       artistDescription.trim().length > 0 ||
       artistWebsiteUrl.trim().length > 0 ||
       artistGenres.length > 0 ||
-      artistMusicUrls.some((item) => item.url.trim().length > 0 || item.title.trim().length > 0) ||
+      artistMusicUrls.some(
+        (item) => item.url.trim().length > 0 || item.title.trim().length > 0,
+      ) ||
       !!artistMainImageFile ||
       !!artistMainImagePreviewUrl;
 
@@ -698,7 +766,8 @@ export const EditEvent = () => {
   const shouldWarnOnLeave = hasUnsavedChanges && !success && !isSavingArtist;
 
   const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => shouldWarnOnLeave && currentLocation.pathname !== nextLocation.pathname,
+    ({ currentLocation, nextLocation }) =>
+      shouldWarnOnLeave && currentLocation.pathname !== nextLocation.pathname,
   );
 
   useBeforeUnload(
@@ -713,7 +782,9 @@ export const EditEvent = () => {
   useEffect(() => {
     if (blocker.state !== "blocked") return;
 
-    const confirmLeave = window.confirm("You have unsaved changes. Are you sure you want to leave this page?");
+    const confirmLeave = window.confirm(
+      "You have unsaved changes. Are you sure you want to leave this page?",
+    );
 
     if (confirmLeave) {
       blocker.proceed();
@@ -723,29 +794,27 @@ export const EditEvent = () => {
     blocker.reset();
   }, [blocker]);
 
-  const handleToastClose = (_event?: unknown, reason?: string) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    if (toast.severity === "error") {
-      setError("");
-    }
-
-    setToast((current) => ({
-      ...current,
-      open: false,
-    }));
+  const handleToastClose = () => {
+    if (toast.severity === "error") setError("");
+    closeToast();
   };
 
   const handleArtistSelect = (artistId: string) => {
     const prev = getValues("selectedArtistIds");
-    setValue("selectedArtistIds", prev.includes(artistId) ? prev.filter((id) => id !== artistId) : [...prev, artistId]);
+    setValue(
+      "selectedArtistIds",
+      prev.includes(artistId)
+        ? prev.filter((id) => id !== artistId)
+        : [...prev, artistId],
+    );
   };
 
   const handleArtistGenreToggle = (genre: string) => {
     const prev = getValues("artistGenres");
-    setValue("artistGenres", prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]);
+    setValue(
+      "artistGenres",
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre],
+    );
   };
 
   const handleArtistMainImageFileChange = (file: File | null) => {
@@ -784,7 +853,9 @@ export const EditEvent = () => {
     const invalidYoutubeResource = validMusicResources.find((item) => {
       return false;
       const normalized = item.url.toLowerCase();
-      return !(normalized.includes("youtube.com") || normalized.includes("youtu.be"));
+      return !(
+        normalized.includes("youtube.com") || normalized.includes("youtu.be")
+      );
     });
 
     if (invalidYoutubeResource) {
@@ -797,7 +868,10 @@ export const EditEvent = () => {
     try {
       let artistMainImageKey: string | undefined;
       if (artistMainImageFile) {
-        artistMainImageKey = await uploadFile(artistMainImageFile, "artistImage");
+        artistMainImageKey = await uploadFile(
+          artistMainImageFile,
+          "artistImage",
+        );
       }
 
       const payload = {
@@ -909,10 +983,14 @@ export const EditEvent = () => {
     },
     onLocationSelect: handleLocationSelect,
     onLocationNameChange: (value: string) => setValue("locationName", value),
-    onLocationAddressChange: (value: string) => handleAddressFieldChange("locationAddress", value),
-    onLocationCityChange: (value: string) => handleAddressFieldChange("locationCity", value),
-    onLocationZipChange: (value: string) => handleAddressFieldChange("locationZip", value),
-    onLocationCountryChange: (value: string) => handleAddressFieldChange("locationCountry", value),
+    onLocationAddressChange: (value: string) =>
+      handleAddressFieldChange("locationAddress", value),
+    onLocationCityChange: (value: string) =>
+      handleAddressFieldChange("locationCity", value),
+    onLocationZipChange: (value: string) =>
+      handleAddressFieldChange("locationZip", value),
+    onLocationCountryChange: (value: string) =>
+      handleAddressFieldChange("locationCountry", value),
     onCreateLocation: handleCreateLocation,
     onMapClick: handleMapClick,
     onLocationSearch: handleLocationSearch,
@@ -940,9 +1018,15 @@ export const EditEvent = () => {
     onArtistSelect: handleArtistSelect,
     onArtistNameChange: (value: string) => setValue("artistName", value),
     onArtistGenreToggle: handleArtistGenreToggle,
-    onArtistDescriptionChange: (value: string) => setValue("artistDescription", value),
-    onArtistWebsiteUrlChange: (value: string) => setValue("artistWebsiteUrl", value),
-    onArtistMusicUrlChange: (index: number, field: "title" | "url", value: string) => {
+    onArtistDescriptionChange: (value: string) =>
+      setValue("artistDescription", value),
+    onArtistWebsiteUrlChange: (value: string) =>
+      setValue("artistWebsiteUrl", value),
+    onArtistMusicUrlChange: (
+      index: number,
+      field: "title" | "url",
+      value: string,
+    ) => {
       const next = [...getValues("artistMusicUrls")];
       next[index] = {
         ...next[index],
@@ -950,10 +1034,17 @@ export const EditEvent = () => {
       };
       setValue("artistMusicUrls", next);
     },
-    onAddArtistMusicUrl: () => setValue("artistMusicUrls", [...getValues("artistMusicUrls"), { title: "", url: "" }]),
+    onAddArtistMusicUrl: () =>
+      setValue("artistMusicUrls", [
+        ...getValues("artistMusicUrls"),
+        { title: "", url: "" },
+      ]),
     onRemoveArtistMusicUrl: (index: number) => {
       const next = getValues("artistMusicUrls").filter((_, i) => i !== index);
-      setValue("artistMusicUrls", next.length > 0 ? next : [{ title: "", url: "" }]);
+      setValue(
+        "artistMusicUrls",
+        next.length > 0 ? next : [{ title: "", url: "" }],
+      );
     },
     onArtistMainImageFileChange: handleArtistMainImageFileChange,
     showSavedArtistPreview,
@@ -978,41 +1069,33 @@ export const EditEvent = () => {
       }
 
       if (lastCreatedArtistId) {
-        const next = getValues("selectedArtistIds").filter((id) => String(id) !== String(lastCreatedArtistId));
+        const next = getValues("selectedArtistIds").filter(
+          (id) => String(id) !== String(lastCreatedArtistId),
+        );
         setValue("selectedArtistIds", next);
       }
 
       setShowSavedArtistPreview(false);
       setArtistMainImageFile(null);
     },
-    onLoadArtistForEdit: (_artistId: string) => {
-      // For event editing, we don't support editing existing artists
-      // This is mainly for create event flow
-    },
-    onCancelArtistEdit: () => {
-      // For event editing, we don't support editing existing artists
-      // This is mainly for create event flow
-    },
   };
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      <Snackbar
+      <Toast
         open={toast.open}
-        autoHideDuration={3000}
+        message={toast.message}
+        severity={toast.severity}
         onClose={handleToastClose}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleToastClose} severity={toast.severity} variant="filled" sx={{ width: "100%" }}>
-          {toast.message}
-        </Alert>
-      </Snackbar>
+      />
 
       <GoBackBtn path="/managed-events" />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">Managed Events</h1>
+          <h1 className="text-4xl font-black text-white mb-2">
+            Managed Events
+          </h1>
           <p className="text-gray-400">Edit your saved events</p>
         </div>
 
