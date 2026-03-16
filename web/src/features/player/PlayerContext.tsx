@@ -67,7 +67,6 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     }));
     emptyOutPlaylist();
     setPlayerStateId(crypto.randomUUID()); // This removes old player instances
-    console.log("playerStateId", playerStateId);
     setPlaylist(parsedItems);
     setCurrentIndex(0);
     setPlayerState("playing");
@@ -75,12 +74,6 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
   const playNext = () => {
     if (playlist.length === 0) return;
-    console.log(
-      "currentIndex",
-      currentIndex,
-      "playlist.length",
-      playlist.length,
-    );
     if (currentIndex >= playlist.length - 1) setCurrentIndex(-1);
     else setCurrentIndex((prev) => prev + 1);
   };

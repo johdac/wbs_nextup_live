@@ -29,7 +29,7 @@ export const ArtistPreviewCard = ({
                 current.src = "/placeholder.jpeg";
               }
             }}
-            className="h-full w-full rounded-lg object-cover border border-purple-500/30"
+            className="h-full w-full rounded-lg object-cover"
           />
         </div>
         <div className="flex flex-col gap-2 min-w-0">
@@ -39,7 +39,7 @@ export const ArtistPreviewCard = ({
               {genres.map((genre) => (
                 <span
                   key={`${artistId}-${genre}`}
-                  className="inline-flex items-center rounded-full bg-purple-500/25 border border-purple-400/40 px-3 py-1 text-xs text-white"
+                  className="inline-flex items-center rounded-md capitalize font-bold bg-purple px-3 py-1 text-xs text-white"
                 >
                   {genre}
                 </span>
@@ -54,7 +54,7 @@ export const ArtistPreviewCard = ({
           <button
             type="button"
             onClick={onEdit}
-            className="w-full sm:w-auto px-3 py-2 cursor-pointer rounded-lg bg-black/40 text-gray-200 hover:bg-black/60 border border-purple-500/30"
+            className="w-full sm:w-auto px-3 py-2 cursor-pointer rounded-lg bg-black/40 text-gray-200 hover:bg-black/60"
           >
             Edit
           </button>
