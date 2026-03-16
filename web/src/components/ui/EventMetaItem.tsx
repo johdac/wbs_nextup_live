@@ -19,8 +19,8 @@ export const EventMetaItem = ({
   return (
     <>
       <div>
-        <div className="grid grid-cols-[35px_auto] pb-1 gap-1 items-center mb-8">
-          <Icon className="mr-3 h-5 w-5 " />
+        <div className="grid grid-cols-[37px_auto] sm:grid-cols-[40px_auto] pb-1 gap-1 items-center mb-8">
+          <Icon className="h-6 w-6 sm:h-7 sm:w-7 " />
           <div className="text-lg uppercase font-black">{heading}</div>
           <div className=""></div>
           <div>{children}</div>

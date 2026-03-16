@@ -40,10 +40,12 @@ export const FavoriteEventBtn = ({
     <>
       <button
         {...props}
-        className="flex group items-center"
+        className="flex group items-center "
         onClick={handleClick}
       >
-        <CalendarHeart className={`btn-icon ${className} ${activeClass}`} />
+        <CalendarHeart
+          className={`w-6 sm:w-7 btn-icon ${className} ${activeClass}`}
+        />
         {withText && (
           <div className="btn-default px-4 py-2">
             {event.interactionType === "favorite"

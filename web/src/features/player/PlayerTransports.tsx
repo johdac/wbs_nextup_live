@@ -12,8 +12,11 @@ export const PlayerTransports = ({
 
   return (
     <>
-      <PlayBtn onClick={() => playTracks(resources)} />
-      <AddToListBtn onClick={() => addManyToPlaylist(resources)} />
+      <PlayBtn onClick={() => playTracks(resources)} className="w-6 sm:w-7" />
+      <AddToListBtn
+        onClick={() => addManyToPlaylist(resources)}
+        className="w-6 sm:w-7"
+      />
     </>
   );
 };
