@@ -17,8 +17,8 @@ export const ArtistPreviewCard = ({
 }: ArtistPreviewCardProps) => {
   return (
     <div className="managed-card">
-      <div className="flex items-center gap-4">
-        <div className="w-full h-20 sm:w-30 sm:h-30 shrink-0 overflow-hidden rounded-md">
+      <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="w-20 h-20 sm:w-30 sm:h-30 shrink-0 overflow-hidden rounded-md">
           <img
             src={mainImageUrl || "/placeholder.jpeg"}
             alt={name}
@@ -32,10 +32,10 @@ export const ArtistPreviewCard = ({
             className="h-full w-full rounded-lg object-cover border border-purple-500/30"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-white font-semibold">{name}</p>
+        <div className="flex flex-col gap-2 min-w-0">
+          <p className="text-white font-semibold truncate">{name}</p>
           {genres.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-1 flex flex-wrap gap-2">
               {genres.map((genre) => (
                 <span
                   key={`${artistId}-${genre}`}
@@ -49,12 +49,12 @@ export const ArtistPreviewCard = ({
         </div>
       </div>
 
-      <div>
+      <div className="w-full sm:w-auto flex sm:justify-end">
         {canEdit && onEdit && (
           <button
             type="button"
             onClick={onEdit}
-            className="px-3 py-2 cursor-pointer rounded-lg bg-black/40 text-gray-200 hover:bg-black/60 border border-purple-500/30"
+            className="w-full sm:w-auto px-3 py-2 cursor-pointer rounded-lg bg-black/40 text-gray-200 hover:bg-black/60 border border-purple-500/30"
           >
             Edit
           </button>
