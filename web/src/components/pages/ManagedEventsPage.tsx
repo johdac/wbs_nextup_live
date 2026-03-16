@@ -9,7 +9,7 @@ import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 
-export const ManagedEvents = () => {
+export const ManagedEventsPage = () => {
   const navigate = useNavigate();
 
   const { user } = useAuth();

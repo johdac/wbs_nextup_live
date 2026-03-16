@@ -7,7 +7,7 @@ import { SingleEventPage } from "./components/pages/SingleEventPage";
 import { ArtistDetails } from "./components/pages/ArtistDetails";
 import { CreateEvent } from "./components/pages/CreateEvent";
 import { ManagedLocations } from "./components/pages/ManagedLocations";
-import { ManagedEvents } from "./components/pages/ManagedEvents";
+import { ManagedEventsPage } from "./components/pages/ManagedEventsPage";
 import { ManagedArtists } from "./components/pages/ManagedArtists";
 import { LocationDetails } from "./components/pages/LocationDetails";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -81,7 +81,7 @@ export const router = createBrowserRouter([
         path: "/managed-events",
         element: (
           <ProtectedRoute>
-            <ManagedEvents></ManagedEvents>
+            <ManagedEventsPage></ManagedEventsPage>
           </ProtectedRoute>
         ),
       },
