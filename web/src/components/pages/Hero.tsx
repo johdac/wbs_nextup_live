@@ -28,11 +28,7 @@ export const Hero = () => {
       </div>
 
       <div className="flex justify-center lg:justify-end order-1 mb-10 lg:mb-0">
-        <img
-          src="hero.webp"
-          alt="Live music illustration"
-          className="w-full max-w-md lg:max-w-full"
-        />
+        <img src="hero.webp" alt="Live music illustration" className="herobg" />
       </div>
     </div>
   );

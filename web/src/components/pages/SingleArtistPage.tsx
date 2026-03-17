@@ -175,6 +175,8 @@ export const SingleArtistPage = () => {
             <div className="py-5">
               <a
                 href={artist.websiteUrl}
+                target={"_blank"}
+                rel="noopener noreferrer"
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
               >
                 <Link /> <div>Website</div>
