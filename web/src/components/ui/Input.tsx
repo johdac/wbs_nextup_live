@@ -8,7 +8,7 @@ type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
 
 const variantClassMap: Record<InputVariant, string> = {
   default:
-    "w-full rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-white outline-none transition focus:border-purple-500",
+    "w-full rounded-md border border-gray-700 bg-gray-200 px-3 py-2 text-gray-900 outline-none transition focus:border-primary",
   glass:
     "w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-white backdrop-blur-md outline-none transition focus:border-purple-400",
   outline:

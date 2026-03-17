@@ -1,9 +1,14 @@
 import { useState } from "react";
-import { Mail, Lock, User, CircleAlert } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate, Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { motion } from "framer-motion";
+import { Label } from "../ui/Label";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
+import { AuthShowcase } from "../ui/AuthShowcase";
+import { ErrorMessage } from "../ui/ErrorMessage";
 
 interface RegisterFormInputs {
   username: string;
@@ -12,6 +17,42 @@ interface RegisterFormInputs {
   confirmPassword: string;
   role: "user" | "organizer";
 }
+
+const getUsernameValidationRules = () => ({
+  required: "Username is required",
+});
+
+const getEmailValidationRules = () => ({
+  required: "Email is required",
+  pattern: {
+    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: "Invalid email",
+  },
+});
+
+const getPasswordValidationRules = () => ({
+  required: "Password is required",
+  minLength: {
+    value: 8,
+    message: "Password must be at least 8 characters.",
+  },
+  validate: {
+    hasLowercase: (value: string) =>
+      /[a-z]/.test(value) ||
+      "Password must include at least one lowercase letter.",
+    hasUppercase: (value: string) =>
+      /[A-Z]/.test(value) ||
+      "Password must include at least one uppercase letter.",
+    hasNumber: (value: string) =>
+      /[0-9]/.test(value) || "Password must include at least one number.",
+  },
+});
+
+const getConfirmPasswordValidationRules = (watchedPassword: string) => ({
+  required: "Please confirm your password",
+  validate: (value: string) =>
+    value === watchedPassword || "Passwords do not match",
+});
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -74,28 +115,33 @@ export const Register = () => {
             <div className="w-full max-w-md">
               <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
                 <div className="text-center space-y-2 mb-6">
-                  <h1 className="text-3xl font-bold">Create Account</h1>
+                  <h1 className="text-2xl md:text-3xl font-bold">
+                    Create Account
+                  </h1>
                   <p className="text-purple-light text-sm">
                     Join us to discover amazing events
                   </p>
                 </div>
-
+                {/* Error Message */}
+                {error && <ErrorMessage message={error} />}
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   {/* Username */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
+                    <Label
+                      className="text-secondary-foreground"
+                      htmlFor="username"
+                    >
                       Username
-                    </label>
+                    </Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <input
+                      <Input
+                        id="username"
+                        className="pl-10"
                         type="text"
-                        {...register("username", {
-                          required: "Username is required",
-                        })}
+                        {...register("username", getUsernameValidationRules())}
                         placeholder="Enter your username"
-                        className="input-default pl-10  focus:border-primary w-full"
-                      />
+                      ></Input>
                     </div>
                     {errors.username && (
                       <p className="text-red-800 text-xs">
@@ -106,23 +152,21 @@ export const Register = () => {
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
+                    <Label
+                      className="text-secondary-foreground"
+                      htmlFor="email"
+                    >
                       Email
-                    </label>
+                    </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <input
+                      <Input
+                        id="email"
+                        className="pl-10"
                         type="email"
-                        {...register("email", {
-                          required: "Email is required",
-                          pattern: {
-                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                            message: "Invalid email",
-                          },
-                        })}
+                        {...register("email", getEmailValidationRules())}
                         placeholder="john@gmail.com"
-                        className="input-default pl-10  focus:border-primary w-full"
-                      />
+                      ></Input>
                     </div>
                     {errors.email && (
                       <p className="text-red-800 text-xs">
@@ -133,34 +177,21 @@ export const Register = () => {
 
                   {/* Password */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
+                    <Label
+                      className="text-secondary-foreground"
+                      htmlFor="password"
+                    >
                       Password
-                    </label>
+                    </Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <input
+                      <Input
+                        id="password"
                         type="password"
-                        {...register("password", {
-                          required: "Password is required",
-                          minLength: {
-                            value: 8,
-                            message: "Password must be at least 8 characters.",
-                          },
-                          validate: {
-                            hasLowercase: (value) =>
-                              /[a-z]/.test(value) ||
-                              "Password must include at least one lowercase letter.",
-                            hasUppercase: (value) =>
-                              /[A-Z]/.test(value) ||
-                              "Password must include at least one uppercase letter.",
-                            hasNumber: (value) =>
-                              /[0-9]/.test(value) ||
-                              "Password must include at least one number.",
-                          },
-                        })}
+                        {...register("password", getPasswordValidationRules())}
                         placeholder="••••••••"
-                        className="input-default pl-10  focus:border-primary w-full"
-                      />
+                        className="pl-10"
+                      ></Input>
                     </div>
                     {errors.password && (
                       <p className="text-red-800 text-xs">
@@ -171,21 +202,24 @@ export const Register = () => {
 
                   {/* Confirm Password */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary-foreground mb-1 block">
+                    <Label
+                      className="text-secondary-foreground"
+                      htmlFor="confirm-password"
+                    >
                       Confirm Password
-                    </label>
+                    </Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <input
+                      <Input
+                        id="confirm-password"
+                        className="pl-10"
                         type="password"
-                        {...register("confirmPassword", {
-                          required: "Please confirm your password",
-                          validate: (value) =>
-                            value === password || "Passwords do not match",
-                        })}
+                        {...register(
+                          "confirmPassword",
+                          getConfirmPasswordValidationRules(password),
+                        )}
                         placeholder="••••••••"
-                        className="input-default pl-10 focus:border-primary w-full"
-                      />
+                      ></Input>
                     </div>
                     {errors.confirmPassword && (
                       <p className="text-red-800 text-xs">
@@ -196,9 +230,6 @@ export const Register = () => {
 
                   {/* Role Selection */}
                   <div className="space-y-3 pt-2">
-                    {/* <label className="text-sm font-medium text-black block">
-                    I am a
-                  </label> */}
                     <div className="flex gap-6">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -221,21 +252,10 @@ export const Register = () => {
                     </div>
                   </div>
 
-                  {/* Error Message */}
-                  {error && (
-                    <div className="p-3 flex items-center rounded-lg bg-red-500/20 border border-red-500 text-red-800 text-sm">
-                      <CircleAlert className="text-red pr-2" /> {error}
-                    </div>
-                  )}
-
                   {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
-                  >
+                  <Button type="submit" disabled={loading} className="w-full">
                     {loading ? "Creating Account..." : "Create Account"}
-                  </button>
+                  </Button>
 
                   {/* Login Link */}
                   <p className="text-center text-sm text-gray-600 ">
@@ -255,67 +275,14 @@ export const Register = () => {
         </motion.div>
 
         {/* Right Column - Design Section */}
-        <div className="hidden md:flex bg-linear-to-br from-purple-600 via-blue-600 to-purple-700 h-full rounded-lg overflow-hidden items-center justify-center relative p-8">
-          {/* Gradient overlay for depth */}
-          <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
-
-          {/* Content */}
-          <div className="relative z-10 text-center space-y-6 max-w-md">
-            {/* Main Headline */}
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-black text-white leading-tight">
-                Discover Your Next
-                <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-pink-400 via-yellow-400 to-pink-400">
-                  Live Show
-                </span>
-              </h2>
-
-              <p className="text-gray-200 text-lg leading-relaxed">
-                Join thousands of music fans exploring upcoming events in your
-                city. Build your perfect night out.
-              </p>
-            </div>
-
-            {/* Floating Elements */}
-            <div className="relative h-32 flex items-center justify-center">
-              {/* Top Left Badge */}
-              <div className="absolute top-0 left-0 bg-yellow-400 text-black px-4 py-2 rounded-lg text-sm font-bold shadow-lg transform -rotate-12">
-                Join Now
-              </div>
-
-              {/* Bottom Right Badge */}
-              <div className="absolute bottom-0 right-0 bg-pink-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transform rotate-12">
-                Free Access
-              </div>
-
-              {/* Center Icon */}
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                <span className="text-3xl">✦</span>
-              </div>
-            </div>
-
-            {/* Feature List */}
-            <div className="space-y-3 pt-4">
-              <div className="flex items-center gap-3 justify-center">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span className="text-white text-sm">
-                  Unlimited Event Access
-                </span>
-              </div>
-              <div className="flex items-center gap-3 justify-center">
-                <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                <span className="text-white text-sm">
-                  Personalized Recommendations
-                </span>
-              </div>
-              <div className="flex items-center gap-3 justify-center">
-                <div className="w-2 h-2 bg-blue-300 rounded-full"></div>
-                <span className="text-white text-sm"></span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AuthShowcase
+          headline="Discover Your Next"
+          highlightedText="Live Show"
+          description="Join thousands of music fans exploring upcoming events in your city. Build your perfect night out."
+          leftBadge="Join Now"
+          rightBadge="Free Access"
+          features={["Unlimited Event Access", "Personalized Recommendations"]}
+        />
       </div>
     </div>
   );
