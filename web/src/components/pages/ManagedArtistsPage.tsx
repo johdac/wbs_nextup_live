@@ -50,14 +50,14 @@ export const ManagedArtistsPage = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <Heading title="Managed Artist" subtitle="Update your saved artists" />
+        <Heading title="Managed Artists" subtitle="Update your saved artists" />
         {error && (
           <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-300">
             {error}
           </div>
         )}
 
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid grid-cols-1">
           {isLoading ? (
             <div className="py-12 text-center font-display text-lg text-white">
               Loading artists...
