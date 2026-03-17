@@ -11,8 +11,9 @@ import {
 } from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
 import { EventFormContext } from "../../context/EventFormContext";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import { ArtistLayout } from "../layout/ArtistLayout";
+import { Heading } from "../ui/Heading";
+import toast from "react-hot-toast";
 
 type ArtistMusicUrl = { title: string; url: string };
 
@@ -145,7 +146,7 @@ export const EditArtist = () => {
   const createArtistMutation = useMutation({
     mutationFn: (data: CreateArtistInput) => artistsService.createArtist(data),
     onSuccess: (newArtist) => {
-      setSuccess(true);
+      // setSuccess(true);
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       setSavedArtistPreviewId(newArtist.id || newArtist._id || null);
       setSavedArtistPreview({
@@ -247,6 +248,13 @@ export const EditArtist = () => {
       setError("Failed to load artist");
     }
   }, [artistByIdError]);
+
+  useEffect(() => {
+    if (!success) {
+      return;
+    }
+    toast.success("Artist updated successfully!");
+  }, [success]);
 
   const handleToggleGenre = (genre: string) => {
     const prev = getValues("artistGenres");
@@ -401,7 +409,7 @@ export const EditArtist = () => {
       setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImagePreviewUrl(undefined);
       setError("");
-      setSuccess(false);
+      // setSuccess(false);
     },
     onCreateArtist: handleSave,
   };
@@ -413,29 +421,31 @@ export const EditArtist = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <GoBackBtn path="/managed-events" />
-      <div className="mb-8">
-        <h1 className="text-4xl font-black text-white mb-2">Managed Artist</h1>
-        <p className="text-gray-400">Update the artist's details.</p>
+    <div className="container z-20 min-h-screen py-8">
+      {/* <GoBackBtn path="/managed-events" /> */}
+      <div className="max-w-4xl mx-auto">
+        <Heading
+          title={"Managed Artists"}
+          subtitle={"Edit your selected artist"}
+        />
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-500/20 border border-red-500 rounded-lg flex items-center gap-2 text-red-100">
+            <AlertCircle className="w-5 h-5" />
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-100">
+            Artist updated successfully!
+          </div>
+        )}
+
+        <EventFormContext.Provider value={eventFormContextValue}>
+          <ArtistLayout mode="standalone" />
+        </EventFormContext.Provider>
       </div>
-
-      {error && (
-        <div className="mb-4 p-4 bg-red-500/20 border border-red-500 rounded-lg flex items-center gap-2 text-red-100">
-          <AlertCircle className="w-5 h-5" />
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-4 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-100">
-          Artist updated successfully!
-        </div>
-      )}
-
-      <EventFormContext.Provider value={eventFormContextValue}>
-        <ArtistLayout mode="standalone" />
-      </EventFormContext.Provider>
     </div>
   );
 };

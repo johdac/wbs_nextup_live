@@ -20,6 +20,7 @@ import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
 import { Heading } from "../ui/Heading";
 import { GoBackBtn } from "../buttons/GoBackBtn";
+import toast from "react-hot-toast";
 
 interface CreateEventProps {
   mode?: "create" | "edit";
@@ -495,6 +496,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
       setTimeout(() => {
         navigate("/managed-events");
       }, 1500);
+      toast.success("Event updated successfully!");
     },
     onError: (err: Error | unknown) => {
       const error = err as {
@@ -1305,7 +1307,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      {isEditMode ? (
+      {/* {isEditMode ? (
         <GoBackBtn path="/managed-events" />
       ) : (
         <div className="hidden sm:block text-white">
@@ -1313,7 +1315,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
             <ArrowLeft></ArrowLeft>
           </Link>
         </div>
-      )}
+      )} */}
       <div className="max-w-4xl mx-auto">
         <Heading
           title={isEditMode ? "Managed Events" : "Create New Event"}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 // import { Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import L from "leaflet";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -16,6 +16,7 @@ import {
 import { Heading } from "../ui/Heading";
 import { GoBackBtn } from "../buttons/GoBackBtn";
 import { LocationLayout } from "../layout/LocationLayout";
+import toast from "react-hot-toast";
 
 type EditLocationProps = {
   preselectedLocationId?: string;
@@ -32,6 +33,7 @@ export const EditLocation = ({
       (user as { _id?: string; id?: string } | null)?.id ||
       "",
   );
+  const navigate = useNavigate();
 
   const [selectedLocationId, setSelectedLocationId] = useState("");
   const [name, setName] = useState("");
@@ -147,13 +149,10 @@ export const EditLocation = ({
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      setSuccess("");
-    }, 3000);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
+    setTimeout(() => {
+      navigate("/managed-locations");
+    }, 1500);
+    toast.success("Location updated successfully!");
   }, [success]);
 
   const setFormFromLocation = (locationId: string) => {
@@ -360,26 +359,17 @@ export const EditLocation = ({
   };
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-4 flex justify-between">
-          <GoBackBtn path="/managed-locations" />
-        </div>
-
+    <div className="container z-20 min-h-screen py-8">
+      {/* <GoBackBtn path="/managed-locations" /> */}
+      <div className="max-w-4xl mx-auto">
         <Heading
           title="Managed Locations"
-          subtitle="Select and edit your saved locations"
+          subtitle="Edit your selected location"
         />
 
         {error && (
           <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400">
             {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
-            {success}
           </div>
         )}
 
