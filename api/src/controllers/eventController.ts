@@ -79,7 +79,7 @@ export const eventGetAll: RequestHandler = async (req, res) => {
     startAfter,
     startUntil,
     page = "1",
-    limit = 20,
+    limit = 40,
   } = req.query;
 
   const filter: any = {};
@@ -157,29 +157,37 @@ export const eventGetAll: RequestHandler = async (req, res) => {
   }
 
   const pageNum = parseInt(page as string);
-  const limitNum = Number(limit) > 100 ? 100 : Number(limit);
+  const limitNum = Number(limit) > 2 ? 2 : Number(limit);
 
   const eventsDb = await Event.find(filter)
     .populate("createdById", "username")
     .populate("locationId")
     .populate("artistsIds")
     .skip((pageNum - 1) * limitNum)
-    .limit(limitNum)
+    .limit(limitNum + 1) // go one beyond needed to see if there is more
     .sort({ startDate: 1 })
     .lean();
 
+  // For pagination we check if the returned db response has one item more then we need
+  const hasNextPage = eventsDb.length > limitNum;
+  const eventsPaginated = hasNextPage ? eventsDb.slice(0, limitNum) : eventsDb;
+
   // Add eventRelation info for logged in users (favorited, hidden)
-  const eventIds = eventsDb.map((e) => e._id);
+  const eventIds = eventsPaginated.map((e) => e._id);
   let relationMap = new Map<string, string>();
   if (req.user) relationMap = await getEventRelationship(req.user.id, eventIds);
 
-  const events = eventsDb.map((event) => ({
+  const events = eventsPaginated.map((event) => ({
     ...event,
     mainImageUrl: getPublicFileUrl(event.mainImageKey),
     interactionType: relationMap.get(event._id.toString()) || null,
   }));
 
-  res.json(events);
+  res.json({
+    events,
+    page,
+    hasNextPage,
+  });
 };
 
 export const eventGetOne: RequestHandler = async (req, res) => {

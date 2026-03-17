@@ -31,16 +31,26 @@ export const artistGetAll: RequestHandler = async (req, res) => {
   const artistsDb = await Artist.find(filter)
     .populate("createdById", "username")
     .skip((pageNum - 1) * limitNum)
-    .limit(limitNum)
+    .limit(limitNum + 1) // go one beyond needed to see if there is more
     .sort({ name: 1 })
     .lean();
 
+  // For pagination we check if the returned db response has one item more then we need
+  const hasNextPage = artistsDb.length > limitNum;
+  const artistsPaginated = hasNextPage
+    ? artistsDb.slice(0, limitNum)
+    : artistsDb;
+
   const artists = artistsDb.map((artist) => ({
-    ...artist,
+    ...artistsPaginated,
     mainImageUrl: getPublicFileUrl(artist.mainImageKey),
   }));
 
-  res.json(artists);
+  res.json({
+    artists,
+    page,
+    hasNextPage,
+  });
 };
 
 export const artistGetOne: RequestHandler = async (req, res) => {

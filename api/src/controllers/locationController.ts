@@ -27,12 +27,23 @@ export const locationGetAll: RequestHandler = async (req, res) => {
   const pageNum = parseInt(page as string);
   const limitNum = Number(limit) > 100 ? 100 : Number(limit);
 
-  const locations = await Location.find(filter)
+  const locationsDb = await Location.find(filter)
     .populate("createdById", "username")
     .skip((pageNum - 1) * limitNum)
-    .limit(limitNum)
+    .limit(limitNum + 1) // go one beyond needed to see if there is more
     .sort({ name: 1 });
-  res.json(locations);
+
+  // For pagination we check if the returned db response has one item more then we need
+  const hasNextPage = locationsDb.length > limitNum;
+  const locationsPaginated = hasNextPage
+    ? locationsDb.slice(0, limitNum)
+    : locationsDb;
+
+  res.json({
+    locationsPaginated,
+    page,
+    hasNextPage,
+  });
 };
 
 export const locationGetOne: RequestHandler = async (req, res) => {
