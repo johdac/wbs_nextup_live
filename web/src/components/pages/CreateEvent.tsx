@@ -1305,7 +1305,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      {isEditMode ? (
+      {/* {isEditMode ? (
         <GoBackBtn path="/managed-events" />
       ) : (
         <div className="hidden sm:block text-white">
@@ -1313,7 +1313,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
             <ArrowLeft></ArrowLeft>
           </Link>
         </div>
-      )}
+      )} */}
       <div className="max-w-4xl mx-auto">
         <Heading
           title={isEditMode ? "Managed Events" : "Create New Event"}
