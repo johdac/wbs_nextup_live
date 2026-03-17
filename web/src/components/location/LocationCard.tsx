@@ -18,7 +18,7 @@ export const LocationCard = ({
     <>
       <div
         key={location.id}
-        className="flex flex-wrap sm:flex-nowrap py-10 items-start un-border-b text-white relative px-3 sm:px-0 gap-6"
+        className="flex flex-wrap sm:flex-nowrap py-10 items-start text-white relative px-3 sm:px-0 gap-6"
       >
         <div className="relative w-full aspect-video sm:w-auto sm:h-40 sm:aspect-square md:aspect-4/3 shrink-0 overflow-visible rounded-md">
           <div className="text-white h-full overflow-hidden rounded-md">
