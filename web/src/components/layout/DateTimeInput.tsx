@@ -14,7 +14,7 @@ export default function DateTimeInput({
 
   return (
     <DatePicker
-      label="Date"
+      label="From Date"
       value={value ? dayjs(value) : null}
       onChange={handleChange}
       slotProps={{

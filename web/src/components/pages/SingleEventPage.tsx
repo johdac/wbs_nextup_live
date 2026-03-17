@@ -63,7 +63,7 @@ export const SingleEventPage = () => {
   const startDate = format(new Date(event.startDate), "dd MMM hh:mm a");
   const endDate = format(new Date(event.endDate), "dd MMM hh:mm a");
 
-  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(event.location.address)}&output=embed`;
+  const mapEmbedUrl = `https://www.google.com/maps?q=${event.location.geo.coordinates[1]},${event.location.geo.coordinates[0]}&output=embed`;
   const mergedMusicResources: PlaylistItem[] = mergeMusicResources([event]);
 
   return (
@@ -120,7 +120,10 @@ export const SingleEventPage = () => {
                 <div className="flex justify-between">
                   <h2>Artists</h2>
                   <div className="flex gap-4">
-                    <PlayerTransports resources={mergedMusicResources} />
+                    <PlayerTransports
+                      resources={mergedMusicResources}
+                      addAllPrefix={true}
+                    />
                   </div>
                 </div>
                 <div>
