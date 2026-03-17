@@ -185,12 +185,12 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
       <div className=" py-4 mb-10 ">
         <div className=" flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-4">
           {/* Date / Time Picker */}
-          <div className="w-full lg:flex-1 mui-white-outline">
+          <div className="w-full lg:flex-1 mui-white-outline max-h-13.25">
             <DateTimeInput value={dateTime} onChange={setDateTime} />
           </div>
 
           {/* Location + Radius */}
-          <div className="w-full lg:flex-[1.5] flex gap-2">
+          <div className="w-full lg:flex-[1.5] flex gap-2 ">
             <LocationSearch
               value={location}
               onChange={(nextLocation) => {
@@ -262,9 +262,19 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
         )}
         {!isLoading && eventsList.length > 0 ? (
           <>
-            <div>
-              All songs <PlayerTransports resources={mergedMusicResources} />
+            {/* Result Line and Player Transport */}
+            <div className="flex justify-between mb-2">
+              <div className="font-bolder text-xl text-gray">
+                Results: {eventsList.length}
+              </div>
+              <div>
+                <PlayerTransports
+                  resources={mergedMusicResources}
+                  addAllPrefix={true}
+                />
+              </div>
             </div>
+            {/* Result List */}
             {eventsList.map((event: EventListItem) => {
               return <EventCard key={event.id} event={event} />;
             })}

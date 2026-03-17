@@ -30,7 +30,7 @@ export default function LocationSearch({
   onChange,
   onSelect,
   onClear,
-  label = "Location",
+  label = "Enter Your Location",
   className = "",
 }: LocationSearchProps) {
   const [results, setResults] = useState<OpenStreetResult[]>([]);
@@ -105,7 +105,7 @@ export default function LocationSearch({
 
   return (
     <div className={`relative w-full ${className}`}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
         <TextField
           label={label}
           value={value}
@@ -122,6 +122,7 @@ export default function LocationSearch({
           size="small"
           variant="outlined"
           className="mui-white-outline"
+          placeholder="e.g. Karl-Marx-Str. 12, Berlin"
         />
         {value && value.length > 0 && (
           <button
@@ -132,7 +133,14 @@ export default function LocationSearch({
               onChange("");
               onClear?.();
             }}
-            style={{ marginLeft: 4, background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 18 }}
+            style={{
+              marginLeft: 4,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#888",
+              fontSize: 18,
+            }}
             tabIndex={-1}
           >
             ×
