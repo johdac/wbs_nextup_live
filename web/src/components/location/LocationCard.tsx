@@ -10,7 +10,7 @@ export const LocationCard = ({
   location: Location;
   actionSlot?: ReactNode;
 }) => {
-  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(location.address)}&output=embed`;
+  const mapEmbedUrl = `https://www.google.com/maps?q=${location.geo.coordinates[1]},${location.geo.coordinates[0]}&output=embed`;
   const websiteUrl = location.websiteUrl?.trim() ?? "";
   const hasWebsiteUrl = websiteUrl.length > 0;
 

@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import DOMPurify from "dompurify";
 import { artistsService, type Artist } from "../../services/artistsApi";
 import { Link } from "lucide-react";
 import { EventByArtist } from "../artists/EventsByArtist";
 import { GenresTag } from "../ui/GenresTag";
-import { PlayBtn } from "../buttons/PlayBtn";
 import { Kicker } from "../ui/Kicker";
 import { GoBackBtn } from "../buttons/GoBackBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { useAuth } from "../../context/AuthContext";
 import { ConfirmModal } from "../layout/ConfirmModal";
+import { PlayerTransports } from "../../features/player/PlayerTransports";
+import { eventsService, type EventListItem } from "../../services/eventsApi";
 
 export const SingleArtistPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,7 @@ export const SingleArtistPage = () => {
   const [artist, setArtist] = useState<Artist | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [event, setEvent] = useState<EventListItem | null>(null);
 
   useEffect(() => {
     if (!id) {
@@ -35,8 +37,13 @@ export const SingleArtistPage = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await artistsService.getArtistById(id);
-        setArtist(data);
+        const artistData = await artistsService.getArtistById(id);
+        const eventData = await eventsService.fetchEventsList(1, {
+          artistId: id,
+          limit: 1,
+        });
+        setArtist(artistData);
+        setEvent(eventData[0]);
       } catch (err) {
         setError("Failed to load artist");
       } finally {
@@ -47,7 +54,37 @@ export const SingleArtistPage = () => {
     fetchArtist();
   }, [id]);
 
-  console.log("detail:", artist);
+  /**
+   * Construct the an PlaylistItem array to pass to the player. Since we are on the artist page we
+   * are lacking a full event we can show in the player otherwise. We get the latest event for the artist
+   * fresh from the api.
+   */
+  const playlistItems = useMemo(() => {
+    if (!artist || !event) return [];
+
+    return artist.musicResources?.map((el) => ({
+      played: false,
+      song: {
+        id: el._id,
+        artist: {
+          id: artist.id,
+          name: artist.name,
+        },
+        sourceUrl: el.url,
+        title: el.title,
+      },
+      event: {
+        id: event.id,
+        location: {
+          id: event.location.id,
+          name: event.location.name,
+          city: event.location.city,
+        },
+        start: event.startDate,
+        interactionType: event.interactionType,
+      },
+    }));
+  }, [artist, event]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -93,7 +130,7 @@ export const SingleArtistPage = () => {
         </div>
       )}
       <div className="pb-20 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch w-full">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
 
           {/* image of the artist */}
@@ -112,9 +149,15 @@ export const SingleArtistPage = () => {
               <Kicker text="Artist" />
               <div className="flex flex-row gap-10 items-center pb-2">
                 <h1>{artist.name}</h1>
-                <PlayBtn />
               </div>
-              <GenresTag data={artist} />
+              <div className="flex justify-between">
+                <GenresTag data={artist} />
+                {playlistItems && (
+                  <div className="flex gap-2">
+                    <PlayerTransports resources={playlistItems} />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* description */}

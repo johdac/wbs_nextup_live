@@ -19,7 +19,7 @@ export const EventByLocation = ({
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="">
       <section className=" ">
         <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
           All <span className="neon-gradient-text">Upcoming</span> Events At

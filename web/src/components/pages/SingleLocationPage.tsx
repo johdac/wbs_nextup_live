@@ -48,7 +48,7 @@ export const SingleLocationPage = () => {
   if (error) return <p>{error}</p>;
   if (!location) return <p>Location not found</p>;
 
-  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(location.address)}&output=embed`;
+  const mapEmbedUrl = `https://www.google.com/maps?q=${location.geo.coordinates[1]},${location.geo.coordinates[0]}&output=embed`;
 
   const locationOwnerId =
     location.organizerId ||
@@ -91,7 +91,7 @@ export const SingleLocationPage = () => {
         </div>
       )}
       <div className="pb-20 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch w-full">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
           <div className="w-full overflow-hidden rounded-xl border-0 object-cover">
             <iframe
