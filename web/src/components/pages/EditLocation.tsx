@@ -360,15 +360,12 @@ export const EditLocation = ({
   };
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-4 flex justify-between">
-          <GoBackBtn path="/managed-locations" />
-        </div>
-
+    <div className="container z-20 min-h-screen py-8">
+      {/* <GoBackBtn path="/managed-locations" /> */}
+      <div className="max-w-4xl mx-auto">
         <Heading
           title="Managed Locations"
-          subtitle="Select and edit your saved locations"
+          subtitle="Edit your selected location"
         />
 
         {error && (
