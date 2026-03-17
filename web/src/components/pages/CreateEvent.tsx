@@ -20,6 +20,7 @@ import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
 import { Heading } from "../ui/Heading";
 import { GoBackBtn } from "../buttons/GoBackBtn";
+import toast from "react-hot-toast";
 
 interface CreateEventProps {
   mode?: "create" | "edit";
@@ -495,6 +496,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
       setTimeout(() => {
         navigate("/managed-events");
       }, 1500);
+      toast.success("Event updated successfully!");
     },
     onError: (err: Error | unknown) => {
       const error = err as {
