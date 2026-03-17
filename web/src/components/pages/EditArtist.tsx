@@ -11,9 +11,9 @@ import {
 } from "../../services/artistsApi";
 import { useAuth } from "../../context/AuthContext";
 import { EventFormContext } from "../../context/EventFormContext";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import { ArtistLayout } from "../layout/ArtistLayout";
 import { Heading } from "../ui/Heading";
+import toast from "react-hot-toast";
 
 type ArtistMusicUrl = { title: string; url: string };
 
@@ -146,7 +146,7 @@ export const EditArtist = () => {
   const createArtistMutation = useMutation({
     mutationFn: (data: CreateArtistInput) => artistsService.createArtist(data),
     onSuccess: (newArtist) => {
-      setSuccess(true);
+      // setSuccess(true);
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       setSavedArtistPreviewId(newArtist.id || newArtist._id || null);
       setSavedArtistPreview({
@@ -248,6 +248,13 @@ export const EditArtist = () => {
       setError("Failed to load artist");
     }
   }, [artistByIdError]);
+
+  useEffect(() => {
+    if (!success) {
+      return;
+    }
+    toast.success("Artist updated successfully!");
+  }, [success]);
 
   const handleToggleGenre = (genre: string) => {
     const prev = getValues("artistGenres");
@@ -402,7 +409,7 @@ export const EditArtist = () => {
       setValue("artistMusicUrls", [{ title: "", url: "" }]);
       setArtistMainImagePreviewUrl(undefined);
       setError("");
-      setSuccess(false);
+      // setSuccess(false);
     },
     onCreateArtist: handleSave,
   };
@@ -418,7 +425,7 @@ export const EditArtist = () => {
       {/* <GoBackBtn path="/managed-events" /> */}
       <div className="max-w-4xl mx-auto">
         <Heading
-          title={"Managed Artist"}
+          title={"Managed Artists"}
           subtitle={"Edit your selected artist"}
         />
 
