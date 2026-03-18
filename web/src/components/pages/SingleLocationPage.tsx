@@ -4,7 +4,6 @@ import { locationsService, type Location } from "../../services/locationsApi";
 import { Link } from "lucide-react";
 import { EventByLocation } from "../location/EventsByLocation";
 import { Kicker } from "../ui/Kicker";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { useAuth } from "../../context/AuthContext";
@@ -75,33 +74,32 @@ export const SingleLocationPage = () => {
 
   return (
     <div className="container mx-auto">
-      {isOwner && (
-        <div className="pb-10 flex flex-row justify-between items-center">
-          <div className="text-white">
-            <GoBackBtn path="/managed-locations" />
-          </div>
-          <div className="mt-4 flex items-center justify-end gap-3">
-            <EditBtn data={location} path="managed-locations" />
-            <DeleteBtn
-              id={location.id || location._id || ""}
-              setItemToDelete={setItemToDelete}
-              setShowModal={setShowModal}
-            />
-          </div>
-        </div>
-      )}
       <div className="pb-20 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
-          <div className="w-full overflow-hidden rounded-xl border-0 object-cover">
-            <iframe
-              src={mapEmbedUrl}
-              width="100%"
-              height="400"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
+          <div className="flex flex-wrap sm:flex-nowrap items-start relative px-3">
+            <div className="w-full overflow-hidden rounded-xl border-0 object-cover">
+              <iframe
+                src={mapEmbedUrl}
+                width="100%"
+                height="400"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+            {isOwner && (
+              <div className="flex mt-2 gap-4 absolute bg-purple rounded-md top-5 right-0 px-2 pt-1 pb-1.5">
+                <div className="flex items-center justify-end gap-3">
+                  <EditBtn data={location} path="managed-locations" />
+                  <DeleteBtn
+                    id={location.id || location._id || ""}
+                    setItemToDelete={setItemToDelete}
+                    setShowModal={setShowModal}
+                  />
+                </div>
+              </div>
+            )}
           </div>
           {/* right */}
           <div className="flex flex-col items-start">
