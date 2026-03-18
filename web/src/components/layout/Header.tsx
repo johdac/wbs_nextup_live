@@ -99,7 +99,7 @@ export const Header = () => {
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 top-16 w-52 bg-purple rounded-lg shadow-xl py-2 z-50">
+                  <div className="absolute right-0 top-16 w-52 bg-purple rounded-lg shadow-xl py-2 z-130">
                     <Link
                       to="/profile"
                       onClick={() => setUserDropdownOpen(false)}
