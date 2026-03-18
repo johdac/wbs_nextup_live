@@ -324,15 +324,11 @@
   }
 
   .herobg {
-    width: 150%;
-    max-width: none;
-    z-index: -1;
-    margin-top: -20px;
     mask-image: linear-gradient(
       to right,
       #00000021 0%,
-      #00000047 50%,
-      #00000066 50%
+      #00000087 50%,
+      #0000008f 50%
     );
   }
 }
