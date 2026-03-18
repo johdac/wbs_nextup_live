@@ -9,6 +9,7 @@ export const eventSchema = z.strictObject({
   endDate: dateString,
   description: z.string().optional(),
   mainImageKey: string128.optional(),
+  websiteUrl: url.optional(),
 });
 
 export const eventUpdateSchema = eventSchema

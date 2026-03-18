@@ -6,13 +6,13 @@ export const Landing = () => {
     <>
       <div className="container">
         <Hero></Hero>
-        <h2 className="mb-2 font-display text-2xl font-bold tracking-wider text-foreground sm:text-3xl">
-          All <span className="neon-gradient-text">Upcoming</span> Events
+        <h2 className="mb-2 font-display text-2xl tracking-wider text-foreground sm:text-5xl font-black text-center">
+          How it works
         </h2>
-        <p className="mb-6 font-body text-sm text-white">
-          Your next unforgettable night awaits
+        <p className="text-gray-400 text-center mb-5 text-xl">
+          How to discover upcoming concerts
         </p>
-        <EventList></EventList>
+        <EventList isExplainer={true}></EventList>
       </div>
     </>
   );

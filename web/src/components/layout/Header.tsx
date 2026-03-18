@@ -1,4 +1,16 @@
-import { Sparkles, Heart, Plus, UserPlus, Menu, X, LogOut, User, CalendarRange, MapPin, Mic2 } from "lucide-react";
+import {
+  Sparkles,
+  Heart,
+  Plus,
+  UserPlus,
+  Menu,
+  X,
+  LogOut,
+  User,
+  CalendarRange,
+  MapPin,
+  Mic2,
+} from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -20,11 +32,16 @@ export const Header = () => {
   const currentRole = user?.role ?? user?.roles?.[0] ?? roleFromStorage;
   const isOrganizer = currentRole === "organizer";
   const hideCreateNew = signedIn && currentRole === "user";
-  const navItems = hideCreateNew ? baseNavItems : [...baseNavItems, organizerNavItem];
+  const navItems = hideCreateNew
+    ? baseNavItems
+    : [...baseNavItems, organizerNavItem];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target as Node)
+      ) {
         setUserDropdownOpen(false);
       }
     };
@@ -42,7 +59,12 @@ export const Header = () => {
         <nav className="flex justify-between items-center py-4 sm:py-8 text-white">
           <Link to="/">
             <div className="text-2xl sm:text-4xl font-black italic tracking-tighter">
-              NextUp Live<span className="not-italic ml-1">✦</span>
+              <img
+                className="w-45 sm:w-60 mt-1.5 sm:mt-4"
+                src="logo-nextuplive.svg"
+                alt="Logo nextup live"
+              />
+              {/* NextUp Live<span className="not-italic ml-1">✦</span> */}
             </div>
           </Link>
           {/* Desktop Nav */}
@@ -141,7 +163,10 @@ export const Header = () => {
 
           {/* Mobile Burger Icon */}
           {!open && (
-            <button onClick={() => setOpen(true)} className="lg:hidden relative z-130">
+            <button
+              onClick={() => setOpen(true)}
+              className="lg:hidden relative z-130"
+            >
               <Menu size={28} />
             </button>
           )}
@@ -161,7 +186,10 @@ export const Header = () => {
         ${open ? "translate-x-0" : "translate-x-full"}`}
           >
             {/* X Button inside drawer */}
-            <button onClick={() => setOpen(false)} className="self-end m-4 p-2 rounded-full hover:bg-purple-dark">
+            <button
+              onClick={() => setOpen(false)}
+              className="self-end m-4 p-2 rounded-full hover:bg-purple-dark"
+            >
               <X size={24} />
             </button>
 

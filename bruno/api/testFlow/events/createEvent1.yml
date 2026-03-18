@@ -14,7 +14,8 @@ http:
         "artistsIds": ["{{createdArtist1}}"],
         "title": "Test Event 1",
         "startDate": "2026-05-28T17:20:00.000Z",
-        "endDate": "2026-05-28T17:23:00.000Z"
+        "endDate": "2026-05-28T17:23:00.000Z",
+        "websiteUrl": "https://www.gretchen-club.de/detail.php?id=3187"
       }
   auth: inherit
 

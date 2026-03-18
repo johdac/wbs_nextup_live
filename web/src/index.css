@@ -322,6 +322,15 @@
       transparent
     );
   }
+
+  .herobg {
+    mask-image: linear-gradient(
+      to right,
+      #00000021 0%,
+      #00000087 50%,
+      #0000008f 50%
+    );
+  }
 }
 
 @layer base {

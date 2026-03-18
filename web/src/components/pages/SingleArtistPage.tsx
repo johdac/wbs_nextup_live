@@ -145,7 +145,7 @@ export const SingleArtistPage = () => {
           />
           {/* right */}
           <div className="flex flex-col items-start">
-            <div className="pb-6">
+            <div className="pb-6 w-full">
               <Kicker text="Artist" />
               <div className="flex flex-row gap-10 items-center pb-2">
                 <h1>{artist.name}</h1>
@@ -175,6 +175,8 @@ export const SingleArtistPage = () => {
             <div className="py-5">
               <a
                 href={artist.websiteUrl}
+                target={"_blank"}
+                rel="noopener noreferrer"
                 className="flex flex-row gap-1 items-center text-lg underline cursor-pointer hover:text-purple"
               >
                 <Link /> <div>Website</div>
