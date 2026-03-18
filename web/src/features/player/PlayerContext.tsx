@@ -110,6 +110,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     playTracks,
     pauseCurrentBeforeSwitch,
     favoriteEvent,
+    setPlayerState,
   };
 
   return (
