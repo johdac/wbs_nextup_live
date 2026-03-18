@@ -164,7 +164,7 @@ export const ArtistLayout = ({ mode = "event" }: ArtistLayoutProps) => {
                   return (
                     <label
                       key={artistId}
-                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-lightgray cursor-pointer border-b border-lightgray last:border-b-0 cursor-pointer"
+                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-lightgray border-b border-lightgray last:border-b-0 cursor-pointer"
                     >
                       <input
                         type="checkbox"
