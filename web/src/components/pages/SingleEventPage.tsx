@@ -69,18 +69,6 @@ export const SingleEventPage = () => {
 
   return (
     <div className="container mx-auto">
-      {isOwner && (
-        <div className="flex flex-1 text-white justify-between items-center md:-mt-4 lg:-mt-7.5">
-          <div className="flex items-center justify-end gap-3">
-            <EditBtn data={event} path="managed-events" />
-            <DeleteBtn
-              id={event.id}
-              setItemToDelete={setItemToDelete}
-              setShowModal={setShowModal}
-            />
-          </div>
-        </div>
-      )}
       <div className="pb-5 sm:mt-10 sm:px-0 text-white">
         {/* TOP SECTION */}
 
@@ -102,15 +90,28 @@ export const SingleEventPage = () => {
             </div>
           </div>
           {/* image of the band */}
-          <img
-            src={event.mainImageUrl}
-            alt={event.title}
-            className="w-full aspect-3/2 rounded-xl object-cover"
-          />
+          <div className="flex flex-wrap sm:flex-nowrap items-start relative px-3">
+            <img
+              src={event.mainImageUrl}
+              alt={event.title}
+              className="w-full aspect-3/2 rounded-xl object-cover"
+            />
+            {isOwner && (
+              <div className="flex mt-2 gap-4 absolute bg-purple rounded-md top-5 right-0 px-2 pt-1 pb-1.5">
+                <div className="flex items-center justify-end gap-3">
+                  <EditBtn data={event} path="managed-events" />
+                  <DeleteBtn
+                    id={event.id}
+                    setItemToDelete={setItemToDelete}
+                    setShowModal={setShowModal}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* BOTTOM SECTION */}
-
         <div className="lg:mt-25 mt-10 flex flex-wrap md:flex-nowrap w-full">
           {/* LEFT MAIN CONTENT */}
           <div className="order-2 md:order-1 flex-1 gap-10 un-box-t-padding md:un-box-r-padding">

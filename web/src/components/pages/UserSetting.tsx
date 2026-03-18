@@ -2,6 +2,8 @@ import { User, Lock, Mail, CircleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { authService } from "../../services/authApi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Input } from "../ui/Input";
+import { Label } from "../ui/Label";
 
 export const UserSetting = () => {
   const queryClient = useQueryClient();
@@ -53,7 +55,11 @@ export const UserSetting = () => {
       };
 
       setSuccess("");
-      setError(error?.response?.data?.message || error?.message || "Failed to update profile");
+      setError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update profile",
+      );
     },
   });
 
@@ -93,11 +99,17 @@ export const UserSetting = () => {
   };
 
   if (isLoading) {
-    return <div className="container mx-auto p-6 text-white">Loading profile...</div>;
+    return (
+      <div className="container mx-auto p-6 text-white">Loading profile...</div>
+    );
   }
 
   if (isError) {
-    return <div className="container mx-auto p-6 text-red-500">Failed to load profile.</div>;
+    return (
+      <div className="container mx-auto p-6 text-red-500">
+        Failed to load profile.
+      </div>
+    );
   }
 
   return (
@@ -105,99 +117,104 @@ export const UserSetting = () => {
       <div className="container mx-auto">
         <div className="pb-10 flex items-center justify-center px-4 min-h-screen md:min-h-full">
           <div className="w-full max-w-md">
-            <div className="bg-gray-100 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
+            <div className="rounded-lg p-6 bg-lightgray">
               <div className="flex justify-center">
-                <h2 className="mb-2 flex items-center font-display text-3xl font-bold tracking-widersm:text-3xl">
+                <h2 className="pb-2 text-2xl font-bold text-white flex items-center gap-2">
                   Update Profile
                 </h2>
               </div>
               <form className="space-y-4" onSubmit={handleSubmit}>
                 {/* Username */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-secondary-foreground mb-1 block">Username</label>
+                  <Label className="form-label">Username</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
+                    <Input
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Enter your username"
-                      className="input-default pl-10  focus:border-primary w-full"
+                      variant="event"
+                      className="Input-default pl-10  focus:border-primary w-full"
                     />
                   </div>
                 </div>
 
                 {/* Email */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-secondary-foreground mb-1 block">Email</label>
+                  <Label className="form-label">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
+                    <Input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="john@gmail.com"
-                      className="input-default pl-10  focus:border-primary w-full"
+                      variant="event"
+                      className="Input-default pl-10  focus:border-primary w-full"
                     />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-secondary-foreground mb-1 block">Password</label>
+                  <Label className="form-label">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
+                    <Input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="input-default pl-10  focus:border-primary w-full"
+                      variant="event"
+                      className="Input-default pl-10  focus:border-primary w-full"
                     />
                   </div>
                 </div>
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-secondary-foreground mb-1 block">Confirm Password</label>
+                  <Label className="form-label">Confirm Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
+                    <Input
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="input-default pl-10 focus:border-primary w-full"
+                      variant="event"
+                      className="Input-default pl-10 focus:border-primary w-full"
                     />
                   </div>
                 </div>
 
                 {/* Role Selection */}
-                <div className="space-y-3 pt-2">
-                  {/* <label className="text-sm font-medium text-black block">
-                    I am a
-                  </label> */}
-                  <div className="flex gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                <div className="pt-2">
+                  <div className="flex gap-10 justify-center">
+                    <Label className="form-radio">
                       <input
                         type="radio"
                         value="user"
                         checked={role === "user"}
-                        onChange={(e) => setRole(e.target.value as "user" | "organizer")}
+                        onChange={(e) =>
+                          setRole(e.target.value as "user" | "organizer")
+                        }
                         className="w-4 h-4 cursor-pointer"
                       />
                       <span className="text-sm">Event Attendee</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    </Label>
+                    <Label className="form-radio">
                       <input
                         type="radio"
                         value="organizer"
                         checked={role === "organizer"}
-                        onChange={(e) => setRole(e.target.value as "user" | "organizer")}
+                        onChange={(e) =>
+                          setRole(e.target.value as "user" | "organizer")
+                        }
                         className="w-4 h-4 cursor-pointer"
                       />
                       <span className="text-sm">Event Organizer</span>
-                    </label>
+                    </Label>
                   </div>
                 </div>
 
@@ -218,9 +235,11 @@ export const UserSetting = () => {
                 <button
                   type="submit"
                   disabled={updateProfileMutation.isPending}
-                  className="w-full mt-6 btn-default hover:opacity-90 disabled:opacity-50 transition"
+                  className="w-full mt-2 btn-default hover:opacity-90 disabled:opacity-50 transition"
                 >
-                  {updateProfileMutation.isPending ? "Saving Profile..." : "Update Profile"}
+                  {updateProfileMutation.isPending
+                    ? "Saving Profile..."
+                    : "Update Profile"}
                 </button>
               </form>
             </div>

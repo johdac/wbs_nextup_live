@@ -99,7 +99,7 @@ export const ArtistCard = ({
             )}
           </div>
         </div>
-        <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 absolute sm:static sm:bg-transparent bg-purple rounded-md right-0 top-[calc(-40px+50vw)] px-2 pt-1 pb-1.5 sm:p-0">
+        <div className="flex mt-2 sm:mt-0 sm:ml-auto gap-4 absolute sm:static sm:bg-transparent bg-purple rounded-md right-0 top-[calc(-40px+40vw)] xs:top-40 px-2 pt-1 pb-1.5 sm:p-0">
           {actionSlot && <div>{actionSlot}</div>}
         </div>
       </div>

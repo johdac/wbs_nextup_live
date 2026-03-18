@@ -230,8 +230,8 @@ export const Register = () => {
 
                   {/* Role Selection */}
                   <div className="space-y-3 pt-2">
-                    <div className="flex gap-6">
-                      <label className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex gap-10 justify-center">
+                      <Label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="radio"
                           value="user"
@@ -239,8 +239,8 @@ export const Register = () => {
                           className="w-4 h-4 cursor-pointer"
                         />
                         <span className="text-sm">Event Attendee</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
+                      </Label>
+                      <Label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="radio"
                           value="organizer"
@@ -248,7 +248,7 @@ export const Register = () => {
                           className="w-4 h-4 cursor-pointer"
                         />
                         <span className="text-sm">Event Organizer</span>
-                      </label>
+                      </Label>
                     </div>
                   </div>
 
