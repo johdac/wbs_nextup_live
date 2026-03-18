@@ -311,6 +311,14 @@
     background-color: var(--light-gray);
   }
 
+  .form-label {
+    @apply block text-sm font-medium text-gray-300 mb-2;
+  }
+
+  .form-radio {
+    @apply flex items-center gap-2 text-white cursor-pointer;
+  }
+
   .marqueeGradient {
     overflow: hidden;
     white-space: nowrap;
