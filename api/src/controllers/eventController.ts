@@ -231,6 +231,7 @@ export const eventUpdate: RequestHandler = async (req, res) => {
       endDate,
       description,
       mainImageKey,
+      websiteUrl,
     },
     event,
   } = req;
@@ -271,6 +272,7 @@ export const eventUpdate: RequestHandler = async (req, res) => {
   if (endDate !== undefined) event.endDate = endDate;
   if (description !== undefined) event.description = description;
   if (mainImageKey !== undefined) event.mainImageKey = mainImageKey;
+  if (websiteUrl !== undefined) event.websiteUrl = websiteUrl;
 
   await event.save();
   res.json(event);

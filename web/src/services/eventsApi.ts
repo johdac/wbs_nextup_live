@@ -39,6 +39,7 @@ export interface EventListItem {
   organizerId: string;
   organizerName: string;
   interactionType: "favorite" | "hidden";
+  websiteUrl?: string;
 }
 
 interface EventSearchParams {
@@ -125,6 +126,7 @@ export interface ApiEvent {
   createdAt: string;
   updatedAt: string;
   interactionType: "favorite" | "hidden";
+  websiteUrl?: string;
 }
 
 // Transform API response to MusicEvent format for display
@@ -171,6 +173,7 @@ const transformEventToMusicEvent = (event: ApiEvent): EventListItem => {
     organizerId,
     organizerName: organizer?.username || "Unknown Organizer",
     interactionType: event.interactionType,
+    websiteUrl: event.websiteUrl,
   };
 };
 

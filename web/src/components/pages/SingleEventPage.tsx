@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import { Calendar, MapPin, Sparkles } from "lucide-react";
+import { Calendar, Link as LinkIcon, MapPin, Sparkles } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { ArtistCard } from "../artists/ArtistCard";
 import { GenresTag } from "../ui/GenresTag";
@@ -38,6 +38,8 @@ export const SingleEventPage = () => {
     },
     enabled: Boolean(id),
   });
+
+  console.log(event);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load event</p>;
@@ -165,6 +167,18 @@ export const SingleEventPage = () => {
                   <span className="w-12 inline-block">End</span> {endDate}
                 </div>
               </EventMetaItem>
+              {event.websiteUrl && (
+                <EventMetaItem heading="Web" Icon={LinkIcon}>
+                  <a
+                    target={"_blank"}
+                    rel="noopener noreferrer"
+                    href={event.websiteUrl}
+                    className="underline cursor-pointer hover:text-purple"
+                  >
+                    {event.websiteUrl}
+                  </a>
+                </EventMetaItem>
+              )}
               <EventMetaItem heading="Genres" Icon={Sparkles}>
                 <GenresTag data={event} />
               </EventMetaItem>

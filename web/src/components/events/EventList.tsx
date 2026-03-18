@@ -17,7 +17,13 @@ import LocationSearch, {
 const ROOT_ITEMS_PER_PAGE = 10;
 const EVENTS_ITEMS_PER_PAGE = 20;
 
-const EventList = ({ favorited }: { favorited?: boolean }) => {
+const EventList = ({
+  favorited,
+  isExplainer,
+}: {
+  favorited?: boolean;
+  isExplainer?: boolean;
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialStartAfter = searchParams.get("startAfter");
   const initialRadiusMeters = Number(searchParams.get("radius") || "0");
@@ -183,6 +189,9 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
   return (
     <section>
       <div className=" py-4 mb-10 ">
+        {isExplainer && (
+          <img src="arrow1.svg" alt="" className="my-5 w-70 ml-3 xs:ml-[20%]" />
+        )}
         <div className=" flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-4">
           {/* Date / Time Picker */}
           <div className="w-full lg:flex-1 mui-white-outline max-h-13.25">
@@ -274,6 +283,13 @@ const EventList = ({ favorited }: { favorited?: boolean }) => {
                 />
               </div>
             </div>
+            {isExplainer && (
+              <img
+                src="arrow4.svg"
+                alt=""
+                className="ml-2.5 mt-2.5 md:-mt-12 w-75 xs:ml-[14%] md:ml-[20%] lg:ml-[45%]"
+              />
+            )}
             {/* Result List */}
             {eventsList.map((event: EventListItem) => {
               return <EventCard key={event.id} event={event} />;
