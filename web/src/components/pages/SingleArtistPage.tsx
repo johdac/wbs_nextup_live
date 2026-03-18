@@ -6,7 +6,6 @@ import { Link } from "lucide-react";
 import { EventByArtist } from "../artists/EventsByArtist";
 import { GenresTag } from "../ui/GenresTag";
 import { Kicker } from "../ui/Kicker";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { useAuth } from "../../context/AuthContext";
@@ -114,35 +113,34 @@ export const SingleArtistPage = () => {
 
   return (
     <div className="container mx-auto">
-      {isOwner && (
-        <div className="pb-10 flex flex-row justify-between items-center">
-          <div className="text-white">
-            <GoBackBtn path="/managed-artists" />
-          </div>
-          <div className="mt-4 flex items-center justify-end gap-3">
-            <EditBtn data={artist} path="managed-artists" />
-            <DeleteBtn
-              id={artist.id || artist._id || ""}
-              setItemToDelete={setItemToDelete}
-              setShowModal={setShowModal}
-            />
-          </div>
-        </div>
-      )}
       <div className="pb-20 max-w-8xl sm:px-0 flex flex-col justify-center items-center text-white">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:items-stretch w-full">
           {/* left */}
 
           {/* image of the artist */}
-          <img
-            src={artist.mainImageUrl ?? "/placeholder.jpeg"}
-            alt={artist.name}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/placeholder.jpeg";
-            }}
-            className="w-full aspect-3/2 rounded-xl object-cover"
-          />
+          <div className="flex flex-wrap sm:flex-nowrap items-start relative px-3">
+            <img
+              src={artist.mainImageUrl ?? "/placeholder.jpeg"}
+              alt={artist.name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/placeholder.jpeg";
+              }}
+              className="w-full aspect-3/2 rounded-xl object-cover"
+            />
+            {isOwner && (
+              <div className="flex mt-2 gap-4 absolute bg-purple rounded-md top-5 right-0 px-2 pt-1 pb-1.5">
+                <div className="flex items-center justify-end gap-3">
+                  <EditBtn data={artist} path="managed-artists" />
+                  <DeleteBtn
+                    id={artist.id || artist._id || ""}
+                    setItemToDelete={setItemToDelete}
+                    setShowModal={setShowModal}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
           {/* right */}
           <div className="flex flex-col items-start">
             <div className="pb-6 w-full">
