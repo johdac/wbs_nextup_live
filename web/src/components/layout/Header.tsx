@@ -61,7 +61,7 @@ export const Header = () => {
             <div className="text-2xl sm:text-4xl font-black italic tracking-tighter">
               <img
                 className="w-45 sm:w-60 mt-1.5 sm:mt-4"
-                src="logo-nextuplive.svg"
+                src="/logo-nextuplive.svg"
                 alt="Logo nextup live"
               />
               {/* NextUp Live<span className="not-italic ml-1">✦</span> */}
