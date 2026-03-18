@@ -34,10 +34,10 @@ const EventList = ({
   );
 
   const [dateTime, setDateTime] = useState<Date | null>(defaultStartDate);
-  const [radius, setRadius] = useState(
+  const [radiusInput, setRadiusInput] = useState(
     Number.isFinite(initialRadiusMeters) && initialRadiusMeters > 0
-      ? initialRadiusMeters / 1000
-      : 1,
+      ? String(initialRadiusMeters / 1000)
+      : "1",
   );
   const [genre, setGenre] = useState(searchParams.get("genre") || "");
   const [location, setLocation] = useState(searchParams.get("location") || "");
@@ -51,6 +51,9 @@ const EventList = ({
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isEventRoute = pathname === "/events";
+  const parsedRadius = Number(radiusInput);
+  const radius =
+    Number.isFinite(parsedRadius) && parsedRadius > 0 ? parsedRadius : 1;
   const radiusInMeters = Math.round(radius * 1000);
   const appliedGenre = searchParams.get("genre") || "";
   const appliedStartAfter =
@@ -129,7 +132,7 @@ const EventList = ({
     setLocation("");
     setSelectedLat(null);
     setSelectedLng(null);
-    setRadius(1);
+    setRadiusInput("1");
     // Remove location/lat/lng/radius from URL params and trigger search for all events
     const params = new URLSearchParams(searchParams);
     params.delete("location");
@@ -214,13 +217,24 @@ const EventList = ({
             />
             <TextField
               label="Radius (km)"
-              type="number"
-              value={radius}
-              onChange={(e) =>
-                setRadius(Math.max(1, Number(e.target.value) || 1))
-              }
+              type="text"
+              value={radiusInput}
+              onChange={(e) => {
+                const nextValue = e.target.value;
+                if (/^\d*$/.test(nextValue)) {
+                  setRadiusInput(nextValue);
+                }
+              }}
+              onBlur={() => {
+                const normalizedRadius = Number(radiusInput);
+                if (!Number.isFinite(normalizedRadius) || normalizedRadius < 1) {
+                  setRadiusInput("1");
+                  return;
+                }
+                setRadiusInput(String(Math.min(100, Math.floor(normalizedRadius))));
+              }}
               size="small"
-              inputProps={{ min: 1, max: 100 }}
+              inputProps={{ inputMode: "numeric", pattern: "[0-9]*", min: 1, max: 100 }}
               className="mui-white-outline"
               sx={{ width: { xs: 100, sm: 150 } }} // Responsive width
             />

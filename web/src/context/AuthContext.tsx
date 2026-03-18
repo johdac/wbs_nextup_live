@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           const data = await refreshAccessToken();
           persistAuthSession(data.accessToken, data.refreshToken);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           // If refresh fails, clear tokens
           clearAuthSession();
