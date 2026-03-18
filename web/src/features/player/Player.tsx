@@ -18,7 +18,9 @@ export const Player = () => {
     togglePlayPause,
     playNext,
     playPrev,
+    setPlayerState,
   } = usePlayer();
+
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Derived data from usePlayer context
@@ -39,6 +41,12 @@ export const Player = () => {
     }
   }, [currentIndex, playerStateId]);
 
+  useEffect(() => {
+    // after track change
+    console.log("edit history");
+    window.history.replaceState(null, "", window.location.href);
+  }, [currentIndex]);
+
   const bindYoutubePlayer = (autoplay: boolean) => {
     const bindYoutube = () => {
       if (
@@ -55,10 +63,20 @@ export const Player = () => {
               youtubeRef.current = event.target;
               if (autoplay) event.target.playVideo();
             },
-
             onStateChange: (event: any) => {
-              if (event.data === (window as any).YT.PlayerState.ENDED) {
+              const YT = (window as any).YT;
+              const state = event.data;
+
+              if (state === YT.PlayerState.ENDED) {
                 playNext();
+              }
+
+              if (state === YT.PlayerState.PLAYING) {
+                setPlayerState("playing");
+              }
+
+              if (state === YT.PlayerState.PAUSED) {
+                setPlayerState("paused");
               }
             },
           },
@@ -166,7 +184,7 @@ export const Player = () => {
                 {currentSong && (
                   <iframe
                     ref={iframeRef}
-                    src={`${currentSong.song.embedUrl}?${playerStateId}`}
+                    src={`${currentSong.song.embedUrl}&${playerStateId}`}
                     className="w-40 sm:w-3xs aspect-video absolute bottom-14 xs:bottom-2 rounded-lg "
                     style={{
                       boxShadow: "rgb(255 191 81 / 20%) 0px 0px 20px 5px",

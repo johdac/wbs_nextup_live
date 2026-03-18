@@ -15,13 +15,15 @@ export const Hero = () => {
         <p className="text-gray-400 max-w-full sm:max-w-md text-lg leading-relaxed">
           NextUp Live turns upcoming shows into playlists you can actually
           listen to. Discover bands, venues, and nights out that match your
-          taste — before you buy tickets.
+          taste.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          <button className="bg-linear-to-r from-pink to-yellow text-black font-bold px-8 py-4 rounded-md uppercase text-sm tracking-widest">
-            Find shows near me
-          </button>
+          <a href="#howto">
+            <button className="cursor-pointer bg-linear-to-r from-pink to-yellow text-black font-bold px-8 py-4 rounded-md uppercase text-sm tracking-widest">
+              Find shows near me
+            </button>
+          </a>
           <button className="border border-white text-white px-8 py-4 rounded-md uppercase text-sm font-bold tracking-widest hover:bg-white hover:text-black transition">
             For bands
           </button>

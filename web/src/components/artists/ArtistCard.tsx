@@ -69,7 +69,7 @@ export const ArtistCard = ({
             </Link>
           </div>
           <div
-            className="text-md text-gray line-clamp-3 leading-tight"
+            className="text-md text-gray line-clamp-3"
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(artist.description || ""),
             }}
