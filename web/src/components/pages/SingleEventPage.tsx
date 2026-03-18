@@ -17,7 +17,6 @@ import { EditBtn } from "../buttons/EditBtn";
 import { DeleteBtn } from "../buttons/DeleteBtn";
 import { ConfirmModal } from "../layout/ConfirmModal";
 import { useAuth } from "../../context/AuthContext";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 
 export const SingleEventPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -70,7 +69,6 @@ export const SingleEventPage = () => {
     <div className="container mx-auto">
       {isOwner && (
         <div className="flex flex-1 text-white justify-between items-center md:-mt-4 lg:-mt-7.5">
-          <GoBackBtn path="/managed-events" />
           <div className="flex items-center justify-end gap-3">
             <EditBtn data={event} path="managed-events" />
             <DeleteBtn

@@ -14,7 +14,6 @@ import {
   type UpdateLocationInput,
 } from "../../services/locationsApi";
 import { Heading } from "../ui/Heading";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import { LocationLayout } from "../layout/LocationLayout";
 import toast from "react-hot-toast";
 
@@ -360,7 +359,6 @@ export const EditLocation = ({
 
   return (
     <div className="container z-20 min-h-screen py-8">
-      {/* <GoBackBtn path="/managed-locations" /> */}
       <div className="max-w-4xl mx-auto">
         <Heading
           title="Managed Locations"
