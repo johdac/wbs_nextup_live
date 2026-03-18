@@ -14,7 +14,6 @@ import {
   type UpdateLocationInput,
 } from "../../services/locationsApi";
 import { Heading } from "../ui/Heading";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import { LocationLayout } from "../layout/LocationLayout";
 import toast from "react-hot-toast";
 

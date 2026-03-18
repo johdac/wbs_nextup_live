@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useBeforeUnload, useBlocker, useNavigate } from "react-router";
+import { useBeforeUnload, useBlocker, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { eventsService } from "../../services/eventsApi";
 import { artistsService } from "../../services/artistsApi";
 import { locationsService } from "../../services/locationsApi";
@@ -19,7 +19,6 @@ import L from "leaflet";
 import { uploadFile } from "../../services/uploadApi";
 import { EventInfoForm } from "../events/EventInfoForm";
 import { Heading } from "../ui/Heading";
-import { GoBackBtn } from "../buttons/GoBackBtn";
 import toast from "react-hot-toast";
 
 interface CreateEventProps {
