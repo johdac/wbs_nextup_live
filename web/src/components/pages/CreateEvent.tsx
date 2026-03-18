@@ -1305,7 +1305,7 @@ export const CreateEvent = ({ mode = "create", eventId }: CreateEventProps) => {
   };
 
   return (
-    <div className="container z-20 min-h-screen py-8">
+    <div className="container z-20 min-h-screen">
       {/* {isEditMode ? (
         <GoBackBtn path="/managed-events" />
       ) : (

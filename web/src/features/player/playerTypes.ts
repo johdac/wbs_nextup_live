@@ -1,4 +1,5 @@
 import type { RefObject } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 export type Vendors = "youtube" | "soundcloud";
 
@@ -59,4 +60,5 @@ export type Player = {
   pauseCurrentBeforeSwitch: () => void;
 
   favoriteEvent: (eventId: string) => void;
+  setPlayerState: Dispatch<SetStateAction<PlayerState>>;
 };

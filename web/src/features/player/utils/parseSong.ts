@@ -21,7 +21,21 @@ export const parseSong = (song: PlaylistSong): PlaylistSong => {
     const id = url.match(YOUTUBE_PATTERN)?.[1];
     if (!id) return song;
     vendor = "youtube";
-    embedUrl = `https://www.youtube.com/embed/${id}?enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&autoplay=1`;
+
+    const params = new URLSearchParams({
+      enablejsapi: "1",
+      origin: window.location.origin,
+      autoplay: "1",
+      controls: "1",
+      modestbranding: "1",
+      rel: "0",
+      fs: "1",
+      disablekb: "1",
+      playsinline: "1",
+      mute: "1",
+    });
+
+    embedUrl = `https://www.youtube.com/embed/${id}?${params.toString()}`;
   } else if (SOUNDCLOUD.test(url)) {
     vendor = "soundcloud";
     const encoded = encodeURIComponent(url.split("?")[0]);
