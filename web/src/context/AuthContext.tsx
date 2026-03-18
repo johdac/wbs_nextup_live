@@ -8,6 +8,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "../services/authApi";
 import { clearAuthSession, refreshAccessToken } from "../services/tokenRefresh";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -69,14 +70,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     enabled: !isInitializing && !!localStorage.getItem("accessToken"),
   });
 
-  // const loginMutation = useMutation({
-  //   mutationFn: authService.login,
-  //   onSuccess: (data) => {
-  //     localStorage.setItem("accessToken", data.accessToken);
-  //     localStorage.setItem("refreshToken", data.refreshToken);
-  //     queryClient.invalidateQueries({ queryKey: ["authUser"] });
-  //   },
-  // });
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: async (data) => {
@@ -132,7 +125,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("role");
       queryClient.setQueryData(["authUser"], null);
       queryClient.removeQueries({ queryKey: ["authUser"] });
-      window.location.href = "/";
+      toast.success("Logged out successfully");
+      window.setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
     }
   };
 
